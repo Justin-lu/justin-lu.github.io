@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: text | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/text/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-07-06T08:29:16+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[从Vim到Sublime Text]]></title>
+    <link href="http://justin-lu.github.io/blog/2013/10/26/cong-vimdao-sublime-text/"/>
+    <updated>2013-10-26T19:32:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2013/10/26/cong-vimdao-sublime-text</id>
+    <content type="html"><![CDATA[<h3>为什么选择Sublime Text</h3>
+
+<blockquote><p>使用Gvim已经三年了，一直很喜欢Vim里面的hjkl等快捷键和多种模式，以致于在Chrome上安装Vimium插件，让我能够永远的脱离鼠标，很喜欢这种感觉。
+但是，最近，由于工作需要，在Mac上进行开发，于是装上了MacVim，但是，以前一直用的好好地Vim出现bug了，无法直接双击打开文件（后来发下在终端下打开gvim就可以）加上之前一直听师兄说Sublime Text很好用，所以，我试着Google些资料，然后开始各种尝试&hellip;</p></blockquote>
+
+<h3>Sublime Text 下开启Vim模式</h3>
+
+<blockquote><p>对于一个习惯了Vim操作方式的程序员，这无疑是一个很好的消息，一下是配置方式</p></blockquote>
+
+<ul>
+<li>按下<code>Shift + Command + P</code>,调出命令面板</li>
+<li>输入<code>setting user</code>,打开用户配置文件</li>
+<li>如果之前对配置过，此时应该是一个空文件，把一下代码贴入</li>
+</ul>
+
+
+<pre><code class="javascript">    {
+        "ignored_packages": []
+    }
+</code></pre>
+
+<ul>
+<li>保存这个文件，按下ESC键，这时候，你熟悉的Vim命令就回来啦&hellip;</li>
+</ul>
+
+
+<h3>最新版Sublime Text 3 ,点击<a href="http://www.sublimetext.com/3">这里</a>下载</h3>
+
+<h3>Sublime Text 常用快捷键</h3>
+
+<h4>打开/前往</h4>
+
+<ul>
+<li>⌘T   前往文件(和⌘P一样）</li>
+<li>⌘⌃P  前往项目</li>
+<li>⌘R   前往 method(markdown下，跳转至标题)</li>
+<li>⌘⇧P  命令提示</li>
+<li>⌃G   前往行</li>
+<li>⌘KB  开关侧栏</li>
+<li>⌃ `  python 控制台</li>
+<li>⌘⇧N  新建窗口</li>
+</ul>
+
+
+<h4>编辑(会用Vim的同学，可以开启Vim模式，和以前一样)</h4>
+
+<ul>
+<li>⌘L   选择行 (重复按下将下一行加入选择)</li>
+<li>⌘D   选择词 (重复按下时多重选择相同的词进行多重编辑)</li>
+<li>⌃⇧M  选择括号内的内容</li>
+<li>⌘⇧↩  在当前行前插入新行</li>
+<li>⌘↩   在当前行后插入新行</li>
+<li>⌃⇧K  删除行</li>
+<li>⌘KK  从光标处删除至行尾</li>
+<li>⌘K⌫  从光标处删除至行首</li>
+<li>⌘⇧D  复制(多)行</li>
+<li>⌘J   合并(多)行</li>
+<li>⌘KU  改为大写</li>
+<li>⌘KL  改为小写</li>
+<li>⌘ /  注释</li>
+<li>⌘⌥ /   块注释</li>
+<li>⌘Y   恢复或重复</li>
+<li>⌘⇧V  粘贴并自动缩进</li>
+<li>⌃ space  自动完成(重复按下选择下一个提示)</li>
+<li>⌃M   跳转至对应的括号</li>
+<li>⌘U   软撤销（可撤销光标移动）</li>
+<li>⌘⇧U  软重做（可重做光标移动）</li>
+</ul>
+
+
+<h4>XML/HTML</h4>
+
+<ul>
+<li>⌘⇧A  选择标签内的内容</li>
+<li>⌘⌥ .   闭合当前标签</li>
+</ul>
+
+
+<h4>查找/替换</h4>
+
+<ul>
+<li>⌘F   查找</li>
+<li>⌘⌥F  替换</li>
+<li>⌘⌥G  查找下一个符合当前所选的内容</li>
+<li>⌘⌃G  查找所有符合当前所选的内容进行多重编辑</li>
+<li>⌘⇧F  在所有打开的文件中进行查找</li>
+</ul>
+
+
+<h4>拆分窗口/标签页</h4>
+
+<ul>
+<li>⌘⌥1  单列</li>
+<li>⌘⌥2  双列</li>
+<li>⌘⌥5  网格 (4组)</li>
+<li>⌃[1,2,3,4]   焦点移动至相应组</li>
+<li>⌃⇧[1,2,3,4]  将当前文件移动至相应组</li>
+<li>⌘[1,2,3…]  选择相应标签页</li>
+</ul>
+
+
+<h4>书签</h4>
+
+<ul>
+<li>⌘F2  添加/去除书签</li>
+<li>F2   下一个书签</li>
+<li>⇧F2  前一个书签</li>
+<li>⌘⇧F2   清除书签</li>
+</ul>
+
+
+<h4>标记</h4>
+
+<ul>
+<li>⌘K space   设置标记</li>
+<li>⌘KW  从光标位置删除至标记</li>
+<li>⌘KA  从光标位置选择至标记</li>
+<li>⌘KG  清除标记</li>
+</ul>
+
+
+<hr />
+
+<blockquote><blockquote><p>你也可以通过按住<code>command+shift+p</code>,输入<code>keybinding user</code>，往里面添加自定义快捷键。例如：
+<code>javascript
+[
+    { "keys": ["ctrl+alt+p"], "command": "markdown_preview", "args": { "target": "browser"} }
+]
+</code></p>
+
+<h3>安装包控制(Package Control)</h3>
+
+<p>我么可以通过Sublime Package Control来进行插件的安装，卸载，升级
+安装方法如下：
+1. 打开Sublime Text ，按住 ctrl + `，打开Console，通常这个快捷加可能会冲突，需要重新修改
+2. 将以下代码粘贴至控制台</p></blockquote></blockquote>
+
+<p>  import urllib.request,os; pf = &lsquo;Package Control.sublime-package&rsquo;; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), &lsquo;wb&rsquo;).write(urllib.request.urlopen( &lsquo;<a href="http://sublime.wbond.net/">http://sublime.wbond.net/</a>&rsquo; + pf.replace(&lsquo; &rsquo;,&lsquo;%20&rsquo;)).read())</p>
+
+<blockquote><blockquote><ol>
+<li>重启Sbulime,如果在Preferences -> Package Settings中见到Package Control这一项，就说明安装成功了。
+
+<h3>Sublime Text 常用插件</h3>
+
+<h4>MarkdownEditing</h4>
+
+<p>如果安装了 Package Control，可以通过添加 repository，输入<code>http://github.com/ttscoff/MarkdownEditing</code> 然后在 Install Package 里找到 MarkdownEditing。
+当然也可以手动 Clone 这个 repo 到 ~/Library/Application Support/Sublime Text 3/Packages。</p></li>
+</ol>
+</blockquote>
+
+<p>MarkdownEditing 从视觉和便捷性上针对 Markdown 文档的编辑进行了一系列的优化</p></blockquote>
+
+<pre><code>*  安装后针对 md\mdown\mmd\txt 格式文件启用插件。颜色方案仿 Byword 及 iA writer。
+*  自动匹配星号（*）、下划线（_）及反引号（`），选中文本按下以上符号能自动在所选文本前后添加配对的符号，方便粗体、斜体和代码框的输入。
+*  直接输入配对的符号后按下退格键（backspace），则两个符号都会被删除；直接输入配对的符号后按下空格键，则会自动删除后一个。
+*  对“选中文字后输入左括号”这一动作进行了调整，以便插入 markdown 链接。
+*  拷贝一个链接，选中文本后按下 ⌘⌥V 会自动插入内联链接。
+*  拷贝一个链接，选中文本后按下 ⌘⌥R 会自动插入引用链接。
+*  ⌘K 插入链接；⌘⇧K 插入图片。
+*  ⌘B 和 ⌘I 分别用于加粗体和斜体。
+*  选中文本后按下 # 会自动在文本前后进行配对，可重复按下来定义标题级别，还可用 ⌘⇧空格 来增加 # 与所选文本之间的空格（也是自动配对的）。
+</code></pre>
+
+<blockquote><p>有些快捷键可能与系统的一些发生冲突，可以跟之前一样，通过修改自定义快捷键文件</p></blockquote>
+
+<h4>JsFormat</h4>
+
+<blockquote><p>功能类似之前Vim使用的Js beautiful插件，美化你的Js代码，可以通过Package Control 直接安装。按住<code>shift + cmd + p</code>输入js format可以对js文件进行美化。</p></blockquote>
+
+<h4>Git</h4>
+
+<blockquote><p>你可以通过按住<code>shift + cmd + p</code>然后输入几乎所有<code>git</code>命令,个人很喜欢里面的<code>git blame</code>命令,在当前文件下，输入<code>git blame</code>命令后，会打开一个文件,直接看到当前文件的修改内容，这些是谁修改的就一清二楚啦&hellip;</p></blockquote>
+
+<h4>Alignment</h4>
+
+<blockquote><p>这个插件对于有强迫症的同学，简直就是福音啊。例如一下代码
+<code>javascript
+  this.clothPartInfoGrid = this.createGridPanel();
+  this.yarnGrid = this.createYarnGrid();
+  this.indexPanel = this.createIndexPanel();
+  this.mainPanel =  this.createMainPanel();
+</code></p>
+
+<p>简单通过选择，<code>ctrl+command+a</code>,即可美化</p></blockquote>
+
+<pre><code class="javascript">  this.clothPartInfoGrid = this.createGridPanel();
+  this.yarnGrid          = this.createYarnGrid();
+  this.indexPanel        = this.createIndexPanel();
+  this.mainPanel         =  this.createMainPanel();
+</code></pre>
+
+<h3>为Sublime Text 添加主题</h3>
+
+<blockquote><p>可以通过Package Control 安装搜索,按住<code>cmd+shift+p</code>,输入<code>install package</code>,然后输入相应主题名，然后在<code>user setting</code>那里激活主题
+<code>javascript
+{
+  "color_scheme": "Packages/Theme - Flatland/Flatland Dark.tmTheme",
+  "theme": "Flatland Dark.sublime-theme"
+}
+</code>
+<a href="http://www.masnun.com/2013/07/08/beautiful-themes-for-sublime-text-3.html">推荐主题列表</a></p></blockquote>
+
+<h3>Sublime Text 小技巧</h3>
+
+<ol>
+<li>防止自动更新: 找到Preferences -> Settings-User,然后在里面添加<code>"update_check":false</code></li>
+<li>为了能够在终端直接打开Sublime,你可以建立一个软连接,在终端输入
+<code>sudo ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /bin/subl</code>，然后就可以运行<code>subl --help</code>来查看命令帮助
+<code>ruby
+ 使用:  subl [参数] [文件]         编辑指定文件
+    或: subl [参数] [目录]            打开指定目录
+    或: subl [参数] -             编辑 stdin
+ 可用参数:
+   --project &lt;项目&gt;: 读取指定项目
+   --command &lt;命令&gt;: 运行指定命令
+   -n 或 --new-window:  打开新窗口
+   -a 或 --add:         向当前窗口中添加文件夹
+   -w 或 --wait:        等待文件关闭后再返回
+   -b 或 --background:  不激活程序窗口
+   -s 或 --stay:        关闭文件后保持程序窗口激活
+   -h 或 --help:        显示此帮助
+   -v 或 --version:     显示版本号
+ 读取 stdin 时会使用 --wait 参数。通过 --stay 可以在文件关闭后不返回终端（仅针对单个文件）。
+ 可以通过向文件名添加 `:行号` 或 `:行号:列号` 后缀来打开到更具体的位置。
+</code></li>
+<li><p>开启自动换行：按住<code>command+shift+p</code>,输入<code>setting user</code>，往里面添加<code>"word_wrap" : true</code></p></li>
+<li><p>最后的配置是这样的：</p></li>
+</ol>
+
+
+<pre><code class="ruby">{
+  "color_scheme": "Packages/Theme - Flatland/Flatland Dark.tmTheme",
+  "font_size": 13,
+  "ignored_packages": [],
+  "theme": "Flatland Dark.sublime-theme",
+  "update_check": false,
+  "word_wrap" : true
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

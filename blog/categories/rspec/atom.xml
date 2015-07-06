@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rspec | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/rspec/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-07-06T08:29:16+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Rspec测试(Grurd+spork+capybara)]]></title>
+    <link href="http://justin-lu.github.io/blog/2013/08/10/rspecce-shi-grurd-plus-sporcapybara/"/>
+    <updated>2013-08-10T16:45:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2013/08/10/rspecce-shi-grurd-plus-sporcapybara</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+</feed>

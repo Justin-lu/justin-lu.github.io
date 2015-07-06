@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: octopress | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-07-06T08:29:16+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[使用octopress快速建立个人博客]]></title>
+    <link href="http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke/"/>
+    <updated>2013-06-16T11:25:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke</id>
+    <content type="html"><![CDATA[<h1>Octopress是什么?</h1>
+
+<p>一个通过<code>Markdwon</code>语法，快速生成HTML，并可以发布到<code>github</code>等服务器的<code>Ruby</code>开源项目</p>
+
+<h2>Octopress有哪些功能？</h2>
+
+<ul>
+<li>快速切换主题功能</li>
+<li>关联github、facebook、google+</li>
+<li>使用disqus获取评论功能</li>
+<li>直接部署至githbub</li>
+<li>&hellip;</li>
+</ul>
+
+
+<h3>配置octpress</h3>
+
+<ul>
+<li>克隆octopress项目，并进行配置</li>
+</ul>
+
+
+<pre><code class="c">  git clone git://github.com/imathis/octopress.git blog
+  cd blog
+</code></pre>
+
+<ul>
+<li>修改<code>.rvmrc</code>文件内容，设置默认ruby版本（如果不使用rvm则不需要）,更新相应的gem</li>
+</ul>
+
+
+<pre><code class="c">  rvm use 1.9.3-p374
+  bundle update
+</code></pre>
+
+<h3>获取ctopress主题,这个几个比较好的主题<a href="http://www.evolument.com/blog/2013/03/02/top-10-plus-octopress-themes/">top 10+</a></h3>
+
+<ul>
+<li><p>配置主题</p>
+
+<ul>
+<li>使用submodule
+<code>c
+cd your_octopress_dir
+git submodule add https://github.com/alexgaribay/octoflat .themes/octoflat
+rake install['octoflat']
+rake generate
+git submodule update
+</code></li>
+<li>使用<code>github clone</code>
+<code>c
+cd your_octopress_dir
+git clone https://github.com/alexgaribay/octoflat .themes/octoflat
+rake install['octoflat']
+rake generate
+</code></li>
+</ul>
+</li>
+<li><p>配置_config.yml</p></li>
+<li><p>新建一个测试博客
+<code>c
+  rake new_post['hello_word']
+</code></p></li>
+<li><p>生成动态站点
+<code>c
+  rake generate
+</code></p></li>
+</ul>
+
+
+<h3>配置github信息</h3>
+
+<ul>
+<li><p>gihtub上新建一个项目</p></li>
+<li><p>添加远程仓库
+<code>c
+  cd blog
+  git remote add origin git@github.com:justin-lu/blog.github.com.git
+</code></p></li>
+<li><p>配置octopress与github连接
+<code>c
+rake setup_github_pages
+</code></p></li>
+<li><p>按照提示填入项目地址如：
+<code>c
+git@github.com:justin-lu/blog.git
+</code></p></li>
+<li><p>部署到github
+<code>c
+rake deploy
+</code></p></li>
+<li><p>高级功能</p>
+
+<ul>
+<li>新浪微博秀</li>
+<li>github</li>
+<li>评论
+<code>
+现在你就可以打开
+justn.github.com/blog
+浏览你的个人blog啦。
+</code></li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

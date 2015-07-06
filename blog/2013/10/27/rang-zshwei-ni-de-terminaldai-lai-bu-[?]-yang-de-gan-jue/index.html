@@ -1,0 +1,328 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>让zsh为你的Terminal带来不一样的感觉 - Hi I'm Justin-lu</title>
+    <meta name="author" content="Justin-lu">
+    
+	<meta name="description" content="使用Git并且在多个分支下开发的同学可能知道，当我们老是在不同分支下切换的时候，有时候会忘记自己在哪个分支，导致我们提交的内容混乱，以前在Ubuntu下，是直接修改.bashrc，让其显示分支名称
+本打算用同样的方法修改OS X系统，让其显示分支名，却让我发现了Zsh 使用oh-my-zsh &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Hi I'm Justin-lu" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.ico" rel="shortcut icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+    <link href='http://fonts.googleapis.com/css?family=Slackey' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Amethysta' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+    <script type="text/javascript" src="/javascripts/jquery-tapir.js"></script>
+
+    <!-- remove or comment it to disable ajaxification -->   
+    <script src="/javascripts/ajaxify.js"></script>
+   
+    
+    
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42406282-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+    <div id="wrapper">
+    <header id="header" class="inner"><!-- for more effects see _animate.scss -->
+<h1 class="animated bounceInDown">
+    <div id="headerbg">
+        Justin-lu
+    </div>
+</h1>
+<br>
+
+<ul id="social-links" style="text-align:center">
+  
+  <!-- GitHub -->
+  <li>
+  <a href="https://github.com/Justin-lu" class="github" title="Github"></a>
+  </li>
+  
+  
+  <!-- Google Plus -->
+  <li>
+  <a href="http://plus.google.com/Justin-lu?rel=author" class="google" title="Google+"></a>
+  </li>
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- Sina Weibo -->
+  <li>
+    <a href="http://weibo.com/luxiaoyong17" target="_blank">
+      <svg width="40" height="40" class="sina-weibo" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <path fill="" d="M9.641,17.231c-3.799,0.374-7.079-1.343-7.326-3.838c-0.246-2.494,2.634-4.82,6.434-5.196  c3.798-0.377,7.079,1.34,7.326,3.835C16.32,14.529,13.44,16.855,9.641,17.231 M17.24,8.952c-0.322-0.098-0.544-0.163-0.375-0.587  c0.365-0.921,0.403-1.718,0.007-2.286c-0.745-1.063-2.783-1.005-5.12-0.027c0-0.002-0.734,0.321-0.546-0.261  c0.359-1.156,0.305-2.123-0.254-2.682c-1.267-1.271-4.639,0.047-7.53,2.936C1.257,8.209,0,10.504,0,12.488  c0,3.796,4.866,6.104,9.628,6.104c6.241,0,10.393-3.627,10.393-6.506C20.021,10.347,18.557,9.358,17.24,8.952" />
+        <path fill="" d="M21.384,2.005c-1.507-1.671-3.73-2.308-5.782-1.872l0,0c-0.475,0.102-0.778,0.569-0.676,1.043  c0.101,0.473,0.567,0.777,1.043,0.674c1.459-0.31,3.039,0.145,4.111,1.332c1.069,1.188,1.362,2.806,0.902,4.225v0.001  c-0.149,0.462,0.104,0.957,0.566,1.106c0.461,0.149,0.956-0.104,1.105-0.565c0,0,0-0.002,0-0.004  C23.299,5.95,22.894,3.674,21.384,2.005" />
+        <path fill="" d="M19.07,4.094c-0.734-0.814-1.817-1.123-2.817-0.912c-0.409,0.088-0.671,0.49-0.581,0.899  c0.088,0.407,0.489,0.67,0.896,0.58v0.001c0.488-0.104,1.019,0.047,1.379,0.445c0.359,0.398,0.455,0.941,0.301,1.416l0,0  c-0.127,0.398,0.09,0.825,0.488,0.954c0.396,0.127,0.824-0.091,0.952-0.488C20,6.017,19.805,4.908,19.07,4.094" />
+        <path fill="" d="M9.85,12.713c-0.132,0.229-0.426,0.338-0.656,0.242c-0.227-0.094-0.297-0.348-0.169-0.572  c0.132-0.221,0.416-0.328,0.64-0.239C9.895,12.227,9.978,12.483,9.85,12.713 M8.64,14.268c-0.367,0.586-1.154,0.843-1.747,0.57  c-0.584-0.265-0.756-0.945-0.389-1.518c0.362-0.568,1.124-0.824,1.712-0.574C8.811,12.998,9.001,13.675,8.64,14.268 M10.021,10.118  c-1.808-0.47-3.852,0.431-4.637,2.023c-0.8,1.624-0.026,3.428,1.801,4.017c1.892,0.612,4.122-0.324,4.898-2.078  C12.848,12.367,11.891,10.602,10.021,10.118" />
+      </svg>
+    </a>
+  </li>
+  
+  
+  <!-- Tencent Weibo -->
+  <li>
+    <a href="http://t.qq.com/gdjyluxiaoyong" target="_blank">
+      <svg width="40" height="40" class="tencent-weibo" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <circle fill="" cx="8.229" cy="10.478" r="2.543" />
+        <path fill="" d="M8.229,18.163c-0.615,0-1.227-0.073-1.82-0.217  c-0.364-0.088-0.587-0.455-0.499-0.819c0.088-0.364,0.455-0.588,0.819-0.5c0.488,0.119,0.993,0.178,1.5,0.178  c3.49,0,6.33-2.839,6.33-6.329c0-3.49-2.839-6.33-6.33-6.33c-3.49,0-6.329,2.84-6.329,6.33c0,1.123,0.297,2.226,0.861,3.189  c0.189,0.323,0.08,0.739-0.243,0.928s-0.739,0.08-0.928-0.243c-0.685-1.172-1.046-2.511-1.046-3.875  c0-4.238,3.448-7.686,7.686-7.686c4.238,0,7.686,3.448,7.686,7.686C15.915,14.716,12.467,18.163,8.229,18.163z" />
+        <path fill="" d="M2.066,24.549c-0.277,0-0.51-0.216-0.526-0.496c-0.021-0.351-0.451-8.643,5.989-13.397  c0.234-0.173,0.565-0.124,0.738,0.111c0.173,0.234,0.123,0.565-0.111,0.738C2.186,15.913,2.589,23.909,2.593,23.99  c0.018,0.29-0.204,0.541-0.495,0.558C2.087,24.548,2.077,24.549,2.066,24.549z" />
+        <circle fill="" cx="22.443" cy="5.184" r="1.536" />
+        <path fill="" d="M26.739,6.946c-0.141,0.344-0.322,0.669-0.538,0.967  c-0.133,0.184-0.389,0.224-0.572,0.091s-0.225-0.389-0.091-0.572c0.178-0.246,0.327-0.514,0.443-0.797  c0.8-1.951-0.136-4.188-2.086-4.988c-1.951-0.8-4.188,0.136-4.988,2.086c-0.8,1.951,0.136,4.188,2.086,4.988  c0.628,0.257,1.312,0.344,1.98,0.25c0.224-0.031,0.431,0.125,0.463,0.349c0.032,0.224-0.125,0.431-0.349,0.463  c-0.812,0.114-1.643,0.009-2.405-0.304c-2.369-0.971-3.505-3.688-2.534-6.057c0.972-2.369,3.688-3.505,6.058-2.534  C26.574,1.86,27.71,4.577,26.739,6.946z" />
+        <path fill="" d="M28.895,11.854c-0.063,0.154-0.237,0.234-0.397,0.18c-0.201-0.068-4.934-1.729-6.115-6.419  c-0.043-0.17,0.061-0.343,0.231-0.386c0.171-0.043,0.344,0.06,0.388,0.231c1.095,4.348,5.656,5.956,5.703,5.971  c0.167,0.057,0.255,0.238,0.198,0.404C28.899,11.843,28.897,11.848,28.895,11.854z" />
+      </svg>
+    </a>
+  </li>
+  
+</ul>
+
+
+<!-- use full url including 'index.html' for navigation bar if you are using ajax -->
+<ul id="nav">
+	<li id="ajax"><a href="/index.html">Home</a></li>
+	<li id="ajax"><a href="/blog/archives/index.html">Archives</a></li>
+    <li id="ajax"><a href="/about-me/index.html">About Me</a></li>
+    <li><a href="/atom.xml">RSS</a></li>
+    
+    <li>
+    <div id="dark">
+        <form method="get" action="/search.html" id="search">
+            <input name="query" type="text" placeholder="Search..." x-webkit-speech />
+        </form>
+    </div>
+    </li>
+    
+</ul>
+
+
+
+
+</header>
+
+<div id="toload">
+<!-- begin toload --> 
+    <div id="content" class="inner">
+        <article class="post">
+	<h2 class="title">让zsh为你的Terminal带来不一样的感觉</h2>
+	<div class="entry-content"><blockquote><p>使用Git并且在多个分支下开发的同学可能知道，当我们老是在不同分支下切换的时候，有时候会忘记自己在哪个分支，导致我们提交的内容混乱，以前在Ubuntu下，是直接修改<code>.bashrc</code>，让其显示分支名称
+本打算用同样的方法修改OS X系统，让其显示分支名，却让我发现了Zsh</p></blockquote>
+
+<hr />
+
+<h2>使用<code>oh-my-zsh</code></h2>
+
+<h3>使用<code>oh-my-zsh</code>的优点</h3>
+
+<ul>
+<li>各种补全
+
+<ul>
+<li>目录补全可以只输入目录的中间部分进行补全</li>
+<li>命令可以补全参数,并且可以显示参数对应的说明</li>
+</ul>
+</li>
+<li>各种主题</li>
+<li>目录切换:
+
+<ul>
+<li>d : 显示最近使用过的几个目录,按1-9可以直接切换过去</li>
+<li>1-9 : 切换至最近使用过的前n个目录</li>
+<li>.. 等于 cd ..</li>
+<li>… 等于 cd ../..</li>
+<li>mcd xxx 等于 mkdir xxx &amp; cd xxx</li>
+<li>使用~xxx快捷目录来通过 cd ~xxx 甚至是 ~xxx 快速进入对应的目录</li>
+</ul>
+</li>
+<li>各种插件:
+
+<ul>
+<li>extract 直接extract filename ,支持各种tar.gz, bz2, 7z等各种压缩格式</li>
+<li>terminalapp 让OS X Lion下的Terminal 启动时打开上次的目录</li>
+</ul>
+</li>
+<li>osx
+
+<ul>
+<li>pfd 打印finder的当前路径</li>
+<li>cdf cd到finder的当前路径</li>
+<li>pushdf pushd 到finder的当前路径</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>安装<code>oh-my-zsh</code></h3>
+
+<h4>自动安装：</h4>
+
+<blockquote><p>当然，如果你信任这个开源项目作者的话你可以尝试使用自动安装的方法。</p></blockquote>
+
+<p><code>wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh</code></p>
+
+<h4>手动安装：</h4>
+
+<ul>
+<li>克隆这个项目到本地(前提是你得有装git)</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">git</span> <span class="nb">clone</span> <span class="ss">git</span><span class="p">:</span><span class="sr">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">robbyrussell</span><span class="o">/</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span><span class="o">.</span><span class="n">git</span> <span class="o">~</span><span class="sr">/.oh-my-zsh</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>创建一个zsh的配置文件
+注意:如果你已经有一个~/.zshrc文件的话，建议你先做备份。使用以下命令</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">cp</span> <span class="o">~</span><span class="sr">/.zshrc ~/</span><span class="o">.</span><span class="n">zshrc</span><span class="o">.</span><span class="n">orig</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后开始创建zsh的配置文件</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">cp</span> <span class="o">~</span><span class="sr">/.oh-my-zsh/</span><span class="n">templates</span><span class="o">/</span><span class="n">zshrc</span><span class="o">.</span><span class="n">zsh</span><span class="o">-</span><span class="n">template</span> <span class="o">~</span><span class="sr">/.zshrc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>设置zsh为你的默认的shell</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">chsh</span> <span class="o">-</span><span class="n">s</span> <span class="sr">/bin/</span><span class="n">zsh</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>因为zsh和bash是兼容的，所以，你可以把你<code>.bashrc</code>或者<code>.bashrc_profile</code>里面的内容直接黏贴到<code>.zshrc</code>里面</p></blockquote>
+
+<ul>
+<li><a href="https://github.com/robbyrussell/oh-my-zsh">github网址</a></li>
+<li><a href="https://github.com/robbyrussell/oh-my-zsh/wiki/themes">各种主题</a></li>
+</ul>
+
+
+<h4>可能遇到的问题</h4>
+
+<blockquote><p>习惯了<code>UTF-8</code>编码的同学，可能需要在<code>.zshrc</code>里面添加如下代码：</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">export</span> <span class="no">LANG</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="n">export</span> <span class="no">LC_ALL</span><span class="o">=</span><span class="n">en_US</span><span class="o">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+<div class="meta">
+	
+		<span class="comments"><a href="/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue/#disqus_thread">Comments</a></span>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+
+    </div>
+    <footer id="footer">
+    <div style="display:inline">
+    Copyright &copy; 2015
+
+    Justin-lu
+. Powered by <a href="http://octopress.org">Octopress</a> | 
+    Theme <a href="http://github.com/panks/fabric">fabric</a> by <a href="http://panks.me">Pankaj Kumar</a>
+</div>
+
+
+    </footer>
+    <script src="/javascripts/fabric.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'justin-lu-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://justin-lu.github.io/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue/';
+        var disqus_url = 'http://justin-lu.github.io/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+<!-- end toload --> 
+</div>
+</div>
+<script src="/javascripts/jquery.ui.totop.js" type="text/javascript"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+;(function($){$().UItoTop({easingType:'easeOutCirc'});})(jQuery); 
+/*]]>*/
+</script><!-- remove it to remove the scroll to top button -->
+</body>
+</html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: on | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/on/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-07-06T08:29:16+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby on Rails配置]]></title>
+    <link href="http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi/"/>
+    <updated>2013-07-12T11:32:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>把下面内容复制到一个后缀为<code>RVM配置ROR.sh</code>新文件</p></li>
+<li><p><code>chmod +x RVM配置ROR.sh</code> #变为可执行文件</p></li>
+<li><p><code>./RVM配置ROR.sh</code>  执行文件</p></li>
+</ul>
+
+
+<pre><code class="c">echo "==========  安装函数库 ================="
+sudo apt-get install curl bison build-essential git-core
+sudo apt-get install zlib1g-dev libssl-dev libreadline5-dev libxml2-dev
+
+echo "========== 安装rvm ==================="
+mkdir -p ~/.rvm/src/ &amp;&amp; cd ~/.rvm/src &amp;&amp; rm -rf ./rvm/ &amp;&amp; git clone git://github.com/wayneeseguin/rvm.git &amp;&amp; cd rvm &amp;&amp; ./install
+
+echo "========== 打开另一个终端，执行 vim ~/.bashrc ================="
+echo "========== 并且将下面内容复制到.bashrc最后 ==========="
+echo " if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+source "$HOME/.rvm/scripts/rvm";
+fi
+[[ -s "$HOME/.rvm/scripts/rvm" ]] &amp;&amp; source "$HOME/.rvm/scripts/rvm"
+"
+echo "========== 修改完后请按回车键继续: =========="
+read var
+
+type rvm | head -1
+
+rvm requirements
+
+sudo apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
+
+echo "=================================="
+source ~/.bashrc  
+
+echo "==================================="
+sudo apt-get install rubygems
+
+echo "========= 安装ruby1.9.2 ==========="
+rvm install 1.9.2-p290
+
+echo "======== 安装rails3.0.3 ==========="
+gem install rails -v=3.0.3
+
+echo "========= 安装ruby ==========="
+rvm install 1.8.7
+
+echo "======== 安装rails ==========="
+gem install rails -v=2.3.5
+
+echo "======= 安装mysql ============"
+sudo apt-get install mysql-server
+sudo apt-get install mysql-client
+
+echo "====== 安装mysql驱动 ========="
+sudo apt-get install libmysqlclient-dev 
+sudo gem install mysql2 
+
+echo "======设置默认版本=========="
+rvm use --default 1.8.7
+
+echo "============更新使用于2.3.5的rubygem========="
+gem update --system 1.5.3
+
+echo "========== 打开另一个终端，执行 vim ~/.bash_profile ================="
+echo "========== 并且将下面内容复制到.bash_profile最后 ==========="
+echo " 
+source ~/.bashrc
+"
+echo "========== 修改完后请按回车键继续: =========="
+read var
+
+echo "===== 如果在此过程中，没有错误，那么Ruby on rails 环境搭配成功(Justin-lu)!! ======== "
+echo "=====   QQ：448426851 ========================== "
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

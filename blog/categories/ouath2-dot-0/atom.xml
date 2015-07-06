@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ouath2.0 | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/ouath2-dot-0/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-07-06T08:29:16+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Oauth2.0]]></title>
+    <link href="http://justin-lu.github.io/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao/"/>
+    <updated>2014-05-30T15:13:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao</id>
+    <content type="html"><![CDATA[<h1>Oauth 2.0</h1>
+
+<ol>
+<li><p>client 获取 provider 提供的资源</p></li>
+<li><p>流程:</p></li>
+</ol>
+
+
+<pre><code>    +----------+
+    | Resource |
+    |   Owner  |
+    |          |
+    +----------+
+         ^
+         |
+        (B)
+    +----|-----+          Client Identifier      +---------------+
+    |         -+----(A)-- &amp; Redirection URI ----&gt;|               |
+    |  User-   |                                 | Authorization |
+    |  Agent  -+----(B)-- User authenticates ---&gt;|     Server    |
+    |          |                                 |               |
+    |         -+----(C)-- Authorization Code ---&lt;|               |
+    +-|----|---+                                 +---------------+
+      |    |                                         ^      v
+     (A)  (C)                                        |      |
+      |    |                                         |      |
+      ^    v                                         |      |
+    +---------+                                      |      |
+    |         |&gt;---(D)-- Authorization Code ---------'      |
+    |  Client |          &amp; Redirection URI                  |
+    |         |                                             |
+    |         |&lt;---(E)----- Access Token -------------------'
+    +---------+       ( Optional Refresh Token)
+</code></pre>
+
+<p>A）用户访问客户端，后者将前者导向认证服务器。
+B）用户选择是否给予客户端授权。
+C）假设用户给予授权，认证服务器将用户导向客户端事先指定的"重定向URI"（redirection URI），同时附上一个授权码。
+D）客户端收到授权码，附上早先的"重定向URI"，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。
+E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）。</p>
+
+<ol>
+<li>Resource Owner -> devise</li>
+<li>API -> Grape</li>
+<li>Provider -> doorkeeper
+<code>ruby
+doorkeeper_for :all                 # Require access token for all actions
+doorkeeper_for :all, except: :index # All actions except index
+doorkeeper_for :index, :show        # Only for index and show action
+doorkeeper_for :create, :scopes =&gt; [:write] #Only for create action and writable
+</code></li>
+<li>client
+<code>ruby
+module OmniAuth
+module Strategies
+ class Doorkeeper &lt; OmniAuth::Strategies::OAuth2
+   option :name, :doorkeeper
+   option :client_options, {
+     :site =&gt; "http://localhost:8090/",
+     :authorize_path =&gt; "/oauth/authorize"
+   }
+   uid do
+     raw_info["id"]
+   end
+   info do
+     {
+       :email =&gt; raw_info["email"]
+     }
+   end
+   def raw_info
+     @raw_info ||= access_token.get('/api/v1/me.json').parsed
+   end
+ end
+end
+end
+</code></li>
+</ol>
+
+
+<p>生成client和access_token
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># get or create an client with OAuth2</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">doorkeeper_oauth_client</span>
+</span><span class='line'>    <span class="vi">@client</span> <span class="o">||=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">DOORKEEPER_APP_ID</span><span class="p">,</span> <span class="no">DOORKEEPER_APP_SECRET</span><span class="p">,</span> <span class="ss">:site</span> <span class="o">=&gt;</span> <span class="no">DOORKEEPER_APP_URL</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  # get or create an AccessToken</span>
+</span><span class='line'><span class="sr">  def doorkeeper_access_token</span>
+</span><span class='line'><span class="sr">    @token ||= OAuth2::AccessToken.new(doorkeeper_oauth_client, current_user.doorkeeper_access_token) if current_user</span>
+</span><span class='line'><span class="sr">  end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>通过<code>access_token</code>来获取api数据
+<code>ruby
+  def index
+    @order = doorkeeper_access_token.get("/api/v1/orders").parsed
+  end
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

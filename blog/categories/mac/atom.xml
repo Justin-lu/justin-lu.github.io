@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mac | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/mac/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-07-06T08:29:16+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[让zsh为你的Terminal带来不一样的感觉]]></title>
+    <link href="http://justin-lu.github.io/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue/"/>
+    <updated>2013-10-27T15:28:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-[?]-yang-de-gan-jue</id>
+    <content type="html"><![CDATA[<blockquote><p>使用Git并且在多个分支下开发的同学可能知道，当我们老是在不同分支下切换的时候，有时候会忘记自己在哪个分支，导致我们提交的内容混乱，以前在Ubuntu下，是直接修改<code>.bashrc</code>，让其显示分支名称
+本打算用同样的方法修改OS X系统，让其显示分支名，却让我发现了Zsh</p></blockquote>
+
+<hr />
+
+<h2>使用<code>oh-my-zsh</code></h2>
+
+<h3>使用<code>oh-my-zsh</code>的优点</h3>
+
+<ul>
+<li>各种补全
+
+<ul>
+<li>目录补全可以只输入目录的中间部分进行补全</li>
+<li>命令可以补全参数,并且可以显示参数对应的说明</li>
+</ul>
+</li>
+<li>各种主题</li>
+<li>目录切换:
+
+<ul>
+<li>d : 显示最近使用过的几个目录,按1-9可以直接切换过去</li>
+<li>1-9 : 切换至最近使用过的前n个目录</li>
+<li>.. 等于 cd ..</li>
+<li>… 等于 cd ../..</li>
+<li>mcd xxx 等于 mkdir xxx &amp; cd xxx</li>
+<li>使用~xxx快捷目录来通过 cd ~xxx 甚至是 ~xxx 快速进入对应的目录</li>
+</ul>
+</li>
+<li>各种插件:
+
+<ul>
+<li>extract 直接extract filename ,支持各种tar.gz, bz2, 7z等各种压缩格式</li>
+<li>terminalapp 让OS X Lion下的Terminal 启动时打开上次的目录</li>
+</ul>
+</li>
+<li>osx
+
+<ul>
+<li>pfd 打印finder的当前路径</li>
+<li>cdf cd到finder的当前路径</li>
+<li>pushdf pushd 到finder的当前路径</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>安装<code>oh-my-zsh</code></h3>
+
+<h4>自动安装：</h4>
+
+<blockquote><p>当然，如果你信任这个开源项目作者的话你可以尝试使用自动安装的方法。</p></blockquote>
+
+<p><code>wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh</code></p>
+
+<h4>手动安装：</h4>
+
+<ul>
+<li>克隆这个项目到本地(前提是你得有装git)
+<code>ruby
+  git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+</code></li>
+<li>创建一个zsh的配置文件
+注意:如果你已经有一个~/.zshrc文件的话，建议你先做备份。使用以下命令
+<code>ruby
+cp ~/.zshrc ~/.zshrc.orig
+</code>
+然后开始创建zsh的配置文件
+<code>ruby
+cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+</code></li>
+<li>设置zsh为你的默认的shell
+<code>ruby
+chsh -s /bin/zsh
+</code></li>
+</ul>
+
+
+<blockquote><p>因为zsh和bash是兼容的，所以，你可以把你<code>.bashrc</code>或者<code>.bashrc_profile</code>里面的内容直接黏贴到<code>.zshrc</code>里面</p></blockquote>
+
+<ul>
+<li><a href="https://github.com/robbyrussell/oh-my-zsh">github网址</a></li>
+<li><a href="https://github.com/robbyrussell/oh-my-zsh/wiki/themes">各种主题</a></li>
+</ul>
+
+
+<h4>可能遇到的问题</h4>
+
+<blockquote><p>习惯了<code>UTF-8</code>编码的同学，可能需要在<code>.zshrc</code>里面添加如下代码：
+<code>ruby
+export LANG=en_US.UTF-8 export LC_ALL=en_US.UTF-8
+</code></p></blockquote>
+]]></content>
+  </entry>
+  
+</feed>

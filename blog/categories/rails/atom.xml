@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rails | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-07-06T08:29:16+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[理解 ActiveSupport::Concern ]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/07/05/li-jie-activesupport-concern/"/>
+    <updated>2015-07-05T21:49:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2015/07/05/li-jie-activesupport-concern</id>
+    <content type="html"><![CDATA[<p>分享一下自己阅读ActiveSupport::Concern源码的过程，希望和大家一起学习，错误之处，还请指出</p>
+
+<p>在查看ActiveSupport::Concern <a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/concern.rb">源码</a>之前，我们先理解几个概念</p>
+
+<h2>class_eval and instance_eval</h2>
+
+<h3>instance_eval</h3>
+
+<p>首先从名字可以得到的信息是，<code>instance_eval</code>的调用者<code>receiver</code>必须是一个实例<code>instance</code>，而在<code>instance_eval</code> block的内部，self即为receiver实例本身。</p>
+
+<pre><code class="ruby"># 例子一
+obj_instance.instance_eval do
+  self  # =&gt; obj_instance
+  # current class =&gt; obj_instance's singleton class
+end
+</code></pre>
+
+<p>根据这个定义，如果在一个实例上调用了<code>instance_eval</code>，就可以在其中定义该实例的单态函数<code>singleton_method</code></p>
+
+<pre><code class="ruby"># 例子二
+class A
+end
+
+a = A.new
+a.instance_eval do
+  puts self  # =&gt; a
+  # current class =&gt; a's singleton class
+  def method1
+    puts "this is a singleton method of instance a"
+  end
+end
+
+a.method1
+#=&gt; this is a singleton method of instance a
+
+b = A.new
+b.method1
+#=&gt; NoMethodError: undefined method `method1' for #&lt;A:0x007fbc2ced9550&gt;
+from (pry):13:in `&lt;main&gt;'
+</code></pre>
+
+<p>如我们所知，因为类本身也是Class类的一个实例，instance_eval也可以用在类上，这个时候就可以在其中定义该类的singleton_method，即为该类的类方法.</p>
+
+<pre><code class="ruby"># 例子三
+class A
+end
+
+A.instance_eval do
+  puts self  # =&gt; A
+  # current class =&gt; A's singleton class
+  def method1
+    puts 'this is a singleton method of class A'
+  end
+end
+
+A.method1
+# this is a singleton method of class A
+#=&gt;  nil
+
+#=&gt; NoMethodError: undefined method `method1' for #&lt;A:0x007fbc3009e180&gt;
+from (pry):11:in `&lt;main&gt;'
+</code></pre>
+
+<h3>class_eval</h3>
+
+<p>再来看<code>class_eval</code>，首先从名字可以得到的信息是，class_eval的调用者receiver必须是一个类，而在<code>class_eval</code> <code>block</code>的内部，<code>self</code>即为receiver类本身。</p>
+
+<pre><code class="ruby"># 例子四
+class A
+end
+
+A.class_eval do
+  puts self  
+end
+# =&gt; A
+</code></pre>
+
+<p>根据这个定义，如果在一个类上调用了class_eval，就可以在其中定义该类的实例方法(instance_method)，例如</p>
+
+<pre><code class="ruby"># 例子五
+class A
+end
+
+a = A.new
+a.method1
+#=&gt; NoMethodError: undefined method `method1' for &lt;A:0x007fbc29a826f8&gt; from (pry):21:in `&lt;main&gt;'
+
+A.class_eval do
+  def method1
+    puts 'this is a instance method of class A'
+  end
+end
+
+a.method1
+#=&gt; this is a instance method of class A
+</code></pre>
+
+<p>综合上面例子，我们可得出</p>
+
+<pre><code>1. `instance_eval`必须由instance来调用，可以用来定义单例函数（`singleton_methods`)
+2. `class_eval`必须是由class来调用，可以用来定义类的实例方法(`instance_methods`)
+</code></pre>
+
+<h2>include and extend</h2>
+
+<p>废话不多说，先看代码：</p>
+
+<pre><code class="ruby"># 例子六
+module Foo
+  def foo
+    puts 'foo method with include...'
+  end
+end
+
+class Bar
+  include Foo
+end
+
+Bar.new.foo 
+# foo method with include...
+# =&gt; nil
+Bar.foo 
+# NoMethodError: undefined method `foo' for Bar:Class
+# from (pry):75:in `&lt;main&gt;'
+
+class Baz
+  extend Foo
+end
+
+Baz.foo
+# foo method with include...
+# =&gt; nil
+
+Baz.new.foo
+# NoMethodError: undefined method `foo' for #&lt;Baz:0x007f8061dec068&gt;
+# from (pry):80:in `&lt;main&gt;'
+</code></pre>
+
+<p>由例子我们可以看出，<code>include</code>会把<code>module</code>的方法变成实例方法，<code>extend</code> 会把方法变成类方法。
+但是，大多时候我们也可以用<code>include</code>来实现类方法和实例方法，请看以下例子：</p>
+
+<pre><code class="ruby"># 例子七
+module Foo
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+
+  module ClassMethods
+    def bar
+      puts 'class method'
+    end
+  end
+
+  def foo
+    puts 'instance method'
+  end
+end
+
+class Baz
+  include Foo
+end
+
+Baz.bar
+# class method
+# =&gt; nil
+Baz.new.foo
+# instance method
+# =&gt; nil
+Baz.foo
+# NoMethodError: undefined method `foo' for Baz:Class
+Baz.new.bar
+# NoMethodError: undefined method `bar' for #&lt;Baz:0x007fbc30274ab8&gt;
+</code></pre>
+
+<p>从例子我们可以看出，<code>include</code>有一个叫<code>included</code>的钩子，正是通过这个钩子，我们可以用<code>include</code>实现添加类方法和实例方法
+我们来看看<code>included</code>这个钩子到底做了什么？</p>
+
+<pre><code class="ruby">  module A
+    def self.included(mod)
+      puts "#{self} included in #{mod}"
+    end
+  end
+  module Enumerable
+    include A
+  end
+  # A included in Enumerable
+  # =&gt; Enumerable
+</code></pre>
+
+<p>从代码我们的输出我们可以知道，<code>included</code>类方法作用域<code>self</code>为<code>Module A</code>，并传入<code>include A</code>的<code>receiver Enumerable</code>。然后我们再看看例子七，结合<code>extend</code>与<code>include</code>的理解，就能明白其中的原理所在。</p>
+
+<p>再来看看ActiveSupport::Concern的实现：</p>
+
+<ol>
+<li>在没有引入<code>ActiveSupport::Concern</code>之前，我们可以这样进行模块分离</li>
+</ol>
+
+
+<pre><code class="ruby">  module M
+    def self.included(base)
+      base.extend ClassMethods
+      base.class_eval do
+        scope :disabled, -&gt; { where(disabled: true) }
+      end
+
+      include InstanceMethods
+    end
+
+    module ClassMethods
+      def say_hello
+        puts "say hello"
+      end
+    end
+
+    module InstanceMethods
+      def say_no
+        puts "say no"
+      end
+    end
+  end
+</code></pre>
+
+<p>从代码可知，通过<code>extend</code>和<code>class_eval</code>为<code>base</code>定义了<code>ClassMethods</code>里面的类方法，通过<code>include</code> 为<code>base</code>定义了<code>InstanceMethods</code>里面的实力方法。</p>
+
+<p>当我们引入<code>ActiveSupport::Concern</code>之后，以上例子我们可以这样写:
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="nb">require</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">active_support</span><span class="o">/</span><span class="n">concern</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  module M</span>
+</span><span class='line'><span class="sr">    extend ActiveSupport::Concern&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:disabled</span><span class="p">,</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="ss">disabled</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">InstanceMethods</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">say_hello</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;say hello&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">InstanceMethods</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">say_no</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;say no&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;最后，我们再来看看[ActiveSupport::Concern] (https:/</span><span class="o">/</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">rails</span><span class="o">/</span><span class="n">rails</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">activesupport</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">active_support</span><span class="o">/</span><span class="n">concern</span><span class="o">.</span><span class="n">rb</span><span class="p">),</span><span class="err">是不是就很好理解了？</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="k">module</span> <span class="nn">Concern</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">MultipleIncludedBlocks</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="no">StandardError</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>        <span class="k">super</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">Cannot</span> <span class="n">define</span> <span class="n">multiple</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">included</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="n">blocks</span> <span class="k">for</span> <span class="n">a</span> <span class="no">Concern</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;def self.extended(base) #:nodoc:</span>
+</span><span class='line'><span class="sr">  base.instance_variable_set(:@_dependencies, [])</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">def append_features(base)</span>
+</span><span class='line'><span class="sr">  if base.instance_variable_defined?(:@_dependencies)</span>
+</span><span class='line'><span class="sr">    base.instance_variable_get(:@_dependencies) &amp;lt;&amp;lt; self</span>
+</span><span class='line'><span class="sr">    return false</span>
+</span><span class='line'><span class="sr">  else</span>
+</span><span class='line'><span class="sr">    return false if base &amp;lt; self</span>
+</span><span class='line'><span class="sr">    @_dependencies.each { |dep| base.include(dep) }</span>
+</span><span class='line'><span class="sr">    super</span>
+</span><span class='line'><span class="sr">    base.extend const_get(:ClassMethods) if const_defined?(:ClassMethods)</span>
+</span><span class='line'><span class="sr">    base.class_eval(&amp;amp;@_included_block) if instance_variable_defined?(:@_included_block)</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">def included(base = nil, &amp;amp;block)</span>
+</span><span class='line'><span class="sr">  if base.nil?</span>
+</span><span class='line'><span class="sr">    raise MultipleIncludedBlocks if instance_variable_defined?(:@_included_block)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    @_included_block = block</span>
+</span><span class='line'><span class="sr">  else</span>
+</span><span class='line'><span class="sr">    super</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">def class_methods(&amp;amp;class_methods_module_definition)</span>
+</span><span class='line'><span class="sr">  mod = const_defined?(:ClassMethods, false) ?</span>
+</span><span class='line'><span class="sr">    const_get(:ClassMethods) :</span>
+</span><span class='line'><span class="sr">    const_set(:ClassMethods, Module.new)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  mod.module_eval(&amp;amp;class_methods_module_definition)</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Rails4.1 之后，Module还加入了<a href="http://api.rubyonrails.org/v4.1.0/classes/Module/Concerning.html">Concerning</a>方法</p>
+
+<h2>Concerning</h2>
+
+<p>我们先来看看细化concern的几种方法</p>
+
+<ul>
+<li>通过注释</li>
+</ul>
+
+
+<pre><code class="ruby">class Todo
+  # Other todo implementation
+  # ...
+
+  ## Event tracking
+  has_many :events
+
+  before_create :track_creation
+  after_destroy :track_deletion
+
+  private
+    def track_creation
+      # ...
+    end
+end
+</code></pre>
+
+<ul>
+<li>通过<code>ActiveSupport::Concern</code></li>
+</ul>
+
+
+<pre><code class="ruby">class Todo
+  # Other todo implementation
+  # ...
+
+  module EventTracking
+    extend ActiveSupport::Concern
+
+    included do
+      has_many :events
+      before_create :track_creation
+      after_destroy :track_deletion
+    end
+
+    private
+      def track_creation
+        # ...
+      end
+  end
+  include EventTracking
+end
+</code></pre>
+
+<ul>
+<li>通过<code>concerning</code></li>
+</ul>
+
+
+<pre><code class="ruby">class Todo &lt; ActiveRecord::Base
+  # Other todo implementation
+  # ...
+
+  concerning :EventTracking do
+    included do
+      has_many :events
+      before_create :track_creation
+      after_destroy :track_deletion
+    end
+
+    private
+      def track_creation
+        # ...
+      end
+  end
+end
+
+Todo.ancestors
+# [Todo,Todo::EventTracking,...]
+</code></pre>
+
+<p>总得来说，<code>concerning</code>主要用于切分比较小的model
+另外，还有还提供了类似的<code>concern</code>等方法</p>
+
+<pre><code class="ruby">concern :EventTracking do
+end
+
+is equivalent to
+
+module EventTracking
+  extend ActiveSupport::Concern
+end
+</code></pre>
+
+<p>最后贴上自用 <a href="https://gist.github.com/Justin-lu/156bd4a1cba1c507e485">sublime snippet</a>,但是我是Vim党.</p>
+
+<p>Reference:
+<a href="http://www.railstips.org/blog/archives/2009/05/15/include-vs-extend-in-ruby/">http://www.railstips.org/blog/archives/2009/05/15/include-vs-extend-in-ruby/</a>
+<a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/concern.rb">https://github.com/rails/rails/blob/master/activesupport/lib/active_support/concern.rb</a>
+<a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/concern.rb">https://github.com/rails/rails/blob/master/activesupport/lib/active_support/concern.rb</a></p>
+
+<hr />
+
+<p>补充：</p>
+
+<h2>ActiveSupport::Concern#append_features</h2>
+
+<pre><code class="ruby">def append_features(base)
+  if base.instance_variable_defined?(:@_dependencies)
+    base.instance_variable_get(:@_dependencies) &lt;&lt; self
+    return false
+  else
+    return false if base &lt; self
+    @_dependencies.each { |dep| base.include(dep) }
+    super
+    base.extend const_get(:ClassMethods) if const_defined?(:ClassMethods)
+    base.class_eval(&amp;@_included_block) if instance_variable_defined?(:@_included_block)
+  end
+end
+</code></pre>
+
+<p><code>append_features</code>也是module的一个callback，会在include之后，为当前class添加module的变量，常量，方法等。append_features 会先与included 被调用，详见：<a href="http://apidock.com/ruby/Module/append_features">append_features</a>
+上面的代码中，如@neverlandxy_naix所说的一样，正是通过递归的方法处理多重嵌套</p>
+
+<p>首先看到一个<code>if</code>判断,这里判断当前类(base)是否定义了<code>@_dependencies</code>，如果被定义，则把当前module加入<code>@_dependencies</code>。怎么说呢？我们再来看看</p>
+
+<pre><code class="ruby">def self.extended(base) #:nodoc:
+  base.instance_variable_set(:@_dependencies, [])
+end
+</code></pre>
+
+<p><code>extended</code>类似于<code>included</code>,具体用法见<a href="http://ruby-doc.org/core-2.2.0/Module.html#method-i-extended">extended</a>
+看完<code>extended</code>的用法，我们知道，如果当前类<code>extend</code>了<code>ActiveSupport::Concern</code>,则<code>@_dependencies</code>会被定义。</p>
+
+<p>第二个if判断，判断当前类是否继承于当前模块，如果是，则不需要做其他操作，如果不是，则说明当前类既不是当前模块的子类，也没有<code>extend</code> <code>ActiveSupport::Concern</code>。也就是我们最终要<code>include</code>当前模块的类，此时，当前类<code>include</code>当前模块所有依赖<code>@_dependencies</code>,并定义<code>ClassMethods</code>和<code>included</code>block里面的方法。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Rails Scopes 预加载]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/07/05/rails-scopes-yu-jia-zai/"/>
+    <updated>2015-07-05T21:48:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2015/07/05/rails-scopes-yu-jia-zai</id>
+    <content type="html"><![CDATA[<p>前几天在<a href="http://rubyweekly.com/">rubyweekly</a>里面看到一篇文章，感觉写得不错。拿出来分享一下。<a href="http://www.justinweiss.com/blog/2015/06/23/how-to-preload-rails-scopes/?utm_source=rubyweekly&amp;utm_medium=email">原文</a>更精彩</p>
+
+<h1>scope 会造成N+1查询</h1>
+
+<p>作为一个Rails开发者，我们经常使用<a href="http://guides.rubyonrails.org/active_record_querying.html#scopes">scope</a>来做查询，以简化你的代码，如：</p>
+
+<pre><code class="ruby">class Review &lt; ActiveRecord::Base
+  belongs_to :restaurant
+
+  scope :positive, -&gt; { where("rating &gt; 3.0") }
+end
+</code></pre>
+
+<pre><code class="ruby">irb(main):001:0&gt; Restaurant.first.reviews.positive.count
+  Restaurant Load (0.4ms)  SELECT  `restaurants`.* FROM `restaurants`  ORDER BY `restaurants`.`id` ASC LIMIT 1
+   (0.6ms)  SELECT COUNT(*) FROM `reviews` WHERE `reviews`.`restaurant_id` = 1 AND (rating &gt; 3.0)
+=&gt; 5
+</code></pre>
+
+<p>但是，当你一不小心，这将严重的影响你应用的性能。
+为什么呢？因为使用<code>scope</code>进行定义的查询并不会被预加载。
+假设你要查询一些<code>restaurants</code>所有<code>positive reviews</code>：</p>
+
+<pre><code class="ruby">irb(main):001:0&gt; restauraunts = Restaurant.first(5)
+irb(main):002:0&gt; restauraunts.map do |restaurant|
+irb(main):003:1*   "#{restaurant.name}: #{restaurant.reviews.positive.length} positive reviews."
+irb(main):004:1&gt; end
+  Review Load (0.6ms)  SELECT `reviews`.* FROM `reviews` WHERE `reviews`.`restaurant_id` = 1 AND (rating &gt; 3.0)
+  Review Load (0.5ms)  SELECT `reviews`.* FROM `reviews` WHERE `reviews`.`restaurant_id` = 2 AND (rating &gt; 3.0)
+  Review Load (0.7ms)  SELECT `reviews`.* FROM `reviews` WHERE `reviews`.`restaurant_id` = 3 AND (rating &gt; 3.0)
+  Review Load (0.7ms)  SELECT `reviews`.* FROM `reviews` WHERE `reviews`.`restaurant_id` = 4 AND (rating &gt; 3.0)
+  Review Load (0.7ms)  SELECT `reviews`.* FROM `reviews` WHERE `reviews`.`restaurant_id` = 5 AND (rating &gt; 3.0)
+=&gt; ["Judd's Pub: 5 positive reviews.", "Felix's Nightclub: 6 positive reviews.", "Mabel's Burrito Shack: 7 positive reviews.", "Kendall's Burrito Shack: 2 positive reviews.", "Elisabeth's Deli: 15 positive reviews."]
+</code></pre>
+
+<p>我们可以看到，<code>scope:positive</code>并没有被缓存起来，这明显的是一个<code>N+1</code>查询。</p>
+
+<h1>用associations代替scopes</h1>
+
+<p>我们可以通过用associations代替scopes，来避免这个问题。请看下面例子：</p>
+
+<pre><code class="ruby">class Restaurant &lt; ActiveRecord::Base
+  has_many :reviews
+end
+</code></pre>
+
+<p>当我们查看这个<a href="http://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html">文档</a>时,我们可以看到，<code>has_many</code>允许我们添加自定义查询</p>
+
+<pre><code class="ruby">class Restaurant &lt; ActiveRecord::Base
+  has_many :reviews
+  has_many :positive_reviews, -&gt; { where("rating &gt; 3.0") }, class_name: "Review"
+end
+</code></pre>
+
+<p>但我们可以这样子获取一个<code>restaurant</code>的所有<code>positive_reviews</code></p>
+
+<pre><code class="ruby">irb(main):001:0&gt; Restaurant.first.positive_reviews.count
+  Restaurant Load (0.2ms)  SELECT  `restaurants`.* FROM `restaurants`  ORDER BY `restaurants`.`id` ASC LIMIT 1
+   (0.4ms)  SELECT COUNT(*) FROM `reviews` WHERE `reviews`.`restaurant_id` = 1 AND (rating &gt; 3.0)
+=&gt; 5
+</code></pre>
+
+<p>然后我们就可以通过<code>include</code>来预加载这个关联关系了</p>
+
+<pre><code class="ruby">irb(main):001:0&gt; restauraunts = Restaurant.includes(:positive_reviews).first(5)
+  Restaurant Load (0.3ms)  SELECT  `restaurants`.* FROM `restaurants`  ORDER BY `restaurants`.`id` ASC LIMIT 5
+  Review Load (1.2ms)  SELECT `reviews`.* FROM `reviews` WHERE (rating &gt; 3.0) AND `reviews`.`restaurant_id` IN (1, 2, 3, 4, 5)
+irb(main):002:0&gt; restauraunts.map do |restaurant|
+irb(main):003:1*   "#{restaurant.name}: #{restaurant.positive_reviews.length} positive reviews."
+irb(main):004:1&gt; end
+=&gt; ["Judd's Pub: 5 positive reviews.", "Felix's Nightclub: 6 positive reviews.", "Mabel's Burrito Shack: 7 positive reviews.", "Kendall's Burrito Shack: 2 positive reviews.", "Elisabeth's Deli: 15 positive reviews."]
+</code></pre>
+
+<p>至此，6个Sql查询变成2个</p>
+
+<h1>消除重复</h1>
+
+<p>现在我们定义了一个<code>scope:positive</code>和一个关系<code>has_many :positive_reviews</code>，我们可以看到，它们是重复的。我们可以简单的消除这个DRY.</p>
+
+<pre><code class="ruby">class Review &lt; ActiveRecord::Base
+  belongs_to :restaurant
+
+  scope :positive, -&gt; { where("rating &gt; 3.0") }
+end
+
+class Restaurant &lt; ActiveRecord::Base
+  has_many :reviews
+  has_many :positive_reviews, -&gt; { positive }, class_name: "Review"
+end
+</code></pre>
+
+<p>至此，我们可以知道<code>scope</code>虽然好用，但是当你发现的代码出现以上问题时，简单的修改，能减少许多<code>sql</code>查询</p>
+
+<p>文章没有逐字翻译，如有问题，麻烦指出。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Asset pipeline 理解]]></title>
+    <link href="http://justin-lu.github.io/blog/2013/08/10/asset-pipeline-li-jie/"/>
+    <updated>2013-08-10T16:46:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2013/08/10/asset-pipeline-li-jie</id>
+    <content type="html"><![CDATA[<h3>如何管理数据</h3>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby on Rails配置]]></title>
+    <link href="http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi/"/>
+    <updated>2013-07-12T11:32:00+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>把下面内容复制到一个后缀为<code>RVM配置ROR.sh</code>新文件</p></li>
+<li><p><code>chmod +x RVM配置ROR.sh</code> #变为可执行文件</p></li>
+<li><p><code>./RVM配置ROR.sh</code>  执行文件</p></li>
+</ul>
+
+
+<pre><code class="c">echo "==========  安装函数库 ================="
+sudo apt-get install curl bison build-essential git-core
+sudo apt-get install zlib1g-dev libssl-dev libreadline5-dev libxml2-dev
+
+echo "========== 安装rvm ==================="
+mkdir -p ~/.rvm/src/ &amp;&amp; cd ~/.rvm/src &amp;&amp; rm -rf ./rvm/ &amp;&amp; git clone git://github.com/wayneeseguin/rvm.git &amp;&amp; cd rvm &amp;&amp; ./install
+
+echo "========== 打开另一个终端，执行 vim ~/.bashrc ================="
+echo "========== 并且将下面内容复制到.bashrc最后 ==========="
+echo " if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+source "$HOME/.rvm/scripts/rvm";
+fi
+[[ -s "$HOME/.rvm/scripts/rvm" ]] &amp;&amp; source "$HOME/.rvm/scripts/rvm"
+"
+echo "========== 修改完后请按回车键继续: =========="
+read var
+
+type rvm | head -1
+
+rvm requirements
+
+sudo apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
+
+echo "=================================="
+source ~/.bashrc  
+
+echo "==================================="
+sudo apt-get install rubygems
+
+echo "========= 安装ruby1.9.2 ==========="
+rvm install 1.9.2-p290
+
+echo "======== 安装rails3.0.3 ==========="
+gem install rails -v=3.0.3
+
+echo "========= 安装ruby ==========="
+rvm install 1.8.7
+
+echo "======== 安装rails ==========="
+gem install rails -v=2.3.5
+
+echo "======= 安装mysql ============"
+sudo apt-get install mysql-server
+sudo apt-get install mysql-client
+
+echo "====== 安装mysql驱动 ========="
+sudo apt-get install libmysqlclient-dev 
+sudo gem install mysql2 
+
+echo "======设置默认版本=========="
+rvm use --default 1.8.7
+
+echo "============更新使用于2.3.5的rubygem========="
+gem update --system 1.5.3
+
+echo "========== 打开另一个终端，执行 vim ~/.bash_profile ================="
+echo "========== 并且将下面内容复制到.bash_profile最后 ==========="
+echo " 
+source ~/.bashrc
+"
+echo "========== 修改完后请按回车键继续: =========="
+read var
+
+echo "===== 如果在此过程中，没有错误，那么Ruby on rails 环境搭配成功(Justin-lu)!! ======== "
+echo "=====   QQ：448426851 ========================== "
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
