@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-06T08:29:16+08:00</updated>
+  <updated>2015-07-06T16:20:13+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -12,6 +12,259 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Google map with ionic]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/07/06/google-map-with-ionic/"/>
+    <updated>2015-07-06T16:03:52+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2015/07/06/google-map-with-ionic</id>
+    <content type="html"><![CDATA[<p>本文介绍如何在ionic添加google map.</p>
+
+<!-- More -->
+
+
+<p>初始化ionic项目</p>
+
+<pre><code class="sh">  ionic start map blank --sass --id com.beansmile.maps
+  cd map
+  npm install
+  gulp sass
+</code></pre>
+
+<p>添加以下代码到ionic.project</p>
+
+<pre><code class="javascript">  "gulpStartupTasks": ["sass", "watch"]
+</code></pre>
+
+<p>个人建议在初始化ionic项目的时候，<code>id</code>参数是必须的，生成的id将做为ios app 的<code>bundle id</code>和android app的<code>package name</code>
+&ndash;sass 参数默认启动sass功能,也可以在以后添加，详见<a href="http://ionicframework.com/docs/cli/sass.html">Using Sass</a></p>
+
+<p>添加定位插件geolocation</p>
+
+<pre><code class="sh">  ionic plugin add cordova-plugin-geolocation
+</code></pre>
+
+<p>查看<a href="https://developers.google.com/maps/documentation/javascript/tutorial">Google Maps Javascript SKD</a>并到<a href="https://code.google.com/apis/console/b/0/?pli=1">Google API Console</a>创建一个Google Maps application.</p>
+
+<p>当你拿到你的<code>google api key</code>后，添加到<code>www/index.html</code></p>
+
+<pre><code class="javascript">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width"&gt;
+    &lt;title&gt;&lt;/title&gt;
+
+    &lt;!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above --&gt;
+    &lt;link href="css/ionic.app.css" rel="stylesheet"&gt;
+
+    &lt;!-- ionic/angularjs js --&gt;
+    &lt;script src="lib/ionic/js/ionic.bundle.js"&gt;&lt;/script&gt;
+
+    &lt;script src="https://maps.googleapis.com/maps/api/js?key=[YOU KEY HERE]&amp;sensor=true"&gt;&lt;/script&gt;
+
+    &lt;!-- cordova script (this will be a 404 during development) --&gt;
+    &lt;script src="cordova.js"&gt;&lt;/script&gt;
+
+    &lt;!-- your app's js --&gt;
+    &lt;script src="js/app.js"&gt;&lt;/script&gt;
+    &lt;script src="js/controllers.js"&gt;&lt;/script&gt;
+    &lt;script src="js/directives.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+
+  &lt;body ng-app="starter" ng-controller="MapCtrl"&gt;
+    &lt;ion-header-bar class="bar-stable"&gt;
+      &lt;h1 class="title"&gt;Map&lt;/h1&gt;
+    &lt;/ion-header-bar&gt;
+
+    &lt;ion-content scroll="false"&gt;
+      &lt;a class="button button-icon icon ion-location map-icon-location active" ng-click="centerOnMe()"&gt;&lt;/a&gt;
+      &lt;a class="button button-icon icon ion-navicon map-icon-menu" ng-click="direction()"&gt;&lt;/a&gt;
+      &lt;map on-create="mapCreated(map)"&gt;&lt;/map&gt;
+    &lt;/ion-content&gt;
+
+    &lt;ion-footer-bar class="bar-stable"&gt;
+        &lt;a class="button button-icon icon ion-woman item-button-left"&gt;&lt;/a&gt;
+        &lt;a class="button button-icon icon ion-chevron-right item-button-right"&gt;&lt;/a&gt;
+      &lt;/a&gt;
+    &lt;/ion-footer-bar&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>添加样式</p>
+
+<pre><code class="css">map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.scroll {
+  height: 100%;
+}
+
+.map-icon-location{
+  background-color: #fff;
+  width: 47px;
+  border-radius: 47px;
+  margin-top: 50px;
+  margin-left: 10px;
+  position: fixed;
+  z-index: 10000;
+  box-shadow: 1px 1px 3px 2px #C2BDBD;
+}
+.map-icon-location.active, .map-icon-menu.active {
+  background-color: #49AEF8 !important;
+  opacity: 1 !important;
+  color: #fff;
+}
+
+.map-icon-menu {
+  background-color: #fff;
+  width: 47px;
+  border-radius: 47px;
+  margin-top: 100px;
+  margin-left: 10px;
+  position: fixed;
+  z-index: 10000;
+  box-shadow: 1px 1px 3px 2px #C2BDBD;
+}
+</code></pre>
+
+<p>添加map的directives</p>
+
+<pre><code class="javascript">angular.module('starter.directives', [])
+
+.directive('map', function() {
+  return {
+    restrict: 'E',
+    scope: {
+      onCreate: '&amp;'
+    },
+    link: function ($scope, $element, $attr) {
+      function initialize() {
+        var mapOptions = {
+          center: new google.maps.LatLng(43.07493, -89.381388),
+          zoom: 16,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map($element[0], mapOptions);
+        $scope.onCreate({map: map});
+
+        // Stop the side bar from dragging when mousedown/tapdown on the map
+        google.maps.event.addDomListener($element[0], 'mousedown', function (e) {
+          e.preventDefault();
+          return false;
+        });
+      }
+
+      if (document.readyState === "complete") {
+        initialize();
+      } else {
+        google.maps.event.addDomListener(window, 'load', initialize);
+      }
+    }
+  }
+});
+</code></pre>
+
+<p>添加对于的controller.js</p>
+
+<pre><code class="javascript">angular.module('starter.controllers', [])
+
+.controller('MapCtrl', function($scope, $ionicLoading) {
+  $scope.mapCreated = function(map) {
+    $scope.map = map;
+  };
+
+  $scope.direction = function(){
+    if (!$scope.map) {
+      return;
+    }
+
+    $scope.loading = $ionicLoading.show({
+      template: 'Getting current location...',
+      showBackdrop: false
+    });
+
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      console.log('Got pos', pos);
+      center = new google.maps.LatLng(37.772323, -122.214897);
+      target = new google.maps.LatLng(37.771923, -122.219339);
+
+      $scope.map.setCenter(center);
+
+      var directionsDisplay = new google.maps.DirectionsRenderer();
+      var directionsService = new google.maps.DirectionsService();
+
+      directionsDisplay.setMap($scope.map);
+
+
+      var request = {
+          origin:center,
+          destination:target,
+          travelMode: google.maps.TravelMode.DRIVING
+      };
+      directionsService.route(request, function(response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+          directionsDisplay.setDirections(response);
+        }
+      });
+
+      $ionicLoading.hide();
+    }, function (error) {
+      alert('Unable to get location: ' + error.message);
+    });
+  }
+
+  $scope.centerOnMe = function () {
+    console.log("Centering");
+    if (!$scope.map) {
+      return;
+    }
+
+    $scope.loading = $ionicLoading.show({
+      template: 'Getting current location...',
+      showBackdrop: false
+    });
+
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      console.log('Got pos', pos);
+      center = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+      $scope.map.setCenter(center);
+      var marker = new google.maps.Marker({
+        position: center,
+        map: $scope.map,
+        title: 'Hello World!'
+      });
+      $ionicLoading.hide();
+    }, function (error) {
+      alert('Unable to get location: ' + error.message);
+    });
+  };
+});
+</code></pre>
+
+<p>打开app.js，注入controllers directives</p>
+
+<pre><code class="javascript">  angular.module('starter', ['ionic','starter.controllers', 'starter.directives'])
+</code></pre>
+
+<p>以上根据google api, 添加了定位功能;两个地点的路线规划功能,为了演示方便，A地点和B地点的经纬度是固定的，可以随意更改。</p>
+
+<p>最后，执行以下命令，即可在你的手机使用这个app了。</p>
+
+<pre><code class="sh">  ionic build ios
+  ionic run ios --devise
+</code></pre>
+
+<p>更多google map api，请看 <a href="https://developers.google.com/maps/documentation/javascript/examples/">example</a></p>
+
+<p>附上效果图一张</p>
+
+<p><img src="/images/blog/google-map.jpg" alt="google map" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[理解 ActiveSupport::Concern ]]></title>
