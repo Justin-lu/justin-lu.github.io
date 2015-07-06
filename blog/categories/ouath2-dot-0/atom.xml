@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ouath2.0 | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/ouath2-dot-0/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-06T16:20:13+08:00</updated>
+  <updated>2015-07-06T16:32:00+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -18,7 +18,12 @@
     <link href="http://justin-lu.github.io/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao/"/>
     <updated>2014-05-30T15:13:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao</id>
-    <content type="html"><![CDATA[<h1>Oauth 2.0</h1>
+    <content type="html"><![CDATA[<p>Oauth2.0 验证流程简单介绍(使用doorkeeper)</p>
+
+<!-- More -->
+
+
+<h1>Oauth 2.0</h1>
 
 <ol>
 <li><p>client 获取 provider 提供的资源</p></li>

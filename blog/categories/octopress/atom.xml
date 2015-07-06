@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-06T16:20:13+08:00</updated>
+  <updated>2015-07-06T16:32:00+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -18,7 +18,12 @@
     <link href="http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke/"/>
     <updated>2013-06-16T11:25:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke</id>
-    <content type="html"><![CDATA[<h1>Octopress是什么?</h1>
+    <content type="html"><![CDATA[<p>本文介绍如何用Octopress款速搭建你的博客.</p>
+
+<!-- More -->
+
+
+<h1>Octopress是什么?</h1>
 
 <p>一个通过<code>Markdwon</code>语法，快速生成HTML，并可以发布到<code>github</code>等服务器的<code>Ruby</code>开源项目</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rspec | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/rspec/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-06T16:20:13+08:00</updated>
+  <updated>2015-07-06T16:32:00+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -18,7 +18,11 @@
     <link href="http://justin-lu.github.io/blog/2013/08/10/rspecce-shi-grurd-plus-sporcapybara/"/>
     <updated>2013-08-10T16:45:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/08/10/rspecce-shi-grurd-plus-sporcapybara</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>Rspec测试框架介绍
+时间不够，过后补上</p>
+
+<!-- More -->
+
 ]]></content>
   </entry>
   

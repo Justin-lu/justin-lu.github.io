@@ -4,7 +4,7 @@
   <title><![CDATA[Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-06T16:20:13+08:00</updated>
+  <updated>2015-07-06T16:32:00+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -473,6 +473,9 @@
     <updated>2015-07-05T21:49:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2015/07/05/li-jie-activesupport-concern</id>
     <content type="html"><![CDATA[<p>分享一下自己阅读ActiveSupport::Concern源码的过程，希望和大家一起学习，错误之处，还请指出</p>
+
+<!-- More -->
+
 
 <p>在查看ActiveSupport::Concern <a href="https://github.com/rails/rails/blob/master/activesupport/lib/active_support/concern.rb">源码</a>之前，我们先理解几个概念</p>
 
@@ -1232,7 +1235,10 @@
     <link href="http://justin-lu.github.io/blog/2015/07/05/rails-scopes-yu-jia-zai/"/>
     <updated>2015-07-05T21:48:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2015/07/05/rails-scopes-yu-jia-zai</id>
-    <content type="html"><![CDATA[<p>前几天在<a href="http://rubyweekly.com/">rubyweekly</a>里面看到一篇文章，感觉写得不错。拿出来分享一下。<a href="http://www.justinweiss.com/blog/2015/06/23/how-to-preload-rails-scopes/?utm_source=rubyweekly&amp;utm_medium=email">原文</a>更精彩</p>
+    <content type="html"><![CDATA[<p>前几天在<a href="http://rubyweekly.com/">rubyweekly</a>里面看到一篇文章，感觉写得不错。拿出来分享一下。<a href="http://www.justinweiss.com/%0Ablog/2015/06/23/how-to-preload-rails-scopes/?utm_source=rubyweekly&amp;utm_medium=email">原文</a>更精彩</p>
+
+<!-- More -->
+
 
 <h1>scope 会造成N+1查询</h1>
 
@@ -1391,7 +1397,12 @@
     <link href="http://justin-lu.github.io/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao/"/>
     <updated>2014-05-30T15:13:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao</id>
-    <content type="html"><![CDATA[<h1>Oauth 2.0</h1>
+    <content type="html"><![CDATA[<p>Oauth2.0 验证流程简单介绍(使用doorkeeper)</p>
+
+<!-- More -->
+
+
+<h1>Oauth 2.0</h1>
 
 <ol>
 <li><p>client 获取 provider 提供的资源</p></li>
@@ -1570,7 +1581,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue/"/>
     <updated>2013-10-27T15:28:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-[?]-yang-de-gan-jue</id>
-    <content type="html"><![CDATA[<blockquote><p>使用Git并且在多个分支下开发的同学可能知道，当我们老是在不同分支下切换的时候，有时候会忘记自己在哪个分支，导致我们提交的内容混乱，以前在Ubuntu下，是直接修改<code>.bashrc</code>，让其显示分支名称
+    <content type="html"><![CDATA[<p>刚接触Mac,发现有zsh这一神器</p>
+
+<!-- More -->
+
+
+<blockquote><p>使用Git并且在多个分支下开发的同学可能知道，当我们老是在不同分支下切换的时候，有时候会忘记自己在哪个分支，导致我们提交的内容混乱，以前在Ubuntu下，是直接修改<code>.bashrc</code>，让其显示分支名称
 本打算用同样的方法修改OS X系统，让其显示分支名，却让我发现了Zsh</p></blockquote>
 
 <hr />
@@ -1689,7 +1705,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/10/26/cong-vimdao-sublime-text/"/>
     <updated>2013-10-26T19:32:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/10/26/cong-vimdao-sublime-text</id>
-    <content type="html"><![CDATA[<h3>为什么选择Sublime Text</h3>
+    <content type="html"><![CDATA[<p>讲述我从vim转化到sublime text的过程</p>
+
+<!-- More -->
+
+
+<h3>为什么选择Sublime Text</h3>
 
 <blockquote><p>使用Gvim已经三年了，一直很喜欢Vim里面的hjkl等快捷键和多种模式，以致于在Chrome上安装Vimium插件，让我能够永远的脱离鼠标，很喜欢这种感觉。
 但是，最近，由于工作需要，在Mac上进行开发，于是装上了MacVim，但是，以前一直用的好好地Vim出现bug了，无法直接双击打开文件（后来发下在终端下打开gvim就可以）加上之前一直听师兄说Sublime Text很好用，所以，我试着Google些资料，然后开始各种尝试&hellip;</p></blockquote>
@@ -1994,7 +2015,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/10/24/rubyzhong-de-block/"/>
     <updated>2013-10-24T18:16:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/10/24/rubyzhong-de-block</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>ruby编程中的block简单介绍</p>
+
+<!-- More -->
+
+
+
 ]]></content>
   </entry>
   
@@ -2003,7 +2029,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/09/26/rubyzhong-de-instance-eavlhe-class-eval/"/>
     <updated>2013-09-26T12:27:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/09/26/rubyzhong-de-instance-eavlhe-class-eval</id>
-    <content type="html"><![CDATA[<p>第二次看Ruby元编程这本书，感觉里面能学到的东西很多，但是很容易忘记，所以把一些想法写下来，以备后用。</p>
+    <content type="html"><![CDATA[<p>ruby元编程中的instance_eavl和class_eval简单介绍</p>
+
+<!-- More -->
+
+
+<p>第二次看Ruby元编程这本书，感觉里面能学到的东西很多，但是很容易忘记，所以把一些想法写下来，以备后用。</p>
 
 <h1>instance_eval</h1>
 
@@ -2156,7 +2187,76 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/08/10/asset-pipeline-li-jie/"/>
     <updated>2013-08-10T16:46:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/08/10/asset-pipeline-li-jie</id>
-    <content type="html"><![CDATA[<h3>如何管理数据</h3>
+    <content type="html"><![CDATA[<p>简单介绍个人对Asset pipeline的理解</p>
+
+<!-- More -->
+
+
+<h3>Asset Pipeline 是什么</h3>
+
+<blockquote><p>asset pipline 是一个提供连结缩小或者压缩 JavaScript 和 CSS 资源的框架。它也添加了用其它语言编写这些资源的功能, 如 CoffeeScript, Sass 和 ERB。</p>
+
+<p>对于新手来说，Asset Pipeline无疑是一个比较难掌握的内容，特别是当Production模式之后，可能遇到的问题会更多，我们只有理解它，才能更好的使用它。</p></blockquote>
+
+<ol>
+<li>Rails 3.1 之后，<code>asset pipeline</code>是自动打开的，你有两种方式不使用它:</li>
+<li>在<code>config/application.rb</code>里面添加：<code>config.assets.enabled = false</code></li>
+<li>也可以在新建App的时候通过参数来关闭:<code>rails new appname --skip-sprockets</code></li>
+<li>目录结构</li>
+<li><code>app/assets</code>存放应用程序本身所使用的JS、CSS和Image</li>
+<li><code>lib/assets</code>存放自己拓展的JS、CSS和Image</li>
+<li><code>vendor/assets</code>存放第三方拓展JS、CSS和Image，例如Jquery、Extjs等一些类库</li>
+<li>搜索路径</li>
+<li>在<code>config/application.rb</code>里面<code>config.assets.paths &lt;&lt; Rails.root.join("app", "assets")</code>里面可以添加到预编译列表</li>
+<li>例如，需要加载这个文件<code>app/assets/javascripts/home.js</code>,这只需要在<code>application.js</code>里面添加<code>=// require home</code>即可</li>
+<li>注意：如果引用资源清单外的文件，必须加载到预编译列表，否知producion环境不可用</li>
+</ol>
+
+
+<hr />
+
+<p>更多详细资料，请参阅</p>
+
+<ul>
+<li><a href="http://guides.ruby-china.org/asset_pipeline.html">Asset Pipline 中文版</a></li>
+<li><a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipline 英文版</a></li>
+<li>如果需要，可在<code>config/application.rb</code>添加<code>config.assets.enabled = false</code>关闭<code>asset pipeline</code>功能</li>
+</ul>
+
+
+<h3>如何管理数据</h3>
+
+<ol>
+<li>一个新的<code>Rails</code>应用程序包含了一个默认的<code>app/assets/javascripts/application.js</code>文件，这个文件包含了一些行:</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// ...</span>
+</span><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span><span class='line'><span class="c1">//= require_tree .</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>require_tree</code>指令告诉<code>Sprockets</code>递归地去包含在指定目录下<code>所有</code>的 JavaScript 文件到输出里</li>
+<li><code>require_directory</code>它会将在某个特定目录下所有的 JavaScript 文件包含进去，但不递归.</li>
+<li><code>include</code>与require 一样，差别在于即使是被加载过的文件，也会被再次加载</li>
+<li><code>require_self</code> 告訴<code>Sprockets</code>在载入其他的文件时，先将自己的内容</li>
+<li><code>stub</code>将路径中得assets加入黑名单，所有其他的require都不会将它载入</li>
+<li>注意：引用时不需要显示提供拓展名,<code>require_tree</code>包含的文件是没有顺序的。</li>
+<li>关掉<code>require_tree .</code>,它会递归加载当前文件下得所有文件，对于小系统来说，可能没多大影响，系统复杂了，每次都加载那么多文件，访问就会变慢了。</li>
+<li>根据需求，组织你自己的加载方式，一下根据做ERP系统，写出我的加载方式</li>
+<li>去掉<code>require_tree .</code></li>
+<li>在三个<code>appliction.js</code>文件中，添加项目工用的JS和CSS代码，默认都会编译</li>
+<li>通过修改<code>config.assets.precompile += %w( other.js , another.js)</code>，增加除了<code>application.js</code>外的文件）</li>
+<li>在<code>/app/application_controller.rb</code>里面添加<code>&lt;%= javascript_include_tag params[:controller]/params[:action] %&gt;</code>或者<code>&lt;%= stylesheet_link_tag params[:controller]/params[:action] %&gt;</code>加载每个页面所使用到的Js和CSS文件</li>
+</ul>
+
 ]]></content>
   </entry>
   
@@ -2165,7 +2265,11 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/08/10/rspecce-shi-grurd-plus-sporcapybara/"/>
     <updated>2013-08-10T16:45:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/08/10/rspecce-shi-grurd-plus-sporcapybara</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>Rspec测试框架介绍
+时间不够，过后补上</p>
+
+<!-- More -->
+
 ]]></content>
   </entry>
   
@@ -2174,7 +2278,14 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/07/15/chanceeasy-summary/"/>
     <updated>2013-07-15T08:39:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/15/chanceeasy-summary</id>
-    <content type="html"><![CDATA[<!--* 文档：文档规范化问题-->
+    <content type="html"><![CDATA[<p>chanceEasy 项目总结</p>
+
+<!-- More -->
+
+
+
+
+<!--* 文档：文档规范化问题-->
 
 
 <!--* 业务：业务不熟练-->
@@ -2384,7 +2495,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi/"/>
     <updated>2013-07-12T11:32:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi</id>
-    <content type="html"><![CDATA[<ul>
+    <content type="html"><![CDATA[<p>安装Ruby On Rails 脚本.</p>
+
+<!-- More -->
+
+
+<ul>
 <li><p>把下面内容复制到一个后缀为<code>RVM配置ROR.sh</code>新文件</p></li>
 <li><p><code>chmod +x RVM配置ROR.sh</code> #变为可执行文件</p></li>
 <li><p><code>./RVM配置ROR.sh</code>  执行文件</p></li>
@@ -2531,7 +2647,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-ruan-jian/"/>
     <updated>2013-07-12T10:00:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-ruan-jian</id>
-    <content type="html"><![CDATA[<ol>
+    <content type="html"><![CDATA[<p>Ubuntu常用软件收集。</p>
+
+<!-- More -->
+
+
+<ol>
 <li><p><code>gnome do</code> 功能：能够快速查找文件，包括文件夹，文件名，程序。。。</p></li>
 <li><p><code>Cairo-dock</code> 功能：美化桌面，导航等。</p></li>
 <li><p><code>Gvim</code> 功能：一个功能强大的文本编辑器。特别适合用来编辑ruby文件。<a href="https://github.com/Justin-lu/.vim">vimrc配置文档</a></p></li>
@@ -2590,7 +2711,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/07/12/ubuntu12-dot-10yi-shang-an-zhuang-gu-ge-shu-ru-fa-,-sou-gou-shu-ru-deng/"/>
     <updated>2013-07-12T09:47:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/12/ubuntu12-dot-10yi-shang-an-zhuang-gu-ge-shu-ru-fa-,-sou-gou-shu-ru-deng</id>
-    <content type="html"><![CDATA[<p>1.卸载Ibus本地输入法</p>
+    <content type="html"><![CDATA[<p>Ubuntu12.10以上安装谷歌输入法、搜狗输入等</p>
+
+<!-- More -->
+
+
+<p>1.卸载Ibus本地输入法</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">remove</span> <span class="n">ibus</span>
@@ -2646,7 +2772,12 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
     <link href="http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-zhi-ling/"/>
     <updated>2013-07-12T09:19:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-zhi-ling</id>
-    <content type="html"><![CDATA[<h3>基本的Ubuntu指令</h3>
+    <content type="html"><![CDATA[<p>基本的Ubuntu指令的使用介绍</p>
+
+<!-- More -->
+
+
+<h3>基本的Ubuntu指令</h3>
 
 <hr />
 
@@ -2875,7 +3006,12 @@ tar[参数列表][文件名]
     <link href="http://justin-lu.github.io/blog/2013/07/12/ssh/"/>
     <updated>2013-07-12T08:37:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/12/ssh</id>
-    <content type="html"><![CDATA[<h3>常用指令</h3>
+    <content type="html"><![CDATA[<p>本文介绍ssh相关使用.</p>
+
+<!-- More -->
+
+
+<h3>常用指令</h3>
 
 <ol>
 <li>生成本机密钥命令<code>ssh-keygen</code></li>
@@ -2953,7 +3089,7 @@ apt-get install pv
 yum install pv
 （可能需要启用额外的软件仓库）。</li>
 <li>如果建立一个可以重新连接的远程GNU screen
-ssh -t <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#111;&#x3a;&#117;&#x73;&#101;&#x72;&#x40;&#x73;&#111;&#x6d;&#x65;&#x2e;&#x64;&#111;&#109;&#97;&#105;&#110;&#46;&#99;&#x6f;&#109;">&#x75;&#x73;&#101;&#114;&#64;&#x73;&#x6f;&#x6d;&#x65;&#46;&#x64;&#x6f;&#x6d;&#x61;&#105;&#110;&#x2e;&#x63;&#x6f;&#109;</a> /usr/bin/screen –xRR
+ssh -t <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x75;&#x73;&#101;&#x72;&#x40;&#115;&#111;&#x6d;&#101;&#x2e;&#x64;&#111;&#109;&#97;&#105;&#110;&#46;&#99;&#x6f;&#x6d;">&#117;&#x73;&#101;&#114;&#64;&#x73;&#x6f;&#109;&#101;&#46;&#x64;&#x6f;&#109;&#x61;&#105;&#x6e;&#46;&#x63;&#111;&#109;</a> /usr/bin/screen –xRR
 人们总是喜欢在一个文本终端中打开许多shell，如果会话突然中断，或你按下了“Ctrl-a d”，远程主机上的shell不会受到丝毫影响，你可以重新连接，其它有用的screen命令有“Ctrl-a c”（打开新的shell）和“Ctrl-a a”（在shell之间来回切换），请访问<a href="http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82">http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82</a></li>
 <li>继续SCP大文件
 rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file
@@ -2962,9 +3098,9 @@ rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_fi
 或
 rsync –partial –progress –rsh=ssh $user@$host:$remote_file $destination_file remote -> local</li>
 <li>通过SSH W/ WIRESHARK分析流量
-ssh <a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#x72;&#x6f;&#111;&#x74;&#64;&#x73;&#x65;&#x72;&#x76;&#101;&#114;&#x2e;&#x63;&#111;&#109;">&#114;&#x6f;&#x6f;&#116;&#x40;&#115;&#x65;&#114;&#x76;&#x65;&#x72;&#46;&#x63;&#111;&#x6d;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
+ssh <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#114;&#x6f;&#111;&#116;&#64;&#115;&#101;&#114;&#118;&#x65;&#114;&#x2e;&#99;&#111;&#109;">&#x72;&#111;&#111;&#116;&#64;&#115;&#x65;&#114;&#118;&#x65;&#114;&#x2e;&#99;&#111;&#x6d;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
 使用tshark捕捉远程主机上的网络通信，通过SSH连接发送原始pcap数据，并在wireshark中显示，按下Ctrl+C将停止捕捉，但也会关闭wireshark窗口，可以传递一个“-c #”参数给tshark，让它只捕捉“#”指定的数据包类型，或通过命名管道重定向数据，而不是直接通过SSH传输给wireshark，我建议你过滤数据包，以节约带宽，tshark可以使用tcpdump替代：
-ssh <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6f;&#x3a;&#x72;&#111;&#x6f;&#x74;&#x40;&#101;&#120;&#x61;&#109;&#112;&#x6c;&#x65;&#46;&#99;&#111;&#109;">&#x72;&#x6f;&#x6f;&#116;&#x40;&#x65;&#120;&#97;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#111;&#109;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
+ssh <a href="&#x6d;&#97;&#105;&#108;&#116;&#111;&#58;&#x72;&#x6f;&#111;&#116;&#x40;&#x65;&#120;&#x61;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#x6d;">&#114;&#111;&#111;&#116;&#64;&#x65;&#120;&#x61;&#109;&#x70;&#x6c;&#101;&#x2e;&#99;&#111;&#109;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
 <li>保持SSH会话永久打开
 autossh -M50000 -t server.example.com ‘screen -raAd mysession’
 打开一个SSH会话后，让其保持永久打开，对于使用笔记本电脑的用户，如果需要在Wi-Fi热点之间切换，可以保证切换后不会丢失连接。</li>
@@ -2990,7 +3126,12 @@ ssh user@host cat /path/to/some/file | xclip</li>
     <link href="http://justin-lu.github.io/blog/2013/07/11/2013-7-6-zui-xin-hostswen-jian/"/>
     <updated>2013-07-11T10:57:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/11/2013-7-6-zui-xin-hostswen-jian</id>
-    <content type="html"><![CDATA[<ul>
+    <content type="html"><![CDATA[<p>最新hosts文件列表.</p>
+
+<!-- More -->
+
+
+<ul>
 <li>window hosts文件位置</li>
 <li>C盘/windows/system32/drivers/ect</li>
 <li>Ubuntu hosts文件位置</li>
@@ -4479,7 +4620,12 @@ ssh user@host cat /path/to/some/file | xclip</li>
     <link href="http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke/"/>
     <updated>2013-06-16T11:25:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke</id>
-    <content type="html"><![CDATA[<h1>Octopress是什么?</h1>
+    <content type="html"><![CDATA[<p>本文介绍如何用Octopress款速搭建你的博客.</p>
+
+<!-- More -->
+
+
+<h1>Octopress是什么?</h1>
 
 <p>一个通过<code>Markdwon</code>语法，快速生成HTML，并可以发布到<code>github</code>等服务器的<code>Ruby</code>开源项目</p>
 

@@ -6,7 +6,7 @@
 	<title>Asset pipeline 理解 - Hi I'm Justin-lu</title>
     <meta name="author" content="Justin-lu">
     
-	<meta name="description" content="如何管理数据 Comments ">
+	<meta name="description" content="简单介绍个人对Asset pipeline的理解 Asset Pipeline 是什么 asset pipline 是一个提供连结缩小或者压缩 JavaScript 和 CSS 资源的框架。它也添加了用其它语言编写这些资源的功能, 如 CoffeeScript, Sass 和 ERB。 &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -131,7 +131,76 @@
     <div id="content" class="inner">
         <article class="post">
 	<h2 class="title">Asset Pipeline 理解</h2>
-	<div class="entry-content"><h3>如何管理数据</h3>
+	<div class="entry-content"><p>简单介绍个人对Asset pipeline的理解</p>
+
+<!-- More -->
+
+
+<h3>Asset Pipeline 是什么</h3>
+
+<blockquote><p>asset pipline 是一个提供连结缩小或者压缩 JavaScript 和 CSS 资源的框架。它也添加了用其它语言编写这些资源的功能, 如 CoffeeScript, Sass 和 ERB。</p>
+
+<p>对于新手来说，Asset Pipeline无疑是一个比较难掌握的内容，特别是当Production模式之后，可能遇到的问题会更多，我们只有理解它，才能更好的使用它。</p></blockquote>
+
+<ol>
+<li>Rails 3.1 之后，<code>asset pipeline</code>是自动打开的，你有两种方式不使用它:</li>
+<li>在<code>config/application.rb</code>里面添加：<code>config.assets.enabled = false</code></li>
+<li>也可以在新建App的时候通过参数来关闭:<code>rails new appname --skip-sprockets</code></li>
+<li>目录结构</li>
+<li><code>app/assets</code>存放应用程序本身所使用的JS、CSS和Image</li>
+<li><code>lib/assets</code>存放自己拓展的JS、CSS和Image</li>
+<li><code>vendor/assets</code>存放第三方拓展JS、CSS和Image，例如Jquery、Extjs等一些类库</li>
+<li>搜索路径</li>
+<li>在<code>config/application.rb</code>里面<code>config.assets.paths &lt;&lt; Rails.root.join("app", "assets")</code>里面可以添加到预编译列表</li>
+<li>例如，需要加载这个文件<code>app/assets/javascripts/home.js</code>,这只需要在<code>application.js</code>里面添加<code>=// require home</code>即可</li>
+<li>注意：如果引用资源清单外的文件，必须加载到预编译列表，否知producion环境不可用</li>
+</ol>
+
+
+<hr />
+
+<p>更多详细资料，请参阅</p>
+
+<ul>
+<li><a href="http://guides.ruby-china.org/asset_pipeline.html">Asset Pipline 中文版</a></li>
+<li><a href="http://guides.rubyonrails.org/asset_pipeline.html">Asset Pipline 英文版</a></li>
+<li>如果需要，可在<code>config/application.rb</code>添加<code>config.assets.enabled = false</code>关闭<code>asset pipeline</code>功能</li>
+</ul>
+
+
+<h3>如何管理数据</h3>
+
+<ol>
+<li>一个新的<code>Rails</code>应用程序包含了一个默认的<code>app/assets/javascripts/application.js</code>文件，这个文件包含了一些行:</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// ...</span>
+</span><span class='line'><span class="c1">//= require jquery</span>
+</span><span class='line'><span class="c1">//= require jquery_ujs</span>
+</span><span class='line'><span class="c1">//= require_tree .</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>require_tree</code>指令告诉<code>Sprockets</code>递归地去包含在指定目录下<code>所有</code>的 JavaScript 文件到输出里</li>
+<li><code>require_directory</code>它会将在某个特定目录下所有的 JavaScript 文件包含进去，但不递归.</li>
+<li><code>include</code>与require 一样，差别在于即使是被加载过的文件，也会被再次加载</li>
+<li><code>require_self</code> 告訴<code>Sprockets</code>在载入其他的文件时，先将自己的内容</li>
+<li><code>stub</code>将路径中得assets加入黑名单，所有其他的require都不会将它载入</li>
+<li>注意：引用时不需要显示提供拓展名,<code>require_tree</code>包含的文件是没有顺序的。</li>
+<li>关掉<code>require_tree .</code>,它会递归加载当前文件下得所有文件，对于小系统来说，可能没多大影响，系统复杂了，每次都加载那么多文件，访问就会变慢了。</li>
+<li>根据需求，组织你自己的加载方式，一下根据做ERP系统，写出我的加载方式</li>
+<li>去掉<code>require_tree .</code></li>
+<li>在三个<code>appliction.js</code>文件中，添加项目工用的JS和CSS代码，默认都会编译</li>
+<li>通过修改<code>config.assets.precompile += %w( other.js , another.js)</code>，增加除了<code>application.js</code>外的文件）</li>
+<li>在<code>/app/application_controller.rb</code>里面添加<code>&lt;%= javascript_include_tag params[:controller]/params[:action] %&gt;</code>或者<code>&lt;%= stylesheet_link_tag params[:controller]/params[:action] %&gt;</code>加载每个页面所使用到的Js和CSS文件</li>
+</ul>
+
 </div>
 
 <div class="meta">

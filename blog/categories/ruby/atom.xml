@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-06T16:20:13+08:00</updated>
+  <updated>2015-07-06T16:32:00+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -18,7 +18,12 @@
     <link href="http://justin-lu.github.io/blog/2013/10/24/rubyzhong-de-block/"/>
     <updated>2013-10-24T18:16:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/10/24/rubyzhong-de-block</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>ruby编程中的block简单介绍</p>
+
+<!-- More -->
+
+
+
 ]]></content>
   </entry>
   
@@ -27,7 +32,12 @@
     <link href="http://justin-lu.github.io/blog/2013/09/26/rubyzhong-de-instance-eavlhe-class-eval/"/>
     <updated>2013-09-26T12:27:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/09/26/rubyzhong-de-instance-eavlhe-class-eval</id>
-    <content type="html"><![CDATA[<p>第二次看Ruby元编程这本书，感觉里面能学到的东西很多，但是很容易忘记，所以把一些想法写下来，以备后用。</p>
+    <content type="html"><![CDATA[<p>ruby元编程中的instance_eavl和class_eval简单介绍</p>
+
+<!-- More -->
+
+
+<p>第二次看Ruby元编程这本书，感觉里面能学到的东西很多，但是很容易忘记，所以把一些想法写下来，以备后用。</p>
 
 <h1>instance_eval</h1>
 
@@ -129,7 +139,12 @@ add_method_to String
     <link href="http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi/"/>
     <updated>2013-07-12T11:32:00+08:00</updated>
     <id>http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi</id>
-    <content type="html"><![CDATA[<ul>
+    <content type="html"><![CDATA[<p>安装Ruby On Rails 脚本.</p>
+
+<!-- More -->
+
+
+<ul>
 <li><p>把下面内容复制到一个后缀为<code>RVM配置ROR.sh</code>新文件</p></li>
 <li><p><code>chmod +x RVM配置ROR.sh</code> #变为可执行文件</p></li>
 <li><p><code>./RVM配置ROR.sh</code>  执行文件</p></li>
