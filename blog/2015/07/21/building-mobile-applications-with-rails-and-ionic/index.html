@@ -1,0 +1,767 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Building Mobile Applications with Rails and Ionic - Hi I'm Justin-lu</title>
+    <meta name="author" content="Justin-lu">
+    
+	<meta name="description" content="本文介绍如何在rails上面开发ionic. Rails 关键 Gem 介绍 grape An opinionated micro-framework for creating REST-like APIs in Ruby 非常轻量，可以脱离Rails，直接运行在Rack服务器之上，速度非常快； &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Hi I'm Justin-lu" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.ico" rel="shortcut icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+    <link href='http://fonts.googleapis.com/css?family=Slackey' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Amethysta' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+    <script type="text/javascript" src="/javascripts/jquery-tapir.js"></script>
+
+    <!-- remove or comment it to disable ajaxification -->   
+    <script src="/javascripts/ajaxify.js"></script>
+   
+    
+    
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42406282-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+    <div id="wrapper">
+    <header id="header" class="inner"><!-- for more effects see _animate.scss -->
+<h1 class="animated bounceInDown">
+    <div id="headerbg">
+        Justin-lu
+    </div>
+</h1>
+<br>
+
+<ul id="social-links" style="text-align:center">
+  
+  <!-- GitHub -->
+  <li>
+  <a href="https://github.com/Justin-lu" class="github" title="Github"></a>
+  </li>
+  
+  
+  <!-- Google Plus -->
+  <li>
+  <a href="http://plus.google.com/Justin-lu?rel=author" class="google" title="Google+"></a>
+  </li>
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- Sina Weibo -->
+  <li>
+    <a href="http://weibo.com/luxiaoyong17" target="_blank">
+      <svg width="40" height="40" class="sina-weibo" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <path fill="" d="M9.641,17.231c-3.799,0.374-7.079-1.343-7.326-3.838c-0.246-2.494,2.634-4.82,6.434-5.196  c3.798-0.377,7.079,1.34,7.326,3.835C16.32,14.529,13.44,16.855,9.641,17.231 M17.24,8.952c-0.322-0.098-0.544-0.163-0.375-0.587  c0.365-0.921,0.403-1.718,0.007-2.286c-0.745-1.063-2.783-1.005-5.12-0.027c0-0.002-0.734,0.321-0.546-0.261  c0.359-1.156,0.305-2.123-0.254-2.682c-1.267-1.271-4.639,0.047-7.53,2.936C1.257,8.209,0,10.504,0,12.488  c0,3.796,4.866,6.104,9.628,6.104c6.241,0,10.393-3.627,10.393-6.506C20.021,10.347,18.557,9.358,17.24,8.952" />
+        <path fill="" d="M21.384,2.005c-1.507-1.671-3.73-2.308-5.782-1.872l0,0c-0.475,0.102-0.778,0.569-0.676,1.043  c0.101,0.473,0.567,0.777,1.043,0.674c1.459-0.31,3.039,0.145,4.111,1.332c1.069,1.188,1.362,2.806,0.902,4.225v0.001  c-0.149,0.462,0.104,0.957,0.566,1.106c0.461,0.149,0.956-0.104,1.105-0.565c0,0,0-0.002,0-0.004  C23.299,5.95,22.894,3.674,21.384,2.005" />
+        <path fill="" d="M19.07,4.094c-0.734-0.814-1.817-1.123-2.817-0.912c-0.409,0.088-0.671,0.49-0.581,0.899  c0.088,0.407,0.489,0.67,0.896,0.58v0.001c0.488-0.104,1.019,0.047,1.379,0.445c0.359,0.398,0.455,0.941,0.301,1.416l0,0  c-0.127,0.398,0.09,0.825,0.488,0.954c0.396,0.127,0.824-0.091,0.952-0.488C20,6.017,19.805,4.908,19.07,4.094" />
+        <path fill="" d="M9.85,12.713c-0.132,0.229-0.426,0.338-0.656,0.242c-0.227-0.094-0.297-0.348-0.169-0.572  c0.132-0.221,0.416-0.328,0.64-0.239C9.895,12.227,9.978,12.483,9.85,12.713 M8.64,14.268c-0.367,0.586-1.154,0.843-1.747,0.57  c-0.584-0.265-0.756-0.945-0.389-1.518c0.362-0.568,1.124-0.824,1.712-0.574C8.811,12.998,9.001,13.675,8.64,14.268 M10.021,10.118  c-1.808-0.47-3.852,0.431-4.637,2.023c-0.8,1.624-0.026,3.428,1.801,4.017c1.892,0.612,4.122-0.324,4.898-2.078  C12.848,12.367,11.891,10.602,10.021,10.118" />
+      </svg>
+    </a>
+  </li>
+  
+  
+  <!-- Tencent Weibo -->
+  <li>
+    <a href="http://t.qq.com/gdjyluxiaoyong" target="_blank">
+      <svg width="40" height="40" class="tencent-weibo" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <circle fill="" cx="8.229" cy="10.478" r="2.543" />
+        <path fill="" d="M8.229,18.163c-0.615,0-1.227-0.073-1.82-0.217  c-0.364-0.088-0.587-0.455-0.499-0.819c0.088-0.364,0.455-0.588,0.819-0.5c0.488,0.119,0.993,0.178,1.5,0.178  c3.49,0,6.33-2.839,6.33-6.329c0-3.49-2.839-6.33-6.33-6.33c-3.49,0-6.329,2.84-6.329,6.33c0,1.123,0.297,2.226,0.861,3.189  c0.189,0.323,0.08,0.739-0.243,0.928s-0.739,0.08-0.928-0.243c-0.685-1.172-1.046-2.511-1.046-3.875  c0-4.238,3.448-7.686,7.686-7.686c4.238,0,7.686,3.448,7.686,7.686C15.915,14.716,12.467,18.163,8.229,18.163z" />
+        <path fill="" d="M2.066,24.549c-0.277,0-0.51-0.216-0.526-0.496c-0.021-0.351-0.451-8.643,5.989-13.397  c0.234-0.173,0.565-0.124,0.738,0.111c0.173,0.234,0.123,0.565-0.111,0.738C2.186,15.913,2.589,23.909,2.593,23.99  c0.018,0.29-0.204,0.541-0.495,0.558C2.087,24.548,2.077,24.549,2.066,24.549z" />
+        <circle fill="" cx="22.443" cy="5.184" r="1.536" />
+        <path fill="" d="M26.739,6.946c-0.141,0.344-0.322,0.669-0.538,0.967  c-0.133,0.184-0.389,0.224-0.572,0.091s-0.225-0.389-0.091-0.572c0.178-0.246,0.327-0.514,0.443-0.797  c0.8-1.951-0.136-4.188-2.086-4.988c-1.951-0.8-4.188,0.136-4.988,2.086c-0.8,1.951,0.136,4.188,2.086,4.988  c0.628,0.257,1.312,0.344,1.98,0.25c0.224-0.031,0.431,0.125,0.463,0.349c0.032,0.224-0.125,0.431-0.349,0.463  c-0.812,0.114-1.643,0.009-2.405-0.304c-2.369-0.971-3.505-3.688-2.534-6.057c0.972-2.369,3.688-3.505,6.058-2.534  C26.574,1.86,27.71,4.577,26.739,6.946z" />
+        <path fill="" d="M28.895,11.854c-0.063,0.154-0.237,0.234-0.397,0.18c-0.201-0.068-4.934-1.729-6.115-6.419  c-0.043-0.17,0.061-0.343,0.231-0.386c0.171-0.043,0.344,0.06,0.388,0.231c1.095,4.348,5.656,5.956,5.703,5.971  c0.167,0.057,0.255,0.238,0.198,0.404C28.899,11.843,28.897,11.848,28.895,11.854z" />
+      </svg>
+    </a>
+  </li>
+  
+</ul>
+
+
+<!-- use full url including 'index.html' for navigation bar if you are using ajax -->
+<ul id="nav">
+	<li id="ajax"><a href="/index.html">Home</a></li>
+	<li id="ajax"><a href="/blog/archives/index.html">Archives</a></li>
+    <li id="ajax"><a href="/about-me/index.html">About Me</a></li>
+    <li><a href="/atom.xml">RSS</a></li>
+    
+    <li>
+    <div id="dark">
+        <form method="get" action="/search.html" id="search">
+            <input name="query" type="text" placeholder="Search..." x-webkit-speech />
+        </form>
+    </div>
+    </li>
+    
+</ul>
+
+
+
+
+</header>
+
+<div id="toload">
+<!-- begin toload --> 
+    <div id="content" class="inner">
+        <article class="post">
+	<h2 class="title">Building Mobile Applications With Rails and Ionic</h2>
+	<div class="entry-content"><p>本文介绍如何在rails上面开发ionic.</p>
+
+<!-- More -->
+
+
+<h1>Rails 关键 Gem 介绍</h1>
+
+<h2><a href="https://github.com/intridea/grape">grape</a></h2>
+
+<blockquote><p>An opinionated micro-framework for creating REST-like APIs in Ruby</p></blockquote>
+
+<ol>
+<li>非常轻量，可以脱离Rails，直接运行在Rack服务器之上，速度非常快；</li>
+<li>完全符合REST风格；</li>
+<li>大量DSL简化API的编写；</li>
+<li>提供简单的版本控制；</li>
+<li>文件目录结构：</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>├── services
+</span><span class='line'>|   ├── api
+</span><span class='line'>|   |   ├── entities
+</span><span class='line'>|   |   ├── helpers
+</span><span class='line'>|   |   |   ├── api_strong_parameters.rb
+</span><span class='line'>|   |   |   ├── authorization_helper.rb
+</span><span class='line'>|   |   |   └── response_helper.rb
+</span><span class='line'>|   |   └── v1
+</span><span class='line'>|   |       ├── model.rb
+</span><span class='line'>|   |       └── ...
+</span><span class='line'>|   ├── api.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>6. 添加配置至application.rb
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">add</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">,</span> <span class="s1">&#39;api&#39;</span><span class="p">),</span> <span class="ss">glob</span><span class="p">:</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;*.rb&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">+=</span> <span class="no">Dir</span><span class="o">[</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">config</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">/app/services/*&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><a href="https://github.com/intridea/grape-entity">grape-entity</a></h2>
+
+<blockquote><p>Entities - a simple Facade to use with your models and API - extracted from Grape.</p></blockquote>
+
+<pre><code>1. 自定义放回的内容
+2. 嵌套返回数据
+3. ...
+</code></pre>
+
+<h2><a href="https://github.com/BrandyMint/grape-swagger-rails">grape-swagger-rails</a></h2>
+
+<blockquote><p>Integration swagger to grape in rails</p></blockquote>
+
+<pre><code>1. API在线测试工具
+</code></pre>
+
+<h2><a href="https://github.com/cyu/rack-cors">rack-cors</a></h2>
+
+<blockquote><p>Rack Middleware for handling Cross-Origin Resource Sharing (CORS), which makes cross-origin AJAX possible.</p></blockquote>
+
+<pre><code>1. 配置服务端允许跨域请求
+2. 添加配置至application.rb,以允许所有请求的跨域操作
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">insert_before</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Rack::Cors&quot;</span><span class="p">,</span> <span class="ss">:debug</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span><span class="ss">:logger</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="p">{</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span> <span class="p">})</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">allow</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">origins</span> <span class="s1">&#39;*&#39;</span>
+</span><span class='line'>        <span class="n">resource</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:headers</span> <span class="o">=&gt;</span> <span class="ss">:any</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:methods</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:get</span><span class="p">,</span> <span class="ss">:post</span><span class="p">,</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">:put</span><span class="p">,</span> <span class="ss">:options</span><span class="p">,</span> <span class="ss">:head</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:max_age</span> <span class="o">=&gt;</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><a href="https://github.com/jpush/jpush-api-ruby-client">jpush</a></h2>
+
+<blockquote><p>  极光推送官方支持的 Ruby 版本服务器端 SDK</p></blockquote>
+
+<pre><code>1. 通过配置app_key 和 app_secret 即可发推送通知
+2. demo 代码
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">PushNotifier</span>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">client</span>
+</span><span class='line'>      <span class="k">return</span> <span class="vi">@client</span> <span class="k">if</span> <span class="vi">@clien</span>
+</span><span class='line'>      <span class="n">jpush_configs</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">secrets</span><span class="o">[</span><span class="s1">&#39;jpush&#39;</span><span class="o">]</span>
+</span><span class='line'>      <span class="vi">@client</span> <span class="o">=</span> <span class="no">JPush</span><span class="o">::</span><span class="no">JPushClient</span><span class="o">.</span><span class="n">new</span> <span class="o">*</span><span class="n">jpush_configs</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="s1">&#39;app_key&#39;</span><span class="p">,</span> <span class="s1">&#39;app_secret&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">receiver_credential_ids</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>      <span class="c1"># See how to define audience for pushing message, visit:</span>
+</span><span class='line'>      <span class="c1"># https://github.com/jpush/jpush-api-ruby-client/blob/master/example/push_example.rb</span>
+</span><span class='line'>      <span class="n">receiver_credential_ids</span> <span class="o">=</span> <span class="o">[*</span><span class="n">receiver_credential_ids</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">payload</span> <span class="o">=</span> <span class="no">JPush</span><span class="o">::</span><span class="no">PushPayload</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>        <span class="ss">platform</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Platform</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">audience</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Audience</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="ss">:_alias</span><span class="o">=&gt;</span> <span class="n">receiver_credential_ids</span><span class="p">),</span>
+</span><span class='line'>        <span class="ss">notification</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Notification</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>          <span class="ss">alert</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">ios</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">IOSNotification</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>            <span class="ss">alert</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">badge</span><span class="p">:</span> <span class="s2">&quot;+1&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">sound</span><span class="p">:</span> <span class="s2">&quot;happy&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">extras</span><span class="p">:</span> <span class="n">extras</span>
+</span><span class='line'>          <span class="p">),</span>
+</span><span class='line'>          <span class="ss">android</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">AndroidNotification</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>            <span class="ss">alert</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">builder_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">extras</span><span class="p">:</span> <span class="n">extras</span>
+</span><span class='line'>          <span class="p">)</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="ss">message</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Message</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>          <span class="ss">msg_content</span><span class="p">:</span> <span class="s2">&quot;message content test&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;schoolmatch&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">content_type</span><span class="p">:</span> <span class="s2">&quot;message content type test&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">extras</span><span class="p">:</span> <span class="n">extras</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="ss">options</span><span class="p">:</span><span class="no">JPush</span><span class="o">::</span><span class="no">Options</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>          <span class="ss">sendno</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">apns_production</span><span class="p">:</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">production?</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">sendPush</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+</span><span class='line'>      <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="s2">&quot;Pushed message: </span><span class="si">#{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">debug?</span>
+</span><span class='line'>      <span class="sx">%w(development test staging)</span><span class="o">.</span><span class="n">include?</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># usage: PushNotifier.push(&#39;test&#39;, 1)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>3. 注意`badge: "+1"`配置，该配置是jpush通过维护用户未读消息数，每次推送时，都会自动在当前消息数上做加1操作
+</code></pre>
+
+<h2><a href="https://stripe.com/">stripe</a></h2>
+
+<blockquote><p>关于stripe的集成，清参考Marting大神的 <a href="https://ruby-china.org/topics/24897">blog</a></p></blockquote>
+
+<h2><a href="https://github.com/saberma/china_sms">china_sms</a></h2>
+
+<blockquote><p>中国各个短信平台 Ruby 接口，现支持云片网、推立方、亿美软通、短信宝、畅友网络</p></blockquote>
+
+<pre><code>1. 在这里我们使用[云片网](yunpian.com)进行短信验证
+2. 添加secret_key
+3. 在云片网后台添加服务器IP白名单，签名，模板，等待审核
+4. 审核通过，可在Rails Console里面发送短信
+  demo code
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">ChinaSMS</span><span class="o">.</span><span class="n">use</span> <span class="ss">:yunpian</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">secrets</span><span class="o">.</span><span class="n">china_sms</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="no">ChinaSMS</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">debug</span>
+</span><span class='line'>    <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">development?</span> <span class="o">||</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">test?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">send_to</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="kp">false</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">debug</span> <span class="o">||</span> <span class="nb">self</span><span class="o">.</span><span class="n">debug</span>
+</span><span class='line'>      <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="c1"># use sidekiq to send sms asynchronously</span>
+</span><span class='line'>      <span class="n">delay</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># &quot;【留学助手】#{3721}（短信验证码，有效期3分钟，请尽快使用）&quot; 该模板必须审核通过</span>
+</span><span class='line'><span class="c1"># usage: ChinaSMS.send_to 15820700248, &quot;【留学助手】#{3721}（短信验证码，有效期3分钟，请尽快使用）&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>5.在这里，为了配合验证码验证需求，需要在相应model上添加`verification_code`、`verification_expire_at`等字段
+</code></pre>
+
+<h1>Iionic</h1>
+
+<h2>Ionic简单介绍</h2>
+
+<ol>
+<li>H5 navative app(HTML,CSS,Javascript)</li>
+<li>Cordova/PhoneGap + AngularJs + AngularJs
+
+<h2>命令行工具</h2></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-serve&#39;</span><span class="o">=</span><span class="s1">&#39;ionic serve&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-build-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic build ios&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-run-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic run ios&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-emulate-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic emulate ios --livereload&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-update-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic platform update ios&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>构建工具</h2>
+
+<p>  图形化 ionic APP 构建工具 <a href="https://creator.ionic.io/">Ionic Creator</a>，只需要拖拽就能创建基于 ionic 的 APP了</p>
+
+<h2>目录结构</h2>
+
+<p>简单介绍angular的目录结构</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>├── www
+</span><span class='line'><span class="p">|</span>   ├── js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── app.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── controllers.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── directives.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── helper.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── routes.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── services.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   └── translations.js
+</span><span class='line'><span class="p">|</span>   ├── css
+</span><span class='line'><span class="p">|</span>   ├── templates
+</span><span class='line'><span class="p">|</span>   ├── img
+</span><span class='line'><span class="p">|</span>   ├── lib
+</span><span class='line'><span class="p">|</span>   └── index.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>IOS开发证书配置简单介绍</h2>
+
+<ol>
+<li>创建App Id</li>
+<li>创建 Apns证书</li>
+<li>创建 Provisioning Profile 证书</li>
+<li>配置Xcode
+注意：有时候Provisioning Profile证书在xcode没有生效，重启xcode即可
+图文链接清参考：</li>
+<li><a href="http://docs.jpush.io/client/ios_tutorials/#ios_1">jpush 官网</a></li>
+<li><a href="http://blog.fir.im/how-to-build-adhoc-ipa/">fir 官网</a></li>
+</ol>
+
+
+<h2>调试技巧</h2>
+
+<ol>
+<li>Debug using Chrome <a href="https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en">AngularJS Batarang</a></li>
+<li>Debug Using Safari</li>
+<li>Using Xcode</li>
+<li>Debug with Ionic CLI</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">alias</span> <span class="s1">&#39;ionic-emulate&#39;</span><span class="o">=</span><span class="s1">&#39;ionic emulate ios -l -c -s&#39;</span>
+</span><span class='line'>ionic  <span class="o">[</span>run<span class="p">|</span>emulate<span class="o">]</span> &lt;platform&gt; <span class="o">[</span>options<span class="o">]</span>
+</span><span class='line'>    <span class="o">[</span>--livereload<span class="p">|</span>-l<span class="o">]</span> .... Live Reload app dev files from the device
+</span><span class='line'>    <span class="o">[</span>--consolelogs<span class="p">|</span>-c<span class="o">]</span> ... Print app console logs to Ionic CLI
+</span><span class='line'>    <span class="o">[</span>--serverlogs<span class="p">|</span>-s<span class="o">]</span> .... Print dev server logs to Ionic CLI
+</span><span class='line'>
+</span><span class='line'>1. restart or r to restart the client app from the root
+</span><span class='line'>2. goto or g and a url to have the app navigate to the given url
+</span><span class='line'>3. consolelogs or c to <span class="nb">enable</span>/disable console log output
+</span><span class='line'>4. serverlogs or s to <span class="nb">enable</span>/disable server log output
+</span><span class='line'>5. quit or q to shutdown the server and <span class="nb">exit</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>性能优化</h2>
+
+<ol>
+<li>整合 Crosswalk 至 Cordova（一个Web运行环境），替换自带的 Webview。
+具体做法，可以参考 ionic 上的链接： <a href="http://forum.ionicframework.com/t/crosswalk-build/5778">Crosswalk Build</a></li>
+<li>关闭页面切换动画，即 animation=&ldquo;no-animation&rdquo;</li>
+<li>读取模板的时候，显示“加载中”圈圈，避免出现无响应的错觉</li>
+<li>使用 <a href="https://github.com/Pasvaz/bindonce">Pasvaz/bindonce</a>，避免 Angular.js 对静态内容绑定所带来的性能消耗</li>
+</ol>
+
+
+<h2>Ionic能做什么？</h2>
+
+<h3>多语言支持</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">translations</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">en</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">students</span><span class="o">:</span> <span class="s1">&#39;Students&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">zh</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">students</span><span class="o">:</span> <span class="s1">&#39;同学&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">config</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">$translateProvider</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">//Get system language</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">systemLang</span> <span class="o">=</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">language</span> <span class="o">||</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">userLanguage</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nx">lang</span> <span class="k">in</span> <span class="nx">translations</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">$translateProvider</span><span class="p">.</span><span class="nx">translations</span><span class="p">(</span><span class="nx">lang</span><span class="p">,</span> <span class="nx">translations</span><span class="p">[</span><span class="nx">lang</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">//Set app language</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">appLang</span> <span class="o">=</span> <span class="nx">helper</span><span class="p">.</span><span class="nx">matchLanguageString</span><span class="p">(</span><span class="nx">systemLang</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$translateProvider</span><span class="p">.</span><span class="nx">preferredLanguage</span><span class="p">(</span><span class="nx">appLang</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>消息推送</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;xx.services&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;Push&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">push</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">setAlias</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">alias</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">push</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;jpush: set alias&#39;</span><span class="p">,</span> <span class="nx">alias</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">setAlias</span><span class="p">(</span><span class="nx">alias</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">notificationCallback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;jpush: start init-----------------------&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">push</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">plugins</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">push</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;jpush: init&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">init</span><span class="p">();</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">setDebugMode</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">openNotificationInAndroidCallback</span> <span class="o">=</span> <span class="nx">notificationCallback</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">receiveNotificationIniOSCallback</span> <span class="o">=</span> <span class="nx">notificationCallback</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">receiveMessageIniOSCallback</span> <span class="o">=</span> <span class="nx">notificationCallback</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Push</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">notificationCallback</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">notificationCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">notification</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">fromJson</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//app 是否处于正在运行状</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">isActive</span> <span class="o">=</span> <span class="nx">notification</span><span class="p">.</span><span class="nx">notification</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">// here add your code</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a href="http://ngcordova.com/">ngcordova</a> <a href="http://ngcordova.com/docs/plugins/">Plugin</a></h3>
+
+<blockquote><p>  调用手机摄像头
+  IOS指纹识别
+  OAuth
+  获取地理位置</p></blockquote>
+
+<h2>如何与Rails结合</h2>
+
+<ul>
+<li>Rails 负责提供REST API</li>
+<li>Ionic 通过ng-resource调用REST API</li>
+</ul>
+
+
+<h2>测试与发布</h2>
+
+<ul>
+<li>Android 打包</li>
+<li>Ios 打包</li>
+<li>发布测试版本 <a href="http://fir.im/">fir.im</a></li>
+<li>生成截图 <a href="https://launchkit.io/screenshots/onboard/add-screenshot?layout=below">screenshots</a></li>
+<li>提交到 app store</li>
+</ul>
+
+
+<h2>什么时候用Ionic</h2>
+
+<ul>
+<li><p>用Ionic开发的优点和缺点</p>
+
+<ul>
+<li>优点: 一次开发，多个平台，开发效率高</li>
+<li>缺点：
+1.对开发人员的要求很高，如果需要编译成native app需要开发人员了解 web、ios、andriod 三种开发技术
+2.性能问题
+3.不支持较低Android版本（4.1）</li>
+</ul>
+</li>
+<li><p>哪些应用适合用Ionic来开发:</p>
+
+<ul>
+<li>不属于游戏之类的APP类型；</li>
+<li>想低成本、快速迭代地开发 Android、iOS 平台上的应用；</li>
+<li>目标终端的设备性能不算低；</li>
+<li><a href="http://ionichina.com/showcase">国内例子</a></li>
+<li><a href="http://showcase.ionicframework.com">国外例子</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+<div class="meta">
+	
+		<span class="comments"><a href="/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic/#disqus_thread">Comments</a></span>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+
+    </div>
+    <footer id="footer">
+    <div style="display:inline">
+    Copyright &copy; 2015
+
+    Justin-lu
+. Powered by <a href="http://octopress.org">Octopress</a> | 
+    Theme <a href="http://github.com/panks/fabric">fabric</a> by <a href="http://panks.me">Pankaj Kumar</a>
+</div>
+
+
+    </footer>
+    <script src="/javascripts/fabric.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'justin-lu-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://justin-lu.github.io/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic/';
+        var disqus_url = 'http://justin-lu.github.io/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+<!-- end toload --> 
+</div>
+</div>
+<script src="/javascripts/jquery.ui.totop.js" type="text/javascript"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+;(function($){$().UItoTop({easingType:'easeOutCirc'});})(jQuery); 
+/*]]>*/
+</script><!-- remove it to remove the scroll to top button -->
+</body>
+</html>

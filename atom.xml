@@ -4,7 +4,7 @@
   <title><![CDATA[Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-06T16:32:00+08:00</updated>
+  <updated>2015-07-21T21:55:30+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -12,6 +12,565 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Building Mobile Applications with Rails and Ionic]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic/"/>
+    <updated>2015-07-21T21:52:21+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic</id>
+    <content type="html"><![CDATA[<p>本文介绍如何在rails上面开发ionic.</p>
+
+<!-- More -->
+
+
+<h1>Rails 关键 Gem 介绍</h1>
+
+<h2><a href="https://github.com/intridea/grape">grape</a></h2>
+
+<blockquote><p>An opinionated micro-framework for creating REST-like APIs in Ruby</p></blockquote>
+
+<ol>
+<li>非常轻量，可以脱离Rails，直接运行在Rack服务器之上，速度非常快；</li>
+<li>完全符合REST风格；</li>
+<li>大量DSL简化API的编写；</li>
+<li>提供简单的版本控制；</li>
+<li>文件目录结构：</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>├── services
+</span><span class='line'>|   ├── api
+</span><span class='line'>|   |   ├── entities
+</span><span class='line'>|   |   ├── helpers
+</span><span class='line'>|   |   |   ├── api_strong_parameters.rb
+</span><span class='line'>|   |   |   ├── authorization_helper.rb
+</span><span class='line'>|   |   |   └── response_helper.rb
+</span><span class='line'>|   |   └── v1
+</span><span class='line'>|   |       ├── model.rb
+</span><span class='line'>|   |       └── ...
+</span><span class='line'>|   ├── api.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>6. 添加配置至application.rb
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">add</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">,</span> <span class="s1">&#39;api&#39;</span><span class="p">),</span> <span class="ss">glob</span><span class="p">:</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;*.rb&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">+=</span> <span class="no">Dir</span><span class="o">[</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">config</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">/app/services/*&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><a href="https://github.com/intridea/grape-entity">grape-entity</a></h2>
+
+<blockquote><p>Entities - a simple Facade to use with your models and API - extracted from Grape.</p></blockquote>
+
+<pre><code>1. 自定义放回的内容
+2. 嵌套返回数据
+3. ...
+</code></pre>
+
+<h2><a href="https://github.com/BrandyMint/grape-swagger-rails">grape-swagger-rails</a></h2>
+
+<blockquote><p>Integration swagger to grape in rails</p></blockquote>
+
+<pre><code>1. API在线测试工具
+</code></pre>
+
+<h2><a href="https://github.com/cyu/rack-cors">rack-cors</a></h2>
+
+<blockquote><p>Rack Middleware for handling Cross-Origin Resource Sharing (CORS), which makes cross-origin AJAX possible.</p></blockquote>
+
+<pre><code>1. 配置服务端允许跨域请求
+2. 添加配置至application.rb,以允许所有请求的跨域操作
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">insert_before</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Rack::Cors&quot;</span><span class="p">,</span> <span class="ss">:debug</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span><span class="ss">:logger</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="p">{</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span> <span class="p">})</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">allow</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">origins</span> <span class="s1">&#39;*&#39;</span>
+</span><span class='line'>        <span class="n">resource</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:headers</span> <span class="o">=&gt;</span> <span class="ss">:any</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:methods</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:get</span><span class="p">,</span> <span class="ss">:post</span><span class="p">,</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">:put</span><span class="p">,</span> <span class="ss">:options</span><span class="p">,</span> <span class="ss">:head</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">:max_age</span> <span class="o">=&gt;</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><a href="https://github.com/jpush/jpush-api-ruby-client">jpush</a></h2>
+
+<blockquote><p>  极光推送官方支持的 Ruby 版本服务器端 SDK</p></blockquote>
+
+<pre><code>1. 通过配置app_key 和 app_secret 即可发推送通知
+2. demo 代码
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">PushNotifier</span>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">client</span>
+</span><span class='line'>      <span class="k">return</span> <span class="vi">@client</span> <span class="k">if</span> <span class="vi">@clien</span>
+</span><span class='line'>      <span class="n">jpush_configs</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">secrets</span><span class="o">[</span><span class="s1">&#39;jpush&#39;</span><span class="o">]</span>
+</span><span class='line'>      <span class="vi">@client</span> <span class="o">=</span> <span class="no">JPush</span><span class="o">::</span><span class="no">JPushClient</span><span class="o">.</span><span class="n">new</span> <span class="o">*</span><span class="n">jpush_configs</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="s1">&#39;app_key&#39;</span><span class="p">,</span> <span class="s1">&#39;app_secret&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">receiver_credential_ids</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>      <span class="c1"># See how to define audience for pushing message, visit:</span>
+</span><span class='line'>      <span class="c1"># https://github.com/jpush/jpush-api-ruby-client/blob/master/example/push_example.rb</span>
+</span><span class='line'>      <span class="n">receiver_credential_ids</span> <span class="o">=</span> <span class="o">[*</span><span class="n">receiver_credential_ids</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">payload</span> <span class="o">=</span> <span class="no">JPush</span><span class="o">::</span><span class="no">PushPayload</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>        <span class="ss">platform</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Platform</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">audience</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Audience</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="ss">:_alias</span><span class="o">=&gt;</span> <span class="n">receiver_credential_ids</span><span class="p">),</span>
+</span><span class='line'>        <span class="ss">notification</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Notification</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>          <span class="ss">alert</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">ios</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">IOSNotification</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>            <span class="ss">alert</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">badge</span><span class="p">:</span> <span class="s2">&quot;+1&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">sound</span><span class="p">:</span> <span class="s2">&quot;happy&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">extras</span><span class="p">:</span> <span class="n">extras</span>
+</span><span class='line'>          <span class="p">),</span>
+</span><span class='line'>          <span class="ss">android</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">AndroidNotification</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>            <span class="ss">alert</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">builder_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">extras</span><span class="p">:</span> <span class="n">extras</span>
+</span><span class='line'>          <span class="p">)</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="ss">message</span><span class="p">:</span> <span class="no">JPush</span><span class="o">::</span><span class="no">Message</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>          <span class="ss">msg_content</span><span class="p">:</span> <span class="s2">&quot;message content test&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;schoolmatch&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">content_type</span><span class="p">:</span> <span class="s2">&quot;message content type test&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">extras</span><span class="p">:</span> <span class="n">extras</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="ss">options</span><span class="p">:</span><span class="no">JPush</span><span class="o">::</span><span class="no">Options</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+</span><span class='line'>          <span class="ss">sendno</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">apns_production</span><span class="p">:</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">production?</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">sendPush</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+</span><span class='line'>      <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="s2">&quot;Pushed message: </span><span class="si">#{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">debug?</span>
+</span><span class='line'>      <span class="sx">%w(development test staging)</span><span class="o">.</span><span class="n">include?</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># usage: PushNotifier.push(&#39;test&#39;, 1)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>3. 注意`badge: "+1"`配置，该配置是jpush通过维护用户未读消息数，每次推送时，都会自动在当前消息数上做加1操作
+</code></pre>
+
+<h2><a href="https://stripe.com/">stripe</a></h2>
+
+<blockquote><p>关于stripe的集成，清参考Marting大神的 <a href="https://ruby-china.org/topics/24897">blog</a></p></blockquote>
+
+<h2><a href="https://github.com/saberma/china_sms">china_sms</a></h2>
+
+<blockquote><p>中国各个短信平台 Ruby 接口，现支持云片网、推立方、亿美软通、短信宝、畅友网络</p></blockquote>
+
+<pre><code>1. 在这里我们使用[云片网](yunpian.com)进行短信验证
+2. 添加secret_key
+3. 在云片网后台添加服务器IP白名单，签名，模板，等待审核
+4. 审核通过，可在Rails Console里面发送短信
+  demo code
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">ChinaSMS</span><span class="o">.</span><span class="n">use</span> <span class="ss">:yunpian</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">secrets</span><span class="o">.</span><span class="n">china_sms</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="no">ChinaSMS</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">debug</span>
+</span><span class='line'>    <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">development?</span> <span class="o">||</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">test?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">send_to</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="kp">false</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">debug</span> <span class="o">||</span> <span class="nb">self</span><span class="o">.</span><span class="n">debug</span>
+</span><span class='line'>      <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="c1"># use sidekiq to send sms asynchronously</span>
+</span><span class='line'>      <span class="n">delay</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># &quot;【留学助手】#{3721}（短信验证码，有效期3分钟，请尽快使用）&quot; 该模板必须审核通过</span>
+</span><span class='line'><span class="c1"># usage: ChinaSMS.send_to 15820700248, &quot;【留学助手】#{3721}（短信验证码，有效期3分钟，请尽快使用）&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>5.在这里，为了配合验证码验证需求，需要在相应model上添加`verification_code`、`verification_expire_at`等字段
+</code></pre>
+
+<h1>Iionic</h1>
+
+<h2>Ionic简单介绍</h2>
+
+<ol>
+<li>H5 navative app(HTML,CSS,Javascript)</li>
+<li>Cordova/PhoneGap + AngularJs + AngularJs
+
+<h2>命令行工具</h2></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-serve&#39;</span><span class="o">=</span><span class="s1">&#39;ionic serve&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-build-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic build ios&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-run-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic run ios&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-emulate-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic emulate ios --livereload&#39;</span>
+</span><span class='line'>  <span class="nb">alias</span> <span class="s1">&#39;ionic-update-ios&#39;</span><span class="o">=</span><span class="s1">&#39;ionic platform update ios&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>构建工具</h2>
+
+<p>  图形化 ionic APP 构建工具 <a href="https://creator.ionic.io/">Ionic Creator</a>，只需要拖拽就能创建基于 ionic 的 APP了</p>
+
+<h2>目录结构</h2>
+
+<p>简单介绍angular的目录结构</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>├── www
+</span><span class='line'><span class="p">|</span>   ├── js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── app.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── controllers.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── directives.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── helper.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── routes.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   ├── services.js
+</span><span class='line'><span class="p">|</span>   <span class="p">|</span>   └── translations.js
+</span><span class='line'><span class="p">|</span>   ├── css
+</span><span class='line'><span class="p">|</span>   ├── templates
+</span><span class='line'><span class="p">|</span>   ├── img
+</span><span class='line'><span class="p">|</span>   ├── lib
+</span><span class='line'><span class="p">|</span>   └── index.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>IOS开发证书配置简单介绍</h2>
+
+<ol>
+<li>创建App Id</li>
+<li>创建 Apns证书</li>
+<li>创建 Provisioning Profile 证书</li>
+<li>配置Xcode
+注意：有时候Provisioning Profile证书在xcode没有生效，重启xcode即可
+图文链接清参考：</li>
+<li><a href="http://docs.jpush.io/client/ios_tutorials/#ios_1">jpush 官网</a></li>
+<li><a href="http://blog.fir.im/how-to-build-adhoc-ipa/">fir 官网</a></li>
+</ol>
+
+
+<h2>调试技巧</h2>
+
+<ol>
+<li>Debug using Chrome <a href="https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en">AngularJS Batarang</a></li>
+<li>Debug Using Safari</li>
+<li>Using Xcode</li>
+<li>Debug with Ionic CLI</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">alias</span> <span class="s1">&#39;ionic-emulate&#39;</span><span class="o">=</span><span class="s1">&#39;ionic emulate ios -l -c -s&#39;</span>
+</span><span class='line'>ionic  <span class="o">[</span>run<span class="p">|</span>emulate<span class="o">]</span> &lt;platform&gt; <span class="o">[</span>options<span class="o">]</span>
+</span><span class='line'>    <span class="o">[</span>--livereload<span class="p">|</span>-l<span class="o">]</span> .... Live Reload app dev files from the device
+</span><span class='line'>    <span class="o">[</span>--consolelogs<span class="p">|</span>-c<span class="o">]</span> ... Print app console logs to Ionic CLI
+</span><span class='line'>    <span class="o">[</span>--serverlogs<span class="p">|</span>-s<span class="o">]</span> .... Print dev server logs to Ionic CLI
+</span><span class='line'>
+</span><span class='line'>1. restart or r to restart the client app from the root
+</span><span class='line'>2. goto or g and a url to have the app navigate to the given url
+</span><span class='line'>3. consolelogs or c to <span class="nb">enable</span>/disable console log output
+</span><span class='line'>4. serverlogs or s to <span class="nb">enable</span>/disable server log output
+</span><span class='line'>5. quit or q to shutdown the server and <span class="nb">exit</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>性能优化</h2>
+
+<ol>
+<li>整合 Crosswalk 至 Cordova（一个Web运行环境），替换自带的 Webview。
+具体做法，可以参考 ionic 上的链接： <a href="http://forum.ionicframework.com/t/crosswalk-build/5778">Crosswalk Build</a></li>
+<li>关闭页面切换动画，即 animation=&ldquo;no-animation&rdquo;</li>
+<li>读取模板的时候，显示“加载中”圈圈，避免出现无响应的错觉</li>
+<li>使用 <a href="https://github.com/Pasvaz/bindonce">Pasvaz/bindonce</a>，避免 Angular.js 对静态内容绑定所带来的性能消耗</li>
+</ol>
+
+
+<h2>Ionic能做什么？</h2>
+
+<h3>多语言支持</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">translations</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">en</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">students</span><span class="o">:</span> <span class="s1">&#39;Students&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">zh</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">students</span><span class="o">:</span> <span class="s1">&#39;同学&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">config</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">$translateProvider</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">//Get system language</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">systemLang</span> <span class="o">=</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">language</span> <span class="o">||</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">userLanguage</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nx">lang</span> <span class="k">in</span> <span class="nx">translations</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">$translateProvider</span><span class="p">.</span><span class="nx">translations</span><span class="p">(</span><span class="nx">lang</span><span class="p">,</span> <span class="nx">translations</span><span class="p">[</span><span class="nx">lang</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">//Set app language</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">appLang</span> <span class="o">=</span> <span class="nx">helper</span><span class="p">.</span><span class="nx">matchLanguageString</span><span class="p">(</span><span class="nx">systemLang</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$translateProvider</span><span class="p">.</span><span class="nx">preferredLanguage</span><span class="p">(</span><span class="nx">appLang</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>消息推送</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;xx.services&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;Push&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">push</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">setAlias</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">alias</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">push</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;jpush: set alias&#39;</span><span class="p">,</span> <span class="nx">alias</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">setAlias</span><span class="p">(</span><span class="nx">alias</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">notificationCallback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;jpush: start init-----------------------&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">push</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">plugins</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">push</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;jpush: init&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">init</span><span class="p">();</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">setDebugMode</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">openNotificationInAndroidCallback</span> <span class="o">=</span> <span class="nx">notificationCallback</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">receiveNotificationIniOSCallback</span> <span class="o">=</span> <span class="nx">notificationCallback</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">plugins</span><span class="p">.</span><span class="nx">jPushPlugin</span><span class="p">.</span><span class="nx">receiveMessageIniOSCallback</span> <span class="o">=</span> <span class="nx">notificationCallback</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Push</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">notificationCallback</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">notificationCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">notification</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">fromJson</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//app 是否处于正在运行状</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">isActive</span> <span class="o">=</span> <span class="nx">notification</span><span class="p">.</span><span class="nx">notification</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">// here add your code</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a href="http://ngcordova.com/">ngcordova</a> <a href="http://ngcordova.com/docs/plugins/">Plugin</a></h3>
+
+<blockquote><p>  调用手机摄像头
+  IOS指纹识别
+  OAuth
+  获取地理位置</p></blockquote>
+
+<h2>如何与Rails结合</h2>
+
+<ul>
+<li>Rails 负责提供REST API</li>
+<li>Ionic 通过ng-resource调用REST API</li>
+</ul>
+
+
+<h2>测试与发布</h2>
+
+<ul>
+<li>Android 打包</li>
+<li>Ios 打包</li>
+<li>发布测试版本 <a href="http://fir.im/">fir.im</a></li>
+<li>生成截图 <a href="https://launchkit.io/screenshots/onboard/add-screenshot?layout=below">screenshots</a></li>
+<li>提交到 app store</li>
+</ul>
+
+
+<h2>什么时候用Ionic</h2>
+
+<ul>
+<li><p>用Ionic开发的优点和缺点</p>
+
+<ul>
+<li>优点: 一次开发，多个平台，开发效率高</li>
+<li>缺点：
+1.对开发人员的要求很高，如果需要编译成native app需要开发人员了解 web、ios、andriod 三种开发技术
+2.性能问题
+3.不支持较低Android版本（4.1）</li>
+</ul>
+</li>
+<li><p>哪些应用适合用Ionic来开发:</p>
+
+<ul>
+<li>不属于游戏之类的APP类型；</li>
+<li>想低成本、快速迭代地开发 Android、iOS 平台上的应用；</li>
+<li>目标终端的设备性能不算低；</li>
+<li><a href="http://ionichina.com/showcase">国内例子</a></li>
+<li><a href="http://showcase.ionicframework.com">国外例子</a></li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Google map with ionic]]></title>
@@ -3089,7 +3648,7 @@ apt-get install pv
 yum install pv
 （可能需要启用额外的软件仓库）。</li>
 <li>如果建立一个可以重新连接的远程GNU screen
-ssh -t <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x75;&#x73;&#101;&#x72;&#x40;&#115;&#111;&#x6d;&#101;&#x2e;&#x64;&#111;&#109;&#97;&#105;&#110;&#46;&#99;&#x6f;&#x6d;">&#117;&#x73;&#101;&#114;&#64;&#x73;&#x6f;&#109;&#101;&#46;&#x64;&#x6f;&#109;&#x61;&#105;&#x6e;&#46;&#x63;&#111;&#109;</a> /usr/bin/screen –xRR
+ssh -t <a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#x3a;&#117;&#x73;&#101;&#x72;&#64;&#115;&#111;&#x6d;&#x65;&#46;&#x64;&#x6f;&#109;&#x61;&#x69;&#x6e;&#x2e;&#99;&#111;&#109;">&#117;&#115;&#101;&#114;&#64;&#x73;&#x6f;&#x6d;&#101;&#46;&#100;&#x6f;&#x6d;&#97;&#105;&#x6e;&#46;&#x63;&#x6f;&#x6d;</a> /usr/bin/screen –xRR
 人们总是喜欢在一个文本终端中打开许多shell，如果会话突然中断，或你按下了“Ctrl-a d”，远程主机上的shell不会受到丝毫影响，你可以重新连接，其它有用的screen命令有“Ctrl-a c”（打开新的shell）和“Ctrl-a a”（在shell之间来回切换），请访问<a href="http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82">http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82</a></li>
 <li>继续SCP大文件
 rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file
@@ -3098,9 +3657,9 @@ rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_fi
 或
 rsync –partial –progress –rsh=ssh $user@$host:$remote_file $destination_file remote -> local</li>
 <li>通过SSH W/ WIRESHARK分析流量
-ssh <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#114;&#x6f;&#111;&#116;&#64;&#115;&#101;&#114;&#118;&#x65;&#114;&#x2e;&#99;&#111;&#109;">&#x72;&#111;&#111;&#116;&#64;&#115;&#x65;&#114;&#118;&#x65;&#114;&#x2e;&#99;&#111;&#x6d;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
+ssh <a href="&#x6d;&#97;&#105;&#108;&#x74;&#x6f;&#x3a;&#114;&#x6f;&#x6f;&#116;&#x40;&#115;&#101;&#114;&#118;&#x65;&#x72;&#x2e;&#99;&#x6f;&#x6d;">&#x72;&#x6f;&#x6f;&#x74;&#64;&#x73;&#101;&#x72;&#x76;&#101;&#x72;&#x2e;&#99;&#111;&#x6d;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
 使用tshark捕捉远程主机上的网络通信，通过SSH连接发送原始pcap数据，并在wireshark中显示，按下Ctrl+C将停止捕捉，但也会关闭wireshark窗口，可以传递一个“-c #”参数给tshark，让它只捕捉“#”指定的数据包类型，或通过命名管道重定向数据，而不是直接通过SSH传输给wireshark，我建议你过滤数据包，以节约带宽，tshark可以使用tcpdump替代：
-ssh <a href="&#x6d;&#97;&#105;&#108;&#116;&#111;&#58;&#x72;&#x6f;&#111;&#116;&#x40;&#x65;&#120;&#x61;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#x6d;">&#114;&#111;&#111;&#116;&#64;&#x65;&#120;&#x61;&#109;&#x70;&#x6c;&#101;&#x2e;&#99;&#111;&#109;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
+ssh <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#114;&#111;&#x6f;&#116;&#x40;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;">&#x72;&#111;&#x6f;&#x74;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#x6d;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
 <li>保持SSH会话永久打开
 autossh -M50000 -t server.example.com ‘screen -raAd mysession’
 打开一个SSH会话后，让其保持永久打开，对于使用笔记本电脑的用户，如果需要在Wi-Fi热点之间切换，可以保证切换后不会丢失连接。</li>

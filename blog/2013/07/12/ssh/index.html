@@ -216,7 +216,7 @@ apt-get install pv
 yum install pv
 （可能需要启用额外的软件仓库）。</li>
 <li>如果建立一个可以重新连接的远程GNU screen
-ssh -t <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x75;&#x73;&#101;&#x72;&#x40;&#115;&#111;&#x6d;&#101;&#x2e;&#x64;&#111;&#109;&#97;&#105;&#110;&#46;&#99;&#x6f;&#x6d;">&#117;&#x73;&#101;&#114;&#64;&#x73;&#x6f;&#109;&#101;&#46;&#x64;&#x6f;&#109;&#x61;&#105;&#x6e;&#46;&#x63;&#111;&#109;</a> /usr/bin/screen –xRR
+ssh -t <a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#x3a;&#117;&#x73;&#101;&#x72;&#64;&#115;&#111;&#x6d;&#x65;&#46;&#x64;&#x6f;&#109;&#x61;&#x69;&#x6e;&#x2e;&#99;&#111;&#109;">&#117;&#115;&#101;&#114;&#64;&#x73;&#x6f;&#x6d;&#101;&#46;&#100;&#x6f;&#x6d;&#97;&#105;&#x6e;&#46;&#x63;&#x6f;&#x6d;</a> /usr/bin/screen –xRR
 人们总是喜欢在一个文本终端中打开许多shell，如果会话突然中断，或你按下了“Ctrl-a d”，远程主机上的shell不会受到丝毫影响，你可以重新连接，其它有用的screen命令有“Ctrl-a c”（打开新的shell）和“Ctrl-a a”（在shell之间来回切换），请访问<a href="http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82">http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82</a></li>
 <li>继续SCP大文件
 rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file
@@ -225,9 +225,9 @@ rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_fi
 或
 rsync –partial –progress –rsh=ssh $user@$host:$remote_file $destination_file remote -> local</li>
 <li>通过SSH W/ WIRESHARK分析流量
-ssh <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#114;&#x6f;&#111;&#116;&#64;&#115;&#101;&#114;&#118;&#x65;&#114;&#x2e;&#99;&#111;&#109;">&#x72;&#111;&#111;&#116;&#64;&#115;&#x65;&#114;&#118;&#x65;&#114;&#x2e;&#99;&#111;&#x6d;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
+ssh <a href="&#x6d;&#97;&#105;&#108;&#x74;&#x6f;&#x3a;&#114;&#x6f;&#x6f;&#116;&#x40;&#115;&#101;&#114;&#118;&#x65;&#x72;&#x2e;&#99;&#x6f;&#x6d;">&#x72;&#x6f;&#x6f;&#x74;&#64;&#x73;&#101;&#x72;&#x76;&#101;&#x72;&#x2e;&#99;&#111;&#x6d;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
 使用tshark捕捉远程主机上的网络通信，通过SSH连接发送原始pcap数据，并在wireshark中显示，按下Ctrl+C将停止捕捉，但也会关闭wireshark窗口，可以传递一个“-c #”参数给tshark，让它只捕捉“#”指定的数据包类型，或通过命名管道重定向数据，而不是直接通过SSH传输给wireshark，我建议你过滤数据包，以节约带宽，tshark可以使用tcpdump替代：
-ssh <a href="&#x6d;&#97;&#105;&#108;&#116;&#111;&#58;&#x72;&#x6f;&#111;&#116;&#x40;&#x65;&#120;&#x61;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#x6d;">&#114;&#111;&#111;&#116;&#64;&#x65;&#120;&#x61;&#109;&#x70;&#x6c;&#101;&#x2e;&#99;&#111;&#109;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
+ssh <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#114;&#111;&#x6f;&#116;&#x40;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;">&#x72;&#111;&#x6f;&#x74;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#x6d;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
 <li>保持SSH会话永久打开
 autossh -M50000 -t server.example.com ‘screen -raAd mysession’
 打开一个SSH会话后，让其保持永久打开，对于使用笔记本电脑的用户，如果需要在Wi-Fi热点之间切换，可以保证切换后不会丢失连接。</li>
