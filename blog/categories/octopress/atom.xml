@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-08-19T20:52:09+08:00</updated>
+  <updated>2015-08-19T20:54:52+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -45,8 +45,8 @@
 </ul>
 
 
-<pre><code class="c">  git clone git://github.com/imathis/octopress.git blog
-  cd blog
+<pre><code class="c">git clone git://github.com/imathis/octopress.git blog
+cd blog
 </code></pre>
 
 <ul>
@@ -54,8 +54,8 @@
 </ul>
 
 
-<pre><code class="c">  rvm use 1.9.3-p374
-  bundle update
+<pre><code class="c">rvm use 1.9.3-p374
+bundle update
 </code></pre>
 
 <h3>获取ctopress主题,这个几个比较好的主题<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">3rd Party Octopress Themes</a></h3>
@@ -88,11 +88,11 @@
 <li><p>配置_config.yml</p></li>
 <li><p>新建一个测试博客
 <code>c
-  rake new_post['hello_word']
+rake new_post['hello_word']
 </code></p></li>
 <li><p>生成动态站点
 <code>c
-  rake generate
+rake generate
 </code></p></li>
 </ul>
 
