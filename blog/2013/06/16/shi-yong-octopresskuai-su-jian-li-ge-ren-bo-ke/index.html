@@ -178,46 +178,33 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>获取ctopress主题,这个几个比较好的主题<a href="http://www.evolument.com/blog/2013/03/02/top-10-plus-octopress-themes/">top 10+</a></h3>
+<h3>获取ctopress主题,这个几个比较好的主题<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">3rd Party Octopress Themes</a></h3>
 
 <ul>
-<li>配置主题
+<li><p>配置主题</p>
 
 <ul>
 <li>使用submodule</li>
 </ul>
-</li>
+
+
+<pre><code class="``c">  cd your_octopress_dir
+  git submodule add https://github.com/alexgaribay/octoflat .themes/octoflat
+  rake install['octoflat']
+  rake generate
+  git submodule update
+</code></pre>
+
+<ul>
+<li>使用<code>github clone</code></li>
 </ul>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">cd</span> <span class="n">your_octopress_dir</span>
-</span><span class='line'><span class="n">git</span> <span class="n">submodule</span> <span class="n">add</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//github.com/alexgaribay/octoflat .themes/octoflat</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">install</span><span class="p">[</span><span class="err">&#39;</span><span class="n">octoflat</span><span class="err">&#39;</span><span class="p">]</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">generate</span>
-</span><span class='line'><span class="n">git</span> <span class="n">submodule</span> <span class="n">update</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>* 使用`github clone`
-</code></pre>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">cd</span> <span class="n">your_octopress_dir</span>
-</span><span class='line'><span class="n">git</span> <span class="n">clone</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//github.com/alexgaribay/octoflat .themes/octoflat</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">install</span><span class="p">[</span><span class="err">&#39;</span><span class="n">octoflat</span><span class="err">&#39;</span><span class="p">]</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">generate</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
+<pre><code class="``c">  cd your_octopress_dir
+  git clone https://github.com/alexgaribay/octoflat .themes/octoflat
+  rake install['octoflat']
+  rake generate
+</code></pre></li>
 <li><p>配置_config.yml</p></li>
 <li><p>新建一个测试博客</p></li>
 </ul>
@@ -248,8 +235,8 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">cd</span> <span class="n">blog</span>
-</span><span class='line'><span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="nl">com</span><span class="p">:</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="o">/</span><span class="n">blog</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="p">.</span><span class="n">git</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'>  <span class="n">cd</span> <span class="n">blog</span>
+</span><span class='line'>  <span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="nl">com</span><span class="p">:</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="o">/</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">git</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -269,7 +256,7 @@
 
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'>  <span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="nl">com</span><span class="p">:</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="o">/</span><span class="n">blog</span><span class="p">.</span><span class="n">git</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'>  <span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="nl">com</span><span class="p">:</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="o">/</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">git</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -299,7 +286,7 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='c'><span class='line'>  <span class="err">现在你就可以打开</span>
-</span><span class='line'>  <span class="n">justn</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">blog</span>
+</span><span class='line'>  <span class="n">justn</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span>
 </span><span class='line'>  <span class="err">浏览你的个人</span><span class="n">blog</span><span class="err">啦。</span>
 </span></code></pre></td></tr></table></div></figure>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-07-21T21:55:30+08:00</updated>
+  <updated>2015-08-19T20:52:09+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -58,29 +58,33 @@
   bundle update
 </code></pre>
 
-<h3>获取ctopress主题,这个几个比较好的主题<a href="http://www.evolument.com/blog/2013/03/02/top-10-plus-octopress-themes/">top 10+</a></h3>
+<h3>获取ctopress主题,这个几个比较好的主题<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">3rd Party Octopress Themes</a></h3>
 
 <ul>
 <li><p>配置主题</p>
 
 <ul>
-<li>使用submodule
-<code>c
-cd your_octopress_dir
-git submodule add https://github.com/alexgaribay/octoflat .themes/octoflat
-rake install['octoflat']
-rake generate
-git submodule update
-</code></li>
-<li>使用<code>github clone</code>
-<code>c
-cd your_octopress_dir
-git clone https://github.com/alexgaribay/octoflat .themes/octoflat
-rake install['octoflat']
-rake generate
-</code></li>
+<li>使用submodule</li>
 </ul>
-</li>
+
+
+<pre><code class="``c">  cd your_octopress_dir
+  git submodule add https://github.com/alexgaribay/octoflat .themes/octoflat
+  rake install['octoflat']
+  rake generate
+  git submodule update
+</code></pre>
+
+<ul>
+<li>使用<code>github clone</code></li>
+</ul>
+
+
+<pre><code class="``c">  cd your_octopress_dir
+  git clone https://github.com/alexgaribay/octoflat .themes/octoflat
+  rake install['octoflat']
+  rake generate
+</code></pre></li>
 <li><p>配置_config.yml</p></li>
 <li><p>新建一个测试博客
 <code>c
@@ -99,8 +103,8 @@ rake generate
 <li><p>gihtub上新建一个项目</p></li>
 <li><p>添加远程仓库
 <code>c
-  cd blog
-  git remote add origin git@github.com:justin-lu/blog.github.com.git
+cd blog
+git remote add origin git@github.com:justin-lu/justin-lu.github.io.git
 </code></p></li>
 <li><p>配置octopress与github连接
 <code>c
@@ -108,7 +112,7 @@ rake setup_github_pages
 </code></p></li>
 <li><p>按照提示填入项目地址如：
 <code>c
-git@github.com:justin-lu/blog.git
+git@github.com:justin-lu/justin-lu.github.io.git
 </code></p></li>
 <li><p>部署到github
 <code>c
@@ -122,7 +126,7 @@ rake deploy
 <li>评论
 <code>
 现在你就可以打开
-justn.github.com/blog
+justn.github.io
 浏览你的个人blog啦。
 </code></li>
 </ul>
