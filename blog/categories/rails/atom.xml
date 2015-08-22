@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-08-23T01:13:03+08:00</updated>
+  <updated>2015-08-23T01:14:39+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -499,81 +499,153 @@ Baz.new.bar
 <p>从代码可知，通过<code>extend</code>和<code>class_eval</code>为<code>base</code>定义了<code>ClassMethods</code>里面的类方法，通过<code>include</code> 为<code>base</code>定义了<code>InstanceMethods</code>里面的实力方法。</p>
 
 <p>当我们引入<code>ActiveSupport::Concern</code>之后，以上例子我们可以这样写:
-```ruby
-  require &lsquo;active_support/concern&rsquo;</p>
-
-<p>  module M
-    extend ActiveSupport::Concern</p>
-
-<pre><code>included do
-  scope :disabled, -&gt; { where(disabled: true) }
-
-  include InstanceMethods
-end
-
-module ClassMethods
-  def say_hello
-    puts "say hello"
-  end
-end
-
-module InstanceMethods
-  def say_no
-    puts "say no"
-  end
-end
-</code></pre>
-
-<p>  end</p>
-
-<pre><code>最后，我们再来看看[ActiveSupport::Concern] (https://github.com/rails/rails/blob/master/activesupport/lib/active_support/concern.rb),是不是就很好理解了？
-</code></pre>
-
-<p>module Concern
-    class MultipleIncludedBlocks &lt; StandardError #:nodoc:
-      def initialize
-        super &ldquo;Cannot define multiple &lsquo;included&rsquo; blocks for a Concern&rdquo;
-      end
-    end</p>
-
-<pre><code>def self.extended(base) #:nodoc:
-  base.instance_variable_set(:@_dependencies, [])
-end
-
-def append_features(base)
-  if base.instance_variable_defined?(:@_dependencies)
-    base.instance_variable_get(:@_dependencies) &lt;&lt; self
-    return false
-  else
-    return false if base &lt; self
-    @_dependencies.each { |dep| base.include(dep) }
-    super
-    base.extend const_get(:ClassMethods) if const_defined?(:ClassMethods)
-    base.class_eval(&amp;@_included_block) if instance_variable_defined?(:@_included_block)
-  end
-end
-
-def included(base = nil, &amp;block)
-  if base.nil?
-    raise MultipleIncludedBlocks if instance_variable_defined?(:@_included_block)
-
-    @_included_block = block
-  else
-    super
-  end
-end
-
-def class_methods(&amp;class_methods_module_definition)
-  mod = const_defined?(:ClassMethods, false) ?
-    const_get(:ClassMethods) :
-    const_set(:ClassMethods, Module.new)
-
-  mod.module_eval(&amp;class_methods_module_definition)
-end
-</code></pre>
-
-<p>  end
-```</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="nb">require</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">active_support</span><span class="o">/</span><span class="n">concern</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  module M</span>
+</span><span class='line'><span class="sr">    extend ActiveSupport::Concern&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:disabled</span><span class="p">,</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="ss">disabled</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">InstanceMethods</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">say_hello</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;say hello&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">InstanceMethods</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">say_no</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;say no&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;最后，我们再来看看[ActiveSupport::Concern] (https:/</span><span class="o">/</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">rails</span><span class="o">/</span><span class="n">rails</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">activesupport</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">active_support</span><span class="o">/</span><span class="n">concern</span><span class="o">.</span><span class="n">rb</span><span class="p">),</span><span class="err">是不是就很好理解了？</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="k">module</span> <span class="nn">Concern</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">MultipleIncludedBlocks</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="no">StandardError</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>        <span class="k">super</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">Cannot</span> <span class="n">define</span> <span class="n">multiple</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">included</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="n">blocks</span> <span class="k">for</span> <span class="n">a</span> <span class="no">Concern</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;def self.extended(base) #:nodoc:</span>
+</span><span class='line'><span class="sr">  base.instance_variable_set(:@_dependencies, [])</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">def append_features(base)</span>
+</span><span class='line'><span class="sr">  if base.instance_variable_defined?(:@_dependencies)</span>
+</span><span class='line'><span class="sr">    base.instance_variable_get(:@_dependencies) &amp;lt;&amp;lt; self</span>
+</span><span class='line'><span class="sr">    return false</span>
+</span><span class='line'><span class="sr">  else</span>
+</span><span class='line'><span class="sr">    return false if base &amp;lt; self</span>
+</span><span class='line'><span class="sr">    @_dependencies.each { |dep| base.include(dep) }</span>
+</span><span class='line'><span class="sr">    super</span>
+</span><span class='line'><span class="sr">    base.extend const_get(:ClassMethods) if const_defined?(:ClassMethods)</span>
+</span><span class='line'><span class="sr">    base.class_eval(&amp;amp;@_included_block) if instance_variable_defined?(:@_included_block)</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">def included(base = nil, &amp;amp;block)</span>
+</span><span class='line'><span class="sr">  if base.nil?</span>
+</span><span class='line'><span class="sr">    raise MultipleIncludedBlocks if instance_variable_defined?(:@_included_block)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    @_included_block = block</span>
+</span><span class='line'><span class="sr">  else</span>
+</span><span class='line'><span class="sr">    super</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">def class_methods(&amp;amp;class_methods_module_definition)</span>
+</span><span class='line'><span class="sr">  mod = const_defined?(:ClassMethods, false) ?</span>
+</span><span class='line'><span class="sr">    const_get(:ClassMethods) :</span>
+</span><span class='line'><span class="sr">    const_set(:ClassMethods, Module.new)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  mod.module_eval(&amp;amp;class_methods_module_definition)</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
+</span></code></pre></td></tr></table></div></figure></p>
 
 <p>Rails4.1 之后，Module还加入了<a href="http://api.rubyonrails.org/v4.1.0/classes/Module/Concerning.html">Concerning</a>方法</p>
 

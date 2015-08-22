@@ -4,7 +4,7 @@
   <title><![CDATA[Category: alias | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/alias/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-08-23T01:13:03+08:00</updated>
+  <updated>2015-08-23T01:14:39+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -35,14 +35,14 @@
 
 <h1>安装</h1>
 
-<pre><code class="shell">cd ~
+<pre><code class="c">cd ~
 git clone https://github.com/Justin-lu/alias.git .alias
 </code></pre>
 
 <h1>使用</h1>
 
 <p>添加以下代码到<code>.zshrc</code>或者<code>.bashrc</code>
-```shell</p>
+```c</p>
 
 <h1>system shortcuts</h1>
 
