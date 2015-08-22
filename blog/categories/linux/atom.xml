@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: linux | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2015-08-22T14:43:08+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using alias to in linux/mac]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/08/22/using-alias-to-in-linux-slash-mac/"/>
+    <updated>2015-08-22T14:00:13+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2015/08/22/using-alias-to-in-linux-slash-mac</id>
+    <content type="html"><![CDATA[<p>相信大部分的Linux用户都用过alias去自定义自己的快捷命令,今天整理一下自己常用的alias(原来的alias就是一坨<del>(>_&lt;)</del> )</p>
+
+<!-- More -->
+
+
+<p>我认为，比较好的alias应该包括</p>
+
+<ul>
+<li>符合大部分人的习惯</li>
+<li>尽量使用全拼</li>
+</ul>
+
+
+<p>比较好的alias能够极大的加速开发效率</p>
+
+<h1>安装</h1>
+
+<pre><code class="shell">cd ~
+git clone https://github.com/Justin-lu/alias.git .alias
+</code></pre>
+
+<h1>使用</h1>
+
+<p>添加以下代码到<code>.zshrc</code>或者<code>.bashrc</code>
+```shell</p>
+
+<h1>system shortcuts</h1>
+
+<p>source ~/.alias/system.alias
+alias open-system-alias=&lsquo;vim ~/.alias/system.alias&rsquo;</p>
+
+<h1>file shortcuts</h1>
+
+<p>source ~/.alias/file.alias
+alias open-file-alias=&lsquo;vim ~/.alias/file.alias&rsquo;</p>
+
+<h1>rails</h1>
+
+<p>source ~/.alias/rails.alias
+alias open-rails-alias=&lsquo;vim ~/.alias/rails.alias&rsquo;</p>
+
+<h1>ssh</h1>
+
+<p>source ~/.alias/ssh.alias
+alias open-ssh-alias=&lsquo;vim ~/.alias/ssh.alias&rsquo;</p>
+
+<h1>Heroku alias for ezitask</h1>
+
+<p>source ~/.alias/heroku.alias
+alias open-heroku-alias=&lsquo;vim ~/.alias/heroku.alias&rsquo;</p>
+
+<h1>Git alias</h1>
+
+<p>source ~/.alias/git.alias
+alias open-git-alias=&lsquo;vim ~/.alias/git.alias&rsquo;</p>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>
