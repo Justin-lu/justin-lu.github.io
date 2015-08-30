@@ -4,7 +4,7 @@
   <title><![CDATA[Category: alias | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/alias/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-08-23T01:14:39+08:00</updated>
+  <updated>2015-08-30T20:30:23+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -14,10 +14,10 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Using alias to in linux/mac]]></title>
-    <link href="http://justin-lu.github.io/blog/2015/08/22/using-alias-to-in-linux-slash-mac/"/>
+    <title type="html"><![CDATA[Using alias in linux/mac]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/08/22/using-alias-in-linux-slash-mac/"/>
     <updated>2015-08-22T14:00:13+08:00</updated>
-    <id>http://justin-lu.github.io/blog/2015/08/22/using-alias-to-in-linux-slash-mac</id>
+    <id>http://justin-lu.github.io/blog/2015/08/22/using-alias-in-linux-slash-mac</id>
     <content type="html"><![CDATA[<p>相信大部分的Linux用户都用过alias去自定义自己的快捷命令,今天整理一下自己常用的alias(原来的alias就是一坨<del>(>_&lt;)</del> )</p>
 
 <!-- More -->
