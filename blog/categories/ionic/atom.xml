@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ionic | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/ionic/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-15T20:13:38+08:00</updated>
+  <updated>2016-03-15T20:14:16+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -255,18 +255,27 @@ end
 <li>Debug Using Safari</li>
 <li>Using Xcode</li>
 <li><p>Debug with Ionic CLI
-```sh
-alias &lsquo;ionic-emulate&rsquo;=&lsquo;ionic emulate ios -l -c -s&rsquo;
-ionic  [run|emulate] <platform> [options]
- [&ndash;livereload|-l] &hellip;. Live Reload app dev files from the device
- [&ndash;consolelogs|-c] &hellip; Print app console logs to Ionic CLI
- [&ndash;serverlogs|-s] &hellip;. Print dev server logs to Ionic CLI</p></li>
-<li><p>restart or r to restart the client app from the root</p></li>
-<li>goto or g and a url to have the app navigate to the given url</li>
-<li>consolelogs or c to enable/disable console log output</li>
-<li>serverlogs or s to enable/disable server log output</li>
-<li>quit or q to shutdown the server and exit
-```
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">alias</span> <span class="p">&amp;</span>lsquo<span class="p">;</span>ionic-emulate<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">=</span><span class="p">&amp;</span>lsquo<span class="p">;</span>ionic emulate ios -l -c -s<span class="p">&amp;</span>rsquo<span class="p">;</span>
+</span><span class='line'>ionic  <span class="o">[</span>run<span class="p">|</span>emulate<span class="o">]</span> &lt;platform&gt; <span class="o">[</span>options<span class="o">]</span>
+</span><span class='line'> <span class="o">[</span><span class="p">&amp;</span>ndash<span class="p">;</span>livereload<span class="p">|</span>-l<span class="o">]</span> <span class="p">&amp;</span>hellip<span class="p">;</span>. Live Reload app dev files from the device
+</span><span class='line'> <span class="o">[</span><span class="p">&amp;</span>ndash<span class="p">;</span>consolelogs<span class="p">|</span>-c<span class="o">]</span> <span class="p">&amp;</span>hellip<span class="p">;</span> Print app console logs to Ionic CLI
+</span><span class='line'> <span class="o">[</span><span class="p">&amp;</span>ndash<span class="p">;</span>serverlogs<span class="p">|</span>-s<span class="o">]</span> <span class="p">&amp;</span>hellip<span class="p">;</span>. Print dev server logs to Ionic CLI&lt;/p&gt;&lt;/li&gt;
+</span><span class='line'>&lt;li&gt;&lt;p&gt;restart or r to restart the client app from the root&lt;/p&gt;&lt;/li&gt;
+</span><span class='line'>&lt;li&gt;goto or g and a url to have the app navigate to the given url&lt;/li&gt;
+</span><span class='line'>&lt;li&gt;consolelogs or c to <span class="nb">enable</span>/disable console log output&lt;/li&gt;
+</span><span class='line'>&lt;li&gt;serverlogs or s to <span class="nb">enable</span>/disable server log output&lt;/li&gt;
+</span><span class='line'>&lt;li&gt;quit or q to shutdown the server and <span class="nb">exit</span>
+</span></code></pre></td></tr></table></div></figure>
 
 <h2>性能优化</h2></li>
 <li>整合 Crosswalk 至 Cordova（一个Web运行环境），替换自带的 Webview。

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 部署 | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/bu-shu/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-15T20:13:38+08:00</updated>
+  <updated>2016-03-15T20:14:16+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -109,14 +109,14 @@ $ sudo yum install -y nginx passenger
 
 <p>现在修改 nginx 配置，编辑 <code>/etc/nginx/conf.d/passenger.conf</code>，找到这三行注释：</p>
 
-<pre><code class="conf">#passenger_root /usr/share/ruby/vendor_ruby/phusion_passenger/locations.ini;
+<pre><code class="sh">#passenger_root /usr/share/ruby/vendor_ruby/phusion_passenger/locations.ini;
 #passenger_ruby /usr/bin/ruby;
 #passenger_instance_registry_dir /var/run/passenger-instreg;
 </code></pre>
 
 <p>将它修改为：</p>
 
-<pre><code class="conf">passenger_root /usr/share/ruby/vendor_ruby/phusion_passenger/locations.ini;
+<pre><code class="sh">passenger_root /usr/share/ruby/vendor_ruby/phusion_passenger/locations.ini;
 passenger_ruby /usr/bin/ruby;
 passenger_instance_registry_dir /var/run/passenger-instreg;
 </code></pre>

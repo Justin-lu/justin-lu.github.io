@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ouath2.0 | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/ouath2-dot-0/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-15T20:13:38+08:00</updated>
+  <updated>2016-03-15T20:14:16+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -103,17 +103,25 @@ end
 
 
 <p>生成client和access_token
-```ruby
-  # get or create an client with OAuth2
-  def doorkeeper_oauth_client
-    @client ||= OAuth2::Client.new(DOORKEEPER_APP_ID, DOORKEEPER_APP_SECRET, :site => DOORKEEPER_APP_URL)
-  end</p>
-
-<p>  # get or create an AccessToken
-  def doorkeeper_access_token
-    @token ||= OAuth2::AccessToken.new(doorkeeper_oauth_client, current_user.doorkeeper_access_token) if current_user
-  end
-```</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="c1"># get or create an client with OAuth2</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">doorkeeper_oauth_client</span>
+</span><span class='line'>    <span class="vi">@client</span> <span class="o">||=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">DOORKEEPER_APP_ID</span><span class="p">,</span> <span class="no">DOORKEEPER_APP_SECRET</span><span class="p">,</span> <span class="ss">:site</span> <span class="o">=&gt;</span> <span class="no">DOORKEEPER_APP_URL</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  # get or create an AccessToken</span>
+</span><span class='line'><span class="sr">  def doorkeeper_access_token</span>
+</span><span class='line'><span class="sr">    @token ||= OAuth2::AccessToken.new(doorkeeper_oauth_client, current_user.doorkeeper_access_token) if current_user</span>
+</span><span class='line'><span class="sr">  end</span>
+</span></code></pre></td></tr></table></div></figure></p>
 
 <p>通过<code>access_token</code>来获取api数据
 <code>ruby

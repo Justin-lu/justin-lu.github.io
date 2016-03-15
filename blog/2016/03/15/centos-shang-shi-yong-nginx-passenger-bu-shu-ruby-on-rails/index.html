@@ -3,15 +3,16 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Hi I'm Justin-lu</title>
+	<title>CentOS 上使用 Nginx Passenger 部署 Ruby on Rails - Hi I'm Justin-lu</title>
     <meta name="author" content="Justin-lu">
     
-	<meta name="description" content="Published on: March 15, 2016 Tags: 部署 本教程将会涉及以下工具： Centos 7
+	<meta name="description" content="本教程将会涉及以下工具： Centos 7
 [[RVM]]
 Ruby 2.2.2
 Rails 4.0.3
 Passenger 4.0+
-Nginx（由 Passenger 编译） 创建帐号 假设你已经用 root &hellip;">
+Nginx（由 Passenger 编译） 创建帐号 假设你已经用 root 帐号通过 SSH 登陆服务器, 没有登录的可以通过 1
+$ ssh root@ip &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -144,40 +145,9 @@ Nginx（由 Passenger 编译） 创建帐号 假设你已经用 root &hellip;">
 <div id="toload">
 <!-- begin toload --> 
     <div id="content" class="inner">
-        
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2016/03/15/centos-shang-shi-yong-nginx-passenger-bu-shu-ruby-on-rails/">
-		
-			CentOS 上使用 Nginx Passenger 部署 Ruby on Rails</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- March 15, 2016</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/bu-shu/'>部署</a>
-
-
-</div>
-    </div>
-		<p>本教程将会涉及以下工具：</p>
+        <article class="post">
+	<h2 class="title">CentOS 上使用 Nginx Passenger 部署 Ruby on Rails</h2>
+	<div class="entry-content"><p>本教程将会涉及以下工具：</p>
 
 <ul>
 <li>Centos 7</li>
@@ -1118,639 +1088,36 @@ Nginx（由 Passenger 编译） 创建帐号 假设你已经用 root &hellip;">
 <p>在浏览器打开服务器的 IP 地址或域名，可以看到Nginx已经启动</p>
 
 <p>ref: <a href="http://stackoverflow.com/questions/17413526/nginx-missing-sites-available-directory">http://stackoverflow.com/questions/17413526/nginx-missing-sites-available-directory</a></p>
-
-		
-		
-	</div>
+</div>
 
 <div class="meta">
 	
-		<span class="comments"><a href="/blog/2016/03/15/centos-shang-shi-yong-nginx-passenger-bu-shu-ruby-on-rails//index.html#disqus_thread">Comments</a></span>
+		<span class="comments"><a href="/blog/2016/03/15/centos-shang-shi-yong-nginx-passenger-bu-shu-ruby-on-rails/#disqus_thread">Comments</a></span>
 	
 </div>
 </article>
 
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/11/06/web-service-jian-dan-shi-yong/">
-		
-			</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- November 6, 2015</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/soap/'>soap</a>, <a class='category' href='/blog/categories/webservice/'>webservice</a>
-
-
-</div>
-    </div>
-		<h1>WebService 简单使用</h1>
-
-<p>标签（空格分隔）： 未分类</p>
-
-<hr />
-
-<h2>什么是Web Services？</h2>
-
-<p> Web Services 是独立的（self-contained）并可自我描述
-  - Web Services 可通过使用UDDI来发现
-  - Web Services 可被其他应用程序使用
-  - XML 是 Web Services 的基础</p>
-
-<h2>Web services 平台的元素</h2>
-
-<ul>
-<li>SOAP (简易对象访问协议)</li>
-<li>UDDI (通用描述、发现及整合)</li>
-<li>WSDL (Web services 描述语言)</li>
-</ul>
-
-
-<h3>什么是 SOAP？</h3>
-
-<blockquote><p>基本的 Web services 平台是 XML + HTTP。</p></blockquote>
-
-<ul>
-<li>SOAP 指简易对象访问协议</li>
-<li>SOAP 是一种通信协议</li>
-<li>SOAP 用于应用程序之间的通信</li>
-<li>SOAP 是一种用于发送消息的格式</li>
-<li>SOAP 被设计用来通过因特网进行通信</li>
-<li>SOAP 独立于平台</li>
-<li>SOAP 独立于语言</li>
-<li>SOAP 基于 XML</li>
-<li>SOAP 很简单并可扩展</li>
-<li>SOAP 允许您绕过防火墙</li>
-<li>SOAP 将作为 W3C 标准来发展</li>
-</ul>
-
-
-<h3>什么是 WSDL?</h3>
-
-<blockquote><p>WSDL 是基于 XML 的用于描述 Web Services 以及如何访问 Web Services 的语言。</p></blockquote>
-
-<ul>
-<li>WSDL 指网络服务描述语言</li>
-<li>WSDL 使用 XML 编写</li>
-<li>WSDL 是一种 XML 文档</li>
-<li>WSDL 用于描述网络服务</li>
-<li>WSDL 也可用于定位网络服务</li>
-<li>WSDL 还不是 W3C 标准</li>
-<li><a href="http://www.thomas-bayer.com/axis2/services/BLZService?wsdl">wsdl例子</a></li>
-</ul>
-
-
-<h3>什么是UDDI？</h3>
-
-<ul>
-<li>UDDI 是一种目录服务，通过它，企业可注册并搜索 Web services。</li>
-<li>UDDI 指通用的描述、发现以及整合（Universal Description, Discovery and Integration）。</li>
-<li>UDDI 是一种用于存储有关 web services 的信息的目录。</li>
-<li>UDDI 是一种由 WSDL 描述的网络服务接口目录。</li>
-<li>UDDI 经由 SOAP 进行通迅。</li>
-<li>UDDI 被构建于 Microsoft .NET 平台之中。</li>
-</ul>
-
-
-<h3>调试工具</h3>
-
-<ul>
-<li><a href="http://www.soapui.org/downloads/soapui/open-source.html">SOAP UI 工具</a></li>
-<li><a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/soap/cxf.html">使用CXF客户端</a></li>
-<li><a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/soap/java_client.html">使用JDK客户端</a></li>
-</ul>
-
-
-<h3>SOAP和HTTP区别</h3>
-
-<ul>
-<li>请求消息格式不同</li>
-<li>响应消息格式不同</li>
-<li>安全机制不同</li>
-<li>客户端调用方式不同</li>
-<li>并发处理能力的不同</li>
-</ul>
-
-
-<h3>在Rails下如何调用SOAP接口</h3>
-
-<p>官方文档</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># create a client for the service</span>
-</span><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">Savon</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="ss">wsdl</span><span class="p">:</span> <span class="s1">&#39;http://service.example.com?wsdl&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">client</span><span class="o">.</span><span class="n">operations</span>
-</span><span class='line'><span class="c1"># =&gt; [:find_user, :list_users]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># call the &#39;findUser&#39; operation</span>
-</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="ss">:find_user</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="p">{</span> <span class="nb">id</span><span class="p">:</span> <span class="mi">42</span> <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">response</span><span class="o">.</span><span class="n">body</span>
-</span><span class='line'><span class="c1"># =&gt; { find_user_response: { id: 42, name: &#39;Hoff&#39; } }</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>实际例子</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">SoapWithSavon</span>
-</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
-</span><span class='line'>    <span class="c1"># TODO: should use settin</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">client</span>
-</span><span class='line'>      <span class="vi">@client</span> <span class="o">||=</span> <span class="no">Savon</span><span class="o">.</span><span class="n">client</span> <span class="k">do</span>
-</span><span class='line'>        <span class="c1"># WSDL 接口</span>
-</span><span class='line'>        <span class="n">wsdl</span> <span class="s2">&quot;http://192.168.0.22:8000/sap/bc/srt/wsdl/srvc_5618AD468DEB07E0E1008000C0A80016/wsdl11/allinone/ws_policy/document?sap-client=300&quot;</span>
-</span><span class='line'>        <span class="c1"># 用户验证</span>
-</span><span class='line'>        <span class="n">basic_auth</span> <span class="s2">&quot;CRMINTERFACE&quot;</span><span class="p">,</span> <span class="s2">&quot;123456&quot;</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 默认同步昨天的设备数据</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">get_devices</span> <span class="p">(</span><span class="n">start_at</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">ago</span><span class="p">,</span> <span class="n">end_at</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">ago</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">start_at_format</span> <span class="o">=</span> <span class="n">start_at</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-%d&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">end_at_format</span> <span class="o">=</span> <span class="n">end_at</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-%d&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">response</span> <span class="o">=</span> <span class="n">call_and_fail_gracefully</span><span class="p">(</span><span class="ss">:z_wl_material</span><span class="p">,</span> <span class="ss">:message</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="s2">&quot;EAssetMatnr&quot;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s2">&quot;ImUdate1&quot;</span> <span class="o">=&gt;</span> <span class="n">start_at_format</span><span class="p">,</span> <span class="s2">&quot;ImUdate2&quot;</span> <span class="o">=&gt;</span> <span class="n">end_at_format</span>  <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:z_wl_material_response</span><span class="o">][</span><span class="ss">:e_msgty</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;E&quot;</span>
-</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:z_wl_material_response</span><span class="o">][</span><span class="ss">:e_ermsg</span><span class="o">]</span>
-</span><span class='line'>        <span class="o">[]</span>
-</span><span class='line'>      <span class="k">else</span>
-</span><span class='line'>        <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:z_wl_material_response</span><span class="o">][</span><span class="ss">:e_asset_matnr</span><span class="o">][</span><span class="ss">:item</span><span class="o">]</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">logger</span>
-</span><span class='line'>      <span class="vc">@@logger</span> <span class="o">||=</span> <span class="no">Logger</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;./log/soap_with_savon.log&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">call_and_fail_gracefully</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">rescue</span> <span class="no">Savon</span><span class="o">::</span><span class="no">SOAPFault</span> <span class="o">=&gt;</span> <span class="n">e</span>
-</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">e</span>
-</span><span class='line'>    <span class="k">rescue</span> <span class="no">Savon</span><span class="o">::</span><span class="no">HTTPError</span> <span class="o">=&gt;</span> <span class="n">e</span>
-</span><span class='line'>      <span class="c1"># HTTP Error</span>
-</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">e</span>
-</span><span class='line'>    <span class="k">rescue</span> <span class="no">Savon</span><span class="o">::</span><span class="no">InvalidResponseError</span> <span class="o">=&gt;</span> <span class="n">e</span>
-</span><span class='line'>      <span class="c1"># InvalidResponseError</span>
-</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">e</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>参考文档
-<a href="https://github.com/savonrb/savon">savon</a>
-<a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/index.html">AWS PaaS API参考指南</a></p>
-
-		
-		
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
 	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2015/11/06/web-service-jian-dan-shi-yong//index.html#disqus_thread">Comments</a></span>
-	
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
 </div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/08/22/using-alias-in-linux-slash-mac/">
-		
-			Using Alias in Linux/mac</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
 
 
 
-
-
-
-
-
-  
-
-
- August 22, 2015</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/alias/'>alias</a>, <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/mac/'>mac</a>
-
-
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-    </div>
-		<p>相信大部分的Linux用户都用过alias去自定义自己的快捷命令,今天整理一下自己常用的alias(原来的alias就是一坨<del>(>_&lt;)</del> )</p>
-
-
-		
-		<a href="/blog/2015/08/22/using-alias-in-linux-slash-mac/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2015/08/22/using-alias-in-linux-slash-mac//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic/">
-		
-			Building Mobile Applications With Rails and Ionic</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- July 21, 2015</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/ionic/'>ionic</a>
-
-
-</div>
-    </div>
-		<p>本文介绍如何在rails上面开发ionic.</p>
-
-
-		
-		<a href="/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2015/07/21/building-mobile-applications-with-rails-and-ionic//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/07/06/google-map-with-ionic/">
-		
-			Google Map With Ionic</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- July 6, 2015</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/ionic/'>ionic</a>, <a class='category' href='/blog/categories/rails/'>rails</a>
-
-
-</div>
-    </div>
-		<p>本文介绍如何在ionic添加google map.</p>
-
-
-		
-		<a href="/blog/2015/07/06/google-map-with-ionic/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2015/07/06/google-map-with-ionic//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/07/05/li-jie-activesupport-concern/">
-		
-			理解 ActiveSupport::Concern</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- July 5, 2015</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/rails/'>rails</a>
-
-
-</div>
-    </div>
-		<p>分享一下自己阅读ActiveSupport::Concern源码的过程，希望和大家一起学习，错误之处，还请指出</p>
-
-
-		
-		<a href="/blog/2015/07/05/li-jie-activesupport-concern/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2015/07/05/li-jie-activesupport-concern//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/07/05/rails-scopes-yu-jia-zai/">
-		
-			Rails Scopes 预加载</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- July 5, 2015</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/rails/'>rails</a>
-
-
-</div>
-    </div>
-		<p>前几天在<a href="http://rubyweekly.com/">rubyweekly</a>里面看到一篇文章，感觉写得不错。拿出来分享一下。<a href="http://www.justinweiss.com/%0Ablog/2015/06/23/how-to-preload-rails-scopes/?utm_source=rubyweekly&amp;utm_medium=email">原文</a>更精彩</p>
-
-
-		
-		<a href="/blog/2015/07/05/rails-scopes-yu-jia-zai/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2015/07/05/rails-scopes-yu-jia-zai//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao/">
-		
-			Oauth2.0</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- May 30, 2014</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/ouath2-dot-0/'>ouath2.0</a>
-
-
-</div>
-    </div>
-		<p>Oauth2.0 验证流程简单介绍(使用doorkeeper)</p>
-
-
-		
-		<a href="/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2014/05/30/oauth2-dot-0-shi-yong-ji-qiao//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue/">
-		
-			让zsh为你的Terminal带来不一样的感觉</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- October 27, 2013</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/mac/'>mac</a>
-
-
-</div>
-    </div>
-		<p>刚接触Mac,发现有zsh这一神器</p>
-
-
-		
-		<a href="/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2013/10/27/rang-zshwei-ni-de-terminaldai-lai-bu-%5B%3F%5D-yang-de-gan-jue//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2013/10/26/cong-vimdao-sublime-text/">
-		
-			从Vim到Sublime Text</a>
-	</h2>
-    <div class="entry-content">
-    <div class="meta">
-      <div class="date">Published on: 
-
-
-
-
-
-
-
-
-  
-
-
- October 26, 2013</div>
-      <div class="tags">Tags: 
-
-
-	<a class='category' href='/blog/categories/sublime/'>sublime</a>, <a class='category' href='/blog/categories/text/'>text</a>
-
-
-</div>
-    </div>
-		<p>讲述我从vim转化到sublime text的过程</p>
-
-
-		
-		<a href="/blog/2013/10/26/cong-vimdao-sublime-text/" class="more-link">Read on</a>
-	</div>
-
-<div class="meta">
-	
-		<span class="comments"><a href="/blog/2013/10/26/cong-vimdao-sublime-text//index.html#disqus_thread">Comments</a></span>
-	
-</div>
-</article>
-
-<nav id="pagenavi">
-    
-    
-        <a href="2" class="next">Next</a>
-    
-    <div class="center"><a href="/blog/archives">Blog Archives</a></div>
-</nav>
+</section>
 
     </div>
     <footer id="footer">
@@ -1777,7 +1144,10 @@ Nginx（由 Passenger 编译） 创建帐号 假设你已经用 root &hellip;">
       var disqus_shortname = 'justin-lu-blog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://justin-lu.github.io/blog/2016/03/15/centos-shang-shi-yong-nginx-passenger-bu-shu-ruby-on-rails/';
+        var disqus_url = 'http://justin-lu.github.io/blog/2016/03/15/centos-shang-shi-yong-nginx-passenger-bu-shu-ruby-on-rails/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

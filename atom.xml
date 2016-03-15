@@ -4,7 +4,7 @@
   <title><![CDATA[Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2015-10-04T23:17:44+08:00</updated>
+  <updated>2016-03-15T20:14:16+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -12,6 +12,1174 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS 上使用 Nginx Passenger 部署 Ruby on Rails]]></title>
+    <link href="http://justin-lu.github.io/blog/2016/03/15/centos-shang-shi-yong-nginx-passenger-bu-shu-ruby-on-rails/"/>
+    <updated>2016-03-15T20:04:57+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2016/03/15/centos-shang-shi-yong-nginx-passenger-bu-shu-ruby-on-rails</id>
+    <content type="html"><![CDATA[<p>本教程将会涉及以下工具：</p>
+
+<ul>
+<li>Centos 7</li>
+<li>[[RVM]]</li>
+<li>Ruby 2.2.2</li>
+<li>Rails 4.0.3</li>
+<li>Passenger 4.0+</li>
+<li>Nginx（由 Passenger 编译）</li>
+</ul>
+
+
+<h2>创建帐号</h2>
+
+<p>假设你已经用 root 帐号通过 SSH 登陆服务器, 没有登录的可以通过</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ssh root@ip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>出于安全考虑，不要使用 root 帐号运行 web 应用。这里新建一个专门用于部署的用户，例如 deploy 或者其它你喜欢的名字。运行以下命令创建用户：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># useradd -m -s /bin/bash deploy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将用户加入 sudo 群组，以便使用 sudo 命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># adduser deploy sudo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>为 deploy 用户设置密码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># passwd deploy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>为deploy用户添加管理员权限</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>sudo <span class="nb">echo</span> <span class="s2">&quot;$USER ALL=(ALL:ALL) ALL&quot;</span> &gt;&gt; /etc/sudoers
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>退出当前 SSH 链接，用 deploy 帐号重新登陆。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>ssh deploy@ip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>安装 RVM 和 Ruby</h2>
+
+<p>更新 yum，并安装 curl：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>sudo yum update
+</span><span class='line'><span class="nv">$ </span>sudo yum install curl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后安装 RVM：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+</span><span class='line'><span class="nv">$ </span><span class="se">\c</span>url -sSL https://get.rvm.io <span class="p">|</span> bash -s stable
+</span><span class='line'><span class="nv">$ </span>rvm requirements
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>RVM 安装完毕后，重新登陆 SSH，让 RVM 配置生效。然后安装 Ruby 2.1.2：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>rvm use --install --default 2.2.2
+</span><span class='line'><span class="nv">$ </span>rvm use 2.2.2@deploy --create --default
+</span><span class='line'><span class="nv">$ </span>gem install bundle
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完毕后，确认目前的 Ruby 版本：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ruby -v
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>应该看到 <code>ruby 2.2.2p95 (2015-04-13 revision 50295) [x86_64-linux]</code> 字样。</p>
+
+<h2>安装 Passenger</h2>
+
+<p><a href="https://www.phusionpassenger.com/">Passenger</a> 是一个 app server，支持基于 Rack 框架的 Ruby app（包括 Rails）。Passenger 的特点是需要作为模块编译到 Nginx 中，优点是配置简单，不需要自己写启动脚本。</p>
+
+<p>安装 Passenger 最简单的方法是通过 yum 安装，首先导入 Passenger 的密钥（<a href="https://www.phusionpassenger.com/library/install/nginx/install/oss/el7/">官方文档</a>）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># 安装 EPEL and 和其他依赖</span>
+</span><span class='line'><span class="nv">$ </span>sudo yum install -y epel-release pygpgme curl
+</span><span class='line'>
+</span><span class='line'><span class="c"># 添加el7仓库</span>
+</span><span class='line'><span class="nv">$ </span>sudo curl --fail -sSLo /etc/yum.repos.d/passenger.repo https://oss-binaries.phusionpassenger.com/yum/definitions/el-passenger.repo
+</span><span class='line'>
+</span><span class='line'><span class="c"># 安装Passenger 和 Nginx， 由于万恶的墙，有可能失败，多试几次就可以</span>
+</span><span class='line'><span class="nv">$ </span>sudo yum install -y nginx passenger
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在修改 nginx 配置，编辑 <code>/etc/nginx/conf.d/passenger.conf</code>，找到这三行注释：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#passenger_root /usr/share/ruby/vendor_ruby/phusion_passenger/locations.ini;</span>
+</span><span class='line'><span class="c">#passenger_ruby /usr/bin/ruby;</span>
+</span><span class='line'><span class="c">#passenger_instance_registry_dir /var/run/passenger-instreg;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将它修改为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>passenger_root /usr/share/ruby/vendor_ruby/phusion_passenger/locations.ini<span class="p">;</span>
+</span><span class='line'>passenger_ruby /usr/bin/ruby<span class="p">;</span>
+</span><span class='line'>passenger_instance_registry_dir /var/run/passenger-instreg<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重启Nginx:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo service nginx restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>检查是否安装成功</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo passenger-config validate-install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查看nginx和passgenr是否运行成功</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo passenger-memory-stats
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以看到这个，说明已经成功运行</p>
+
+<p><img src="quiver-image-url/36FF0FFBAC4DC86FB7F27AB8039F3103.jpg" alt="1__deploy_zhouyi__etc__ssh_.jpg" /></p>
+
+<h2>安装Nodejs</h2>
+
+<p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-a-centos-7-server">https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-a-centos-7-server</a></p>
+
+<h2>部署<code>Rails</code>项目</h2>
+
+<h3>新建<code>Rails</code>项目</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="kp">new</span> <span class="n">app</span>
+</span><span class='line'><span class="err">$</span> <span class="n">cd</span> <span class="n">app</span>
+</span><span class='line'><span class="err">$</span> <span class="n">bundle</span> <span class="n">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>打开<code>Gemfile</code>文件，在<code>Gemfile</code>的<code>development</code>和<code>test</code>group 添加<code>capistrano</code>和<code>rvm-capistrano</code></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">group</span> <span class="ss">:development</span><span class="p">,</span> <span class="ss">:test</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># Use Capistrano for deployment</span>
+</span><span class='line'>  <span class="n">gem</span> <span class="s1">&#39;capistrano&#39;</span><span class="p">,</span> <span class="s2">&quot;~&gt; 2.15.5&quot;</span>
+</span><span class='line'>  <span class="n">gem</span> <span class="s1">&#39;rvm-capistrano&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 1.4.1&#39;</span><span class="p">,</span> <span class="ss">:require</span> <span class="o">=&gt;</span> <span class="kp">false</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>生成<code>cap</code>文件,在终端运行，会自动生成<code>Capfile</code>和<code>config/deploy.rb</code></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>capify .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>修改<code>deploy</code>文件，配置项就不逐一介绍了，可以阅读 Capistrano 的文档 2.x Getting Started。主要是修改 :rvm_ruby_string 和 :repository 两个，其它再按需修改。</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;rvm/capistrano&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:rvm_type</span><span class="p">,</span> <span class="ss">:user</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># repo details</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:scm</span><span class="p">,</span> <span class="ss">:git</span>
+</span><span class='line'><span class="c1"># need to clean shared/cached-copy if changed repository</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:repository</span><span class="p">,</span> <span class="s2">&quot;your repository url&quot;</span>
+</span><span class='line'><span class="c1"># set :branch, &quot;master&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:git_enable_submodules</span><span class="p">,</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># bundler bootstrap</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;bundler/capistrano&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:bundle_without</span><span class="p">,</span> <span class="o">[</span><span class="ss">:darwin</span><span class="p">,</span> <span class="ss">:development</span><span class="p">,</span> <span class="ss">:test</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Multi stage</span>
+</span><span class='line'><span class="c1"># https://github.com/capistrano/capistrano/wiki/2.x-Multistage-Extension</span>
+</span><span class='line'><span class="c1"># https://github.com/VinceMD/Scem/wiki/Deploying-on-production</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:stages</span><span class="p">,</span> <span class="sx">%w(production)</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:default_stage</span><span class="p">,</span> <span class="s2">&quot;production&quot;</span> <span class="c1"># require config/deploy/staging.rb</span>
+</span><span class='line'><span class="c1"># set :default_stage, &quot;production&quot; # require config/deploy/production.rb</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;capistrano/ext/multistage&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># server details</span>
+</span><span class='line'><span class="n">default_run_options</span><span class="o">[</span><span class="ss">:pty</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span> <span class="c1"># apparently helps with passphrase prompting</span>
+</span><span class='line'><span class="n">ssh_options</span><span class="o">[</span><span class="ss">:forward_agent</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span> <span class="c1"># tells cap to use my local private key</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_via</span><span class="p">,</span> <span class="ss">:remote_cache</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:use_sudo</span><span class="p">,</span> <span class="kp">false</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># integrate whenever</span>
+</span><span class='line'><span class="c1"># when using bundler</span>
+</span><span class='line'><span class="c1"># set :whenever_command, &quot;bundle exec whenever&quot;</span>
+</span><span class='line'><span class="c1"># when using different environments</span>
+</span><span class='line'><span class="c1"># set :whenever_environment, defer { stage }</span>
+</span><span class='line'><span class="c1"># set :whenever_identifier, defer { &quot;#{fetch(:application)}-#{fetch(:rails_env)}&quot; }</span>
+</span><span class='line'><span class="c1"># require &quot;whenever/capistrano&quot;</span>
+</span><span class='line'><span class="c1"># https://github.com/javan/whenever/blob/master/lib/whenever/capistrano.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># tasks</span>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:deploy</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:start</span><span class="p">,</span> <span class="ss">:roles</span> <span class="o">=&gt;</span> <span class="ss">:app</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;touch </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/tmp/restart.txt&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:stop</span><span class="p">,</span> <span class="ss">:roles</span> <span class="o">=&gt;</span> <span class="ss">:app</span> <span class="k">do</span>
+</span><span class='line'>    <span class="c1"># Do nothing.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Restart Application&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:restart</span><span class="p">,</span> <span class="ss">:roles</span> <span class="o">=&gt;</span> <span class="ss">:app</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;touch </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/tmp/restart.txt&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Symlink shared resources on each release&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:symlink_shared</span><span class="p">,</span> <span class="ss">:roles</span> <span class="o">=&gt;</span> <span class="ss">:app</span> <span class="k">do</span>
+</span><span class='line'>    <span class="sx">%w{database settings.local}</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;ln -nfs </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/config/</span><span class="si">#{</span><span class="n">file</span><span class="si">}</span><span class="s2">.yml </span><span class="si">#{</span><span class="n">release_path</span><span class="si">}</span><span class="s2">/config/</span><span class="si">#{</span><span class="n">file</span><span class="si">}</span><span class="s2">.yml&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># link dirs in public/</span>
+</span><span class='line'>    <span class="sx">%w{uploads}</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;mkdir -p </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/public/</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;ln -nfs </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/public/</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">release_path</span><span class="si">}</span><span class="s2">/public/</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Initialize configuration using example files provided in the distribution&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:upload_config</span> <span class="k">do</span>
+</span><span class='line'>    <span class="sx">%w{config}</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;mkdir -p </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="no">Dir</span><span class="o">[</span><span class="s2">&quot;config/*.yml.example&quot;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">top</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/config/</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;.example&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s1">&#39;Visit the app&#39;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:visit_web</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">system</span> <span class="s2">&quot;open </span><span class="si">#{</span><span class="n">app_url</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">after</span> <span class="s1">&#39;deploy:setup&#39;</span><span class="p">,</span> <span class="s1">&#39;deploy:upload_config&#39;</span>
+</span><span class='line'><span class="n">after</span> <span class="s1">&#39;deploy:update_code&#39;</span><span class="p">,</span> <span class="s1">&#39;deploy:symlink_shared&#39;</span>
+</span><span class='line'><span class="n">after</span> <span class="s1">&#39;deploy:restart&#39;</span><span class="p">,</span> <span class="s1">&#39;deploy:visit_web&#39;</span>
+</span><span class='line'><span class="n">after</span> <span class="s1">&#39;deploy:migrations&#39;</span><span class="p">,</span> <span class="s1">&#39;deploy:cleanup&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:keep_releases</span><span class="p">,</span> <span class="mi">7</span> <span class="c1"># number for keeping old releases</span>
+</span><span class='line'><span class="n">after</span> <span class="s1">&#39;deploy&#39;</span><span class="p">,</span> <span class="s1">&#39;deploy:cleanup&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:db</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Create db for current env&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:create</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">; bundle exec rake db:create RAILS_ENV=</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s1">&#39;could be able to run `cap deploy:migrate` now&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Populates the Production Database&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:seed</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">=== Populating the Production Database! ===</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">; bundle exec rake db:seed RAILS_ENV=</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># http://guides.rubyonrails.org/asset_pipeline.html#precompiling-assets</span>
+</span><span class='line'><span class="c1"># https://github.com/capistrano/capistrano/blob/master/lib/capistrano/recipes/deploy/assets.rb</span>
+</span><span class='line'><span class="nb">load</span> <span class="s1">&#39;deploy/assets&#39;</span> <span class="k">unless</span> <span class="p">(</span><span class="no">ARGV</span><span class="o">.</span><span class="n">join</span> <span class="o">==</span> <span class="s2">&quot;deploy:update&quot;</span> <span class="o">||</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="s1">&#39;deploy:update&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="c1"># then we got these tasks:</span>
+</span><span class='line'><span class="c1"># cap deploy:assets:clean      # Run the asset clean rake task.</span>
+</span><span class='line'><span class="c1"># cap deploy:assets:precompile # Run the asset precompilation rake task.</span>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:remote</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Open the rails console on one of the remote servers&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:console</span><span class="p">,</span> <span class="ss">:roles</span> <span class="o">=&gt;</span> <span class="ss">:app</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">hostname</span> <span class="o">=</span> <span class="n">find_servers_for_task</span><span class="p">(</span><span class="n">current_task</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'>    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2"> &amp;&amp; bundle exec rails console </span><span class="si">#{</span><span class="n">fetch</span><span class="p">(</span><span class="ss">:rails_env</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">fetch</span><span class="p">(</span><span class="ss">:rvm_ruby_string</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># set rvm shell and get ride of &quot;&#39;&quot;</span>
+</span><span class='line'>      <span class="c1"># https://github.com/wayneeseguin/rvm/blob/master/lib/rvm/capistrano.rb</span>
+</span><span class='line'>      <span class="n">rvm_shell</span> <span class="o">=</span> <span class="sx">%{rvm_path=$HOME/.rvm $HOME/.rvm/bin/rvm-shell &quot;</span><span class="si">#{</span><span class="n">fetch</span><span class="p">(</span><span class="ss">:rvm_ruby_string</span><span class="p">)</span><span class="si">}</span><span class="sx">&quot;}</span>
+</span><span class='line'>      <span class="n">command</span> <span class="o">=</span> <span class="sx">%{</span><span class="si">#{</span><span class="n">rvm_shell</span><span class="si">}</span><span class="sx"> -c &quot;</span><span class="si">#{</span><span class="n">command</span><span class="si">}</span><span class="sx">&quot;}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">command</span> <span class="o">=</span> <span class="sx">%{source ~/.profile &amp;&amp; &quot;</span><span class="si">#{</span><span class="n">command</span><span class="si">}</span><span class="sx">&quot;}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="nb">exec</span> <span class="sx">%{ssh -l </span><span class="si">#{</span><span class="n">user</span><span class="si">}</span><span class="sx"> </span><span class="si">#{</span><span class="n">hostname</span><span class="si">}</span><span class="sx"> -t &#39;</span><span class="si">#{</span><span class="n">command</span><span class="si">}</span><span class="sx">&#39;}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;run rake task. e.g.: `cap remote:rake db:version`&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:rake</span> <span class="k">do</span>
+</span><span class='line'>    <span class="no">ARGV</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="no">Range</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ARGV</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;remote:rake&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">rake_task</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">top</span><span class="o">.</span><span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2"> &amp;&amp; RAILS_ENV=</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2"> bundle exec rake </span><span class="si">#{</span><span class="n">rake_task</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;run remote command. e.g.: `cap remote:run &#39;tail -n 10 log/production.log&#39;`&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:run</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">command</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="no">Range</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ARGV</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;remote:run&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">top</span><span class="o">.</span><span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">; RAILS_ENV=</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">command</span><span class="o">*</span><span class="s1">&#39; &#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s1">&#39;run specified rails code on server. e.g.: `cap remote:runner p User.all` or `cap remote:runner &quot;User.all.each{ |u| p u }&quot;`&#39;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:runner</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">command</span><span class="o">=</span><span class="no">ARGV</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="no">Range</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ARGV</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;remote:runner&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">top</span><span class="o">.</span><span class="n">run</span> <span class="s2">&quot;cd </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">; RAILS_ENV=</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2"> bundle exec rails runner &#39;</span><span class="si">#{</span><span class="n">command</span><span class="o">*</span><span class="s1">&#39; &#39;</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;tail log on remote server&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:tail_log</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">top</span><span class="o">.</span><span class="n">run</span> <span class="s2">&quot;tail -f </span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/log/</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">.log&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">channel</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">data</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">break</span> <span class="k">if</span> <span class="n">stream</span> <span class="o">==</span> <span class="ss">:err</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="ss">:update</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Dump remote database into tmp/, download file to local machine, import into local database&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:database</span> <span class="k">do</span>
+</span><span class='line'>    <span class="c1"># config</span>
+</span><span class='line'>    <span class="n">remote_db_yml_path</span>          <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/config/database.yml&quot;</span>
+</span><span class='line'>    <span class="n">remote_db_yml_on_local_path</span> <span class="o">=</span> <span class="s2">&quot;tmp/database_</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">.yml&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># First lets get the remote database config file so that we can read in the database settings</span>
+</span><span class='line'>    <span class="n">get</span> <span class="n">remote_db_yml_path</span><span class="p">,</span> <span class="n">remote_db_yml_on_local_path</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># load the remote settings within the database file</span>
+</span><span class='line'>    <span class="n">remote_settings</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="n">load_file</span><span class="p">(</span><span class="n">remote_db_yml_on_local_path</span><span class="p">)</span><span class="o">[</span><span class="n">rails_env</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">remote_sql_file_path</span>        <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/tmp/</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">-dump.sql&quot;</span>
+</span><span class='line'>    <span class="n">remote_sql_gz_file_path</span>     <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">remote_sql_file_path</span><span class="si">}</span><span class="s2">.gz&quot;</span>
+</span><span class='line'>    <span class="n">local_sql_file_path</span>         <span class="o">=</span> <span class="s2">&quot;tmp/</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-%d_%H:%M:%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">.sql&quot;</span>
+</span><span class='line'>    <span class="n">local_sql_gz_file_path</span>      <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">local_sql_file_path</span><span class="si">}</span><span class="s2">.gz&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># we also need the local settings so that we can import the fresh database properly</span>
+</span><span class='line'>    <span class="n">local_settings</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="n">load_file</span><span class="p">(</span><span class="s2">&quot;config/database.yml&quot;</span><span class="p">)</span><span class="o">[</span><span class="n">rails_env</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># dump the remote database and store it in the current path&#39;s tmp directory.</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;mysqldump -u&#39;</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;username&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; -p&#39;</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">#{</span><span class="s2">&quot;-h &#39;</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;host&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;host&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; &gt; </span><span class="si">#{</span><span class="n">remote_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># gzip db</span>
+</span><span class='line'>    <span class="n">run</span> <span class="s2">&quot;gzip -f </span><span class="si">#{</span><span class="n">remote_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># download gz file to local</span>
+</span><span class='line'>    <span class="n">get</span> <span class="n">remote_sql_gz_file_path</span><span class="p">,</span> <span class="n">local_sql_gz_file_path</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># unzip sql</span>
+</span><span class='line'>    <span class="n">run_locally</span> <span class="s2">&quot;gunzip </span><span class="si">#{</span><span class="n">local_sql_gz_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># import db to local db</span>
+</span><span class='line'>    <span class="c1"># may need to run `RAILS_ENV=production rake db:create` on local first</span>
+</span><span class='line'>    <span class="n">run_locally</span><span class="p">(</span><span class="s2">&quot;mysql -u</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;username&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="s2">&quot;-p</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">#{</span><span class="n">local_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># now that we have the upated production dump file we should use the local settings to import this db.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">desc</span> <span class="s2">&quot;Mirrors the remote shared public directory with your local copy, doesn&#39;t download symlinks&quot;</span>
+</span><span class='line'>  <span class="n">task</span> <span class="ss">:shared_assets</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">run_locally</span> <span class="s2">&quot;if [ -e public/uploads ]; then mv public/uploads public/uploads_back; fi&quot;</span>
+</span><span class='line'>    <span class="c1"># using rsync so that it only copies what it needs</span>
+</span><span class='line'>    <span class="n">run_locally</span><span class="p">(</span><span class="s2">&quot;rsync --recursive --times --rsh=ssh --compress --human-readable --progress </span><span class="si">#{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">#{</span><span class="n">app_server</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/system/ public/system/&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">run_locally</span><span class="p">(</span><span class="s2">&quot;rsync --recursive --times --rsh=ssh --compress --human-readable --progress </span><span class="si">#{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">#{</span><span class="n">app_server</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/public/uploads/ public/uploads/&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">namespace</span> <span class="ss">:remote</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">desc</span> <span class="s2">&quot;update the remote database with the local database&quot;</span>
+</span><span class='line'>    <span class="n">task</span> <span class="ss">:database</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">input</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>      <span class="c1"># STDOUT.puts &quot;Are you SURE to update the databse of remote?(YES)&quot;</span>
+</span><span class='line'>      <span class="c1"># confirmation = STDIN.gets.chomp</span>
+</span><span class='line'>      <span class="n">confirmation</span> <span class="o">=</span> <span class="no">Capistrano</span><span class="o">::</span><span class="no">CLI</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;Are you SURE to update the databse of remote?(YES)&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="nb">abort</span> <span class="s2">&quot;Interrupt..&quot;</span> <span class="k">unless</span> <span class="n">confirmation</span> <span class="o">==</span> <span class="s2">&quot;YES&quot;</span>
+</span><span class='line'>      <span class="c1"># config database.yml on both sides</span>
+</span><span class='line'>      <span class="n">remote_db_yml_path</span>          <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/config/database.yml&quot;</span>
+</span><span class='line'>      <span class="n">remote_db_yml_on_local_path</span> <span class="o">=</span> <span class="s2">&quot;tmp/database_</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">.yml&quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># First get the local database config to remote</span>
+</span><span class='line'>      <span class="n">get</span> <span class="n">remote_db_yml_path</span><span class="p">,</span> <span class="n">remote_db_yml_on_local_path</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># load the local settings within the database file</span>
+</span><span class='line'>      <span class="n">local_settings</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="n">load_file</span><span class="p">(</span><span class="s2">&quot;config/database.yml&quot;</span><span class="p">)</span><span class="o">[</span><span class="n">rails_env</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># set the sql path on both sides</span>
+</span><span class='line'>      <span class="n">local_sql_file_path</span> <span class="o">=</span> <span class="s2">&quot;tmp/</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;database&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">-dump.sql&quot;</span>
+</span><span class='line'>      <span class="n">local_sql_gz_file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">local_sql_file_path</span><span class="si">}</span><span class="s2">.gz&quot;</span>
+</span><span class='line'>      <span class="n">remote_sql_file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">current_path</span><span class="si">}</span><span class="s2">/tmp/</span><span class="si">#{</span><span class="n">rails_env</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;database&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-%d_%H:%M:%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">.sql&quot;</span>
+</span><span class='line'>      <span class="n">remote_sql_gz_file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">remote_sql_file_path</span><span class="si">}</span><span class="s2">.gz&quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># we also need the remote settings so that we can import the fresh dataabse properly</span>
+</span><span class='line'>      <span class="n">remote_settings</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="n">load_file</span><span class="p">(</span><span class="n">remote_db_yml_on_local_path</span><span class="p">)</span><span class="o">[</span><span class="n">rails_env</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># dump the local database and store it in the tmp dir</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;adapter&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;postgresql&#39;</span>
+</span><span class='line'>        <span class="n">run_locally</span> <span class="s2">&quot;PGPASSWORD=&#39;</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;password&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; pg_dump  -U </span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;username&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="s2">&quot;-h &#39;</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;host&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;host&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> -c -O &#39;</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; &gt; </span><span class="si">#{</span><span class="n">local_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">elsif</span> <span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;adapter&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;mysql2&#39;</span>
+</span><span class='line'>        <span class="n">run_locally</span> <span class="s2">&quot;mysqldump -u&#39;</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;username&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">#{</span><span class="s2">&quot;-p</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="s2">&quot;-h &#39;</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;host&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;host&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; &gt; </span><span class="si">#{</span><span class="n">local_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="k">raise</span> <span class="s2">&quot;not supports </span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;adapter&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># gzip db</span>
+</span><span class='line'>      <span class="n">run_locally</span> <span class="s2">&quot;gzip -f </span><span class="si">#{</span><span class="n">local_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># send the gz file to remote</span>
+</span><span class='line'>      <span class="n">upload</span> <span class="n">local_sql_gz_file_path</span><span class="p">,</span> <span class="n">remote_sql_gz_file_path</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># unzip sql</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;gunzip </span><span class="si">#{</span><span class="n">remote_sql_gz_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># import db to remote db</span>
+</span><span class='line'>      <span class="c1"># may need to run `RAILS_ENV=production rake db:create` on remote first</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;adapter&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;postgresql&#39;</span>
+</span><span class='line'>        <span class="n">run</span> <span class="s2">&quot;PGPASSWORD=&#39;</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s1">&#39;password&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; psql -U </span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s1">&#39;username&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2"> -d </span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> -f </span><span class="si">#{</span><span class="n">remote_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">elsif</span> <span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;adapter&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;mysql2&#39;</span>
+</span><span class='line'>        <span class="n">run</span> <span class="s2">&quot;mysql -u</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;username&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="s2">&quot;-p</span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">remote_settings</span><span class="o">[</span><span class="s2">&quot;database&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">#{</span><span class="n">remote_sql_file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="k">raise</span> <span class="s2">&quot;not supports </span><span class="si">#{</span><span class="n">local_settings</span><span class="o">[</span><span class="s1">&#39;adapter&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># now that we have the updated production dump file we should use the remote settings to import this db</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">desc</span> <span class="s2">&quot;Mirrors the local shared public directory with the remote copy, doesn&#39;t download symlinks&quot;</span>
+</span><span class='line'>    <span class="n">task</span> <span class="ss">:shared_assets</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;cp -R </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/system </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/system_back&quot;</span>
+</span><span class='line'>      <span class="n">run</span> <span class="s2">&quot;cp -R </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/public/uploads/ </span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/public/uploads_back&quot;</span>
+</span><span class='line'>      <span class="n">run_locally</span><span class="p">(</span><span class="s2">&quot;rsync --recursive --times --rsh=ssh --compress --human-readable --progress public/system </span><span class="si">#{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">#{</span><span class="n">app_server</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">run_locally</span><span class="p">(</span><span class="s2">&quot;rsync --recursive --times --rsh=ssh --compress --human-readable --progress public/uploads/ </span><span class="si">#{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">#{</span><span class="n">app_server</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">shared_path</span><span class="si">}</span><span class="s2">/public/uploads&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>添加<code>deploy/production.rb</code>,并填写以下内容</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># config/deploy/production.rb</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:app_server</span><span class="p">,</span> <span class="s2">&quot;服务器地址&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:app_url</span><span class="p">,</span> <span class="s2">&quot;服务器网址&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:application</span><span class="p">,</span> <span class="n">app_server</span>
+</span><span class='line'><span class="n">role</span> <span class="ss">:web</span><span class="p">,</span> <span class="n">app_server</span>
+</span><span class='line'><span class="n">role</span> <span class="ss">:app</span><span class="p">,</span> <span class="n">app_server</span>
+</span><span class='line'><span class="n">role</span> <span class="ss">:db</span><span class="p">,</span>  <span class="n">app_server</span><span class="p">,</span> <span class="ss">:primary</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:deploy_to</span><span class="p">,</span> <span class="s2">&quot;/var/www/xxx&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:user</span><span class="p">,</span> <span class="s2">&quot;deploy&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:rvm_ruby_string</span><span class="p">,</span> <span class="s2">&quot;ruby-2.2.2&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:branch</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:rails_env</span><span class="p">,</span> <span class="s2">&quot;productiono&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>添加<code>database.yml.example</code></h3>
+
+<p><code>config/database.yml</code>文件是不应该被提交到代码库的，我们需要用 config/database.yml.example 来做样本，在部署的时候它会被上传到服务器的 /path_to_your_site/shared/config/ 目录里，然后 SSH 到服务器上修改 username, password, socket 等值（上传的动作是在测试部署里说明）。尤其注意 MySQL socket 的路径在 Mac OS 和 Ubuntu 系统上是不同的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># SQLite version 3.x</span>
+</span><span class='line'><span class="c1">#   gem install sqlite3</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1">#   Ensure the SQLite 3 gem is defined in your Gemfile</span>
+</span><span class='line'><span class="c1">#   gem &#39;sqlite3&#39;</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="ss">default</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">default</span>
+</span><span class='line'>  <span class="ss">adapter</span><span class="p">:</span> <span class="n">sqlite3</span>
+</span><span class='line'>  <span class="ss">pool</span><span class="p">:</span> <span class="mi">5</span>
+</span><span class='line'>  <span class="ss">timeout</span><span class="p">:</span> <span class="mi">5000</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">development</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">&lt;&lt;</span><span class="p">:</span> <span class="o">*</span><span class="n">default</span>
+</span><span class='line'>  <span class="ss">database</span><span class="p">:</span> <span class="n">db</span><span class="o">/</span><span class="n">development</span><span class="o">.</span><span class="n">sqlite3</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Warning: The database defined as &quot;test&quot; will be erased and</span>
+</span><span class='line'><span class="c1"># re-generated from your development database when you run &quot;rake&quot;.</span>
+</span><span class='line'><span class="c1"># Do not set this db to the same as development or production.</span>
+</span><span class='line'><span class="nb">test</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">&lt;&lt;</span><span class="p">:</span> <span class="o">*</span><span class="n">default</span>
+</span><span class='line'>  <span class="ss">database</span><span class="p">:</span> <span class="n">db</span><span class="o">/</span><span class="nb">test</span><span class="o">.</span><span class="n">sqlite3</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">production</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">&lt;&lt;</span><span class="p">:</span> <span class="o">*</span><span class="n">default</span>
+</span><span class='line'>  <span class="ss">database</span><span class="p">:</span> <span class="n">db</span><span class="o">/</span><span class="n">production</span><span class="o">.</span><span class="n">sqlite3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>为<code>production</code>添加<code>secret_key_base</code></h3>
+
+<p>编辑 config/secrets.yml 文件，添加：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">production</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">secret_key_base</span><span class="p">:</span> <span class="n">a1feaf0cb8501bb41952bbd1df3641ca0c4eed5beb19fcb69bbaaf30b5e11d58872092a84951679f7df622dda2d6bd1b21f98bd2a24b99e096095f003e4ccf90</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>128位的随机字符串可用 rake secret 命令生成。</p>
+
+<h3>在你的github或者gitlab添加ssh key</h3>
+
+<p>你可以按如下命令来生成sshkey</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>ssh-keygen -t rsa -C <span class="s2">&quot;xxxxx@xxxxx.com&quot;</span>
+</span><span class='line'>cat ~/.ssh/id_rsa.pub
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>初始化<code>cap</code></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>cap deploy:setup
+</span><span class='line'>cap deploy:check
+</span><span class='line'>cap deploy:update
+</span><span class='line'>cap db:create
+</span><span class='line'>cap deploy:migrate
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>以后就可以通过跑以下命令，部署你的应用了</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>cap deploy:migrations 或者 cap deploy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>修改 Nginx 配置</h3>
+
+<p>删除原有的默认网站配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>rm /etc/nginx/sites-enabled/default
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>新建网站配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>touch /etc/nginx/sites-enabled/example.com.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编辑<code>/etc/nginx/sites-enabled/example.com.conf</code>，写入以下内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>    listen <span class="m">80</span> default<span class="p">;</span>
+</span><span class='line'>    server_name example.com<span class="p">;</span> <span class="c"># 这里填写你真实域名</span>
+</span><span class='line'>    root /var/www/example.com/current/public<span class="p">;</span>
+</span><span class='line'>    passenger_enabled on<span class="p">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重启Nginx</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>sudo service nginx restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>完成</h2>
+
+<p>在浏览器打开服务器的 IP 地址或域名，可以看到Nginx已经启动</p>
+
+<p>ref: <a href="http://stackoverflow.com/questions/17413526/nginx-missing-sites-available-directory">http://stackoverflow.com/questions/17413526/nginx-missing-sites-available-directory</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[  ]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/11/06/web-service-jian-dan-shi-yong/"/>
+    <updated>2015-11-06T12:15:07+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2015/11/06/web-service-jian-dan-shi-yong</id>
+    <content type="html"><![CDATA[<h1>WebService 简单使用</h1>
+
+<p>标签（空格分隔）： 未分类</p>
+
+<hr />
+
+<h2>什么是Web Services？</h2>
+
+<p> Web Services 是独立的（self-contained）并可自我描述
+  - Web Services 可通过使用UDDI来发现
+  - Web Services 可被其他应用程序使用
+  - XML 是 Web Services 的基础</p>
+
+<h2>Web services 平台的元素</h2>
+
+<ul>
+<li>SOAP (简易对象访问协议)</li>
+<li>UDDI (通用描述、发现及整合)</li>
+<li>WSDL (Web services 描述语言)</li>
+</ul>
+
+
+<h3>什么是 SOAP？</h3>
+
+<blockquote><p>基本的 Web services 平台是 XML + HTTP。</p></blockquote>
+
+<ul>
+<li>SOAP 指简易对象访问协议</li>
+<li>SOAP 是一种通信协议</li>
+<li>SOAP 用于应用程序之间的通信</li>
+<li>SOAP 是一种用于发送消息的格式</li>
+<li>SOAP 被设计用来通过因特网进行通信</li>
+<li>SOAP 独立于平台</li>
+<li>SOAP 独立于语言</li>
+<li>SOAP 基于 XML</li>
+<li>SOAP 很简单并可扩展</li>
+<li>SOAP 允许您绕过防火墙</li>
+<li>SOAP 将作为 W3C 标准来发展</li>
+</ul>
+
+
+<h3>什么是 WSDL?</h3>
+
+<blockquote><p>WSDL 是基于 XML 的用于描述 Web Services 以及如何访问 Web Services 的语言。</p></blockquote>
+
+<ul>
+<li>WSDL 指网络服务描述语言</li>
+<li>WSDL 使用 XML 编写</li>
+<li>WSDL 是一种 XML 文档</li>
+<li>WSDL 用于描述网络服务</li>
+<li>WSDL 也可用于定位网络服务</li>
+<li>WSDL 还不是 W3C 标准</li>
+<li><a href="http://www.thomas-bayer.com/axis2/services/BLZService?wsdl">wsdl例子</a></li>
+</ul>
+
+
+<h3>什么是UDDI？</h3>
+
+<ul>
+<li>UDDI 是一种目录服务，通过它，企业可注册并搜索 Web services。</li>
+<li>UDDI 指通用的描述、发现以及整合（Universal Description, Discovery and Integration）。</li>
+<li>UDDI 是一种用于存储有关 web services 的信息的目录。</li>
+<li>UDDI 是一种由 WSDL 描述的网络服务接口目录。</li>
+<li>UDDI 经由 SOAP 进行通迅。</li>
+<li>UDDI 被构建于 Microsoft .NET 平台之中。</li>
+</ul>
+
+
+<h3>调试工具</h3>
+
+<ul>
+<li><a href="http://www.soapui.org/downloads/soapui/open-source.html">SOAP UI 工具</a></li>
+<li><a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/soap/cxf.html">使用CXF客户端</a></li>
+<li><a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/soap/java_client.html">使用JDK客户端</a></li>
+</ul>
+
+
+<h3>SOAP和HTTP区别</h3>
+
+<ul>
+<li>请求消息格式不同</li>
+<li>响应消息格式不同</li>
+<li>安全机制不同</li>
+<li>客户端调用方式不同</li>
+<li>并发处理能力的不同</li>
+</ul>
+
+
+<h3>在Rails下如何调用SOAP接口</h3>
+
+<p>官方文档</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># create a client for the service</span>
+</span><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">Savon</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="ss">wsdl</span><span class="p">:</span> <span class="s1">&#39;http://service.example.com?wsdl&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">client</span><span class="o">.</span><span class="n">operations</span>
+</span><span class='line'><span class="c1"># =&gt; [:find_user, :list_users]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># call the &#39;findUser&#39; operation</span>
+</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="ss">:find_user</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="p">{</span> <span class="nb">id</span><span class="p">:</span> <span class="mi">42</span> <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">response</span><span class="o">.</span><span class="n">body</span>
+</span><span class='line'><span class="c1"># =&gt; { find_user_response: { id: 42, name: &#39;Hoff&#39; } }</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实际例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">SoapWithSavon</span>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="c1"># TODO: should use settin</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">client</span>
+</span><span class='line'>      <span class="vi">@client</span> <span class="o">||=</span> <span class="no">Savon</span><span class="o">.</span><span class="n">client</span> <span class="k">do</span>
+</span><span class='line'>        <span class="c1"># WSDL 接口</span>
+</span><span class='line'>        <span class="n">wsdl</span> <span class="s2">&quot;http://192.168.0.22:8000/sap/bc/srt/wsdl/srvc_5618AD468DEB07E0E1008000C0A80016/wsdl11/allinone/ws_policy/document?sap-client=300&quot;</span>
+</span><span class='line'>        <span class="c1"># 用户验证</span>
+</span><span class='line'>        <span class="n">basic_auth</span> <span class="s2">&quot;CRMINTERFACE&quot;</span><span class="p">,</span> <span class="s2">&quot;123456&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 默认同步昨天的设备数据</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get_devices</span> <span class="p">(</span><span class="n">start_at</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">ago</span><span class="p">,</span> <span class="n">end_at</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">ago</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">start_at_format</span> <span class="o">=</span> <span class="n">start_at</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-%d&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">end_at_format</span> <span class="o">=</span> <span class="n">end_at</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-%d&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">response</span> <span class="o">=</span> <span class="n">call_and_fail_gracefully</span><span class="p">(</span><span class="ss">:z_wl_material</span><span class="p">,</span> <span class="ss">:message</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="s2">&quot;EAssetMatnr&quot;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s2">&quot;ImUdate1&quot;</span> <span class="o">=&gt;</span> <span class="n">start_at_format</span><span class="p">,</span> <span class="s2">&quot;ImUdate2&quot;</span> <span class="o">=&gt;</span> <span class="n">end_at_format</span>  <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:z_wl_material_response</span><span class="o">][</span><span class="ss">:e_msgty</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;E&quot;</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:z_wl_material_response</span><span class="o">][</span><span class="ss">:e_ermsg</span><span class="o">]</span>
+</span><span class='line'>        <span class="o">[]</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:z_wl_material_response</span><span class="o">][</span><span class="ss">:e_asset_matnr</span><span class="o">][</span><span class="ss">:item</span><span class="o">]</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">logger</span>
+</span><span class='line'>      <span class="vc">@@logger</span> <span class="o">||=</span> <span class="no">Logger</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;./log/soap_with_savon.log&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">call_and_fail_gracefully</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">rescue</span> <span class="no">Savon</span><span class="o">::</span><span class="no">SOAPFault</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">rescue</span> <span class="no">Savon</span><span class="o">::</span><span class="no">HTTPError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>      <span class="c1"># HTTP Error</span>
+</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">rescue</span> <span class="no">Savon</span><span class="o">::</span><span class="no">InvalidResponseError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>      <span class="c1"># InvalidResponseError</span>
+</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>参考文档
+<a href="https://github.com/savonrb/savon">savon</a>
+<a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/index.html">AWS PaaS API参考指南</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using alias in linux/mac]]></title>
@@ -621,7 +1789,7 @@
 
 <ul>
 <li>Android 打包</li>
-<li>Ios 打包</li>
+<li>iOS 打包</li>
 <li>发布测试版本 <a href="http://fir.im/">fir.im</a></li>
 <li>生成截图 <a href="https://launchkit.io/screenshots/onboard/add-screenshot?layout=below">screenshots</a></li>
 <li>提交到 app store</li>
@@ -3732,7 +4900,7 @@ apt-get install pv
 yum install pv
 （可能需要启用额外的软件仓库）。</li>
 <li>如果建立一个可以重新连接的远程GNU screen
-ssh -t <a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#117;&#x73;&#x65;&#114;&#64;&#x73;&#111;&#x6d;&#x65;&#x2e;&#x64;&#111;&#109;&#x61;&#x69;&#x6e;&#x2e;&#x63;&#111;&#x6d;">&#x75;&#115;&#101;&#114;&#64;&#115;&#x6f;&#x6d;&#x65;&#46;&#x64;&#x6f;&#x6d;&#97;&#x69;&#x6e;&#x2e;&#x63;&#x6f;&#109;</a> /usr/bin/screen –xRR
+ssh -t <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#111;&#x3a;&#117;&#x73;&#101;&#x72;&#64;&#x73;&#111;&#x6d;&#x65;&#46;&#100;&#x6f;&#x6d;&#x61;&#105;&#x6e;&#46;&#x63;&#111;&#x6d;">&#x75;&#115;&#101;&#114;&#64;&#115;&#x6f;&#109;&#x65;&#46;&#x64;&#x6f;&#x6d;&#97;&#105;&#x6e;&#x2e;&#99;&#x6f;&#x6d;</a> /usr/bin/screen –xRR
 人们总是喜欢在一个文本终端中打开许多shell，如果会话突然中断，或你按下了“Ctrl-a d”，远程主机上的shell不会受到丝毫影响，你可以重新连接，其它有用的screen命令有“Ctrl-a c”（打开新的shell）和“Ctrl-a a”（在shell之间来回切换），请访问<a href="http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82">http://aperiodic.net/screen/quick_reference%E9%98%85%E8%AF%BB%E6%9B%B4%E5%A4%9A%E5%85%B3%E4%BA%8Escreen%E5%91%BD%E4%BB%A4%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83%E3%80%82</a></li>
 <li>继续SCP大文件
 rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file
@@ -3741,9 +4909,9 @@ rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_fi
 或
 rsync –partial –progress –rsh=ssh $user@$host:$remote_file $destination_file remote -> local</li>
 <li>通过SSH W/ WIRESHARK分析流量
-ssh <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#x72;&#x6f;&#111;&#116;&#64;&#115;&#101;&#114;&#x76;&#101;&#x72;&#46;&#x63;&#111;&#x6d;">&#114;&#x6f;&#x6f;&#x74;&#x40;&#115;&#x65;&#114;&#118;&#101;&#114;&#x2e;&#x63;&#111;&#x6d;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
+ssh <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#x3a;&#x72;&#x6f;&#111;&#116;&#64;&#115;&#101;&#114;&#118;&#101;&#114;&#x2e;&#x63;&#111;&#109;">&#x72;&#x6f;&#111;&#x74;&#64;&#115;&#101;&#x72;&#x76;&#x65;&#x72;&#x2e;&#x63;&#111;&#109;</a> ‘tshark -f “port !22″ -w -&lsquo; | wireshark -k -i –
 使用tshark捕捉远程主机上的网络通信，通过SSH连接发送原始pcap数据，并在wireshark中显示，按下Ctrl+C将停止捕捉，但也会关闭wireshark窗口，可以传递一个“-c #”参数给tshark，让它只捕捉“#”指定的数据包类型，或通过命名管道重定向数据，而不是直接通过SSH传输给wireshark，我建议你过滤数据包，以节约带宽，tshark可以使用tcpdump替代：
-ssh <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x72;&#111;&#111;&#x74;&#x40;&#101;&#120;&#x61;&#x6d;&#112;&#x6c;&#101;&#46;&#99;&#111;&#x6d;">&#114;&#x6f;&#x6f;&#116;&#64;&#101;&#x78;&#97;&#x6d;&#112;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
+ssh <a href="&#109;&#x61;&#x69;&#108;&#116;&#111;&#x3a;&#114;&#111;&#x6f;&#x74;&#64;&#101;&#120;&#97;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#99;&#x6f;&#x6d;">&#x72;&#111;&#111;&#116;&#64;&#x65;&#120;&#97;&#x6d;&#112;&#x6c;&#101;&#46;&#x63;&#x6f;&#109;</a> tcpdump -w – ‘port !22′ | wireshark -k -i –</li>
 <li>保持SSH会话永久打开
 autossh -M50000 -t server.example.com ‘screen -raAd mysession’
 打开一个SSH会话后，让其保持永久打开，对于使用笔记本电脑的用户，如果需要在Wi-Fi热点之间切换，可以保证切换后不会丢失连接。</li>
@@ -3760,1666 +4928,6 @@ ssh-keygen; ssh-copy-id user@host; ssh user@host
 <li>将标准输入（stdin）复制到你的X11缓冲区
 ssh user@host cat /path/to/some/file | xclip</li>
 </ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2013-7-6 最新hosts文件]]></title>
-    <link href="http://justin-lu.github.io/blog/2013/07/11/2013-7-6-zui-xin-hostswen-jian/"/>
-    <updated>2013-07-11T10:57:00+08:00</updated>
-    <id>http://justin-lu.github.io/blog/2013/07/11/2013-7-6-zui-xin-hostswen-jian</id>
-    <content type="html"><![CDATA[<p>最新hosts文件列表.</p>
-
-<!-- More -->
-
-
-<ul>
-<li>window hosts文件位置</li>
-<li>C盘/windows/system32/drivers/ect</li>
-<li>Ubuntu hosts文件位置</li>
-<li>/etc/hosts</li>
-<li>把以下内容复制至hosts文件</li>
-<li>需要管理员权限</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-<span class='line-number'>202</span>
-<span class='line-number'>203</span>
-<span class='line-number'>204</span>
-<span class='line-number'>205</span>
-<span class='line-number'>206</span>
-<span class='line-number'>207</span>
-<span class='line-number'>208</span>
-<span class='line-number'>209</span>
-<span class='line-number'>210</span>
-<span class='line-number'>211</span>
-<span class='line-number'>212</span>
-<span class='line-number'>213</span>
-<span class='line-number'>214</span>
-<span class='line-number'>215</span>
-<span class='line-number'>216</span>
-<span class='line-number'>217</span>
-<span class='line-number'>218</span>
-<span class='line-number'>219</span>
-<span class='line-number'>220</span>
-<span class='line-number'>221</span>
-<span class='line-number'>222</span>
-<span class='line-number'>223</span>
-<span class='line-number'>224</span>
-<span class='line-number'>225</span>
-<span class='line-number'>226</span>
-<span class='line-number'>227</span>
-<span class='line-number'>228</span>
-<span class='line-number'>229</span>
-<span class='line-number'>230</span>
-<span class='line-number'>231</span>
-<span class='line-number'>232</span>
-<span class='line-number'>233</span>
-<span class='line-number'>234</span>
-<span class='line-number'>235</span>
-<span class='line-number'>236</span>
-<span class='line-number'>237</span>
-<span class='line-number'>238</span>
-<span class='line-number'>239</span>
-<span class='line-number'>240</span>
-<span class='line-number'>241</span>
-<span class='line-number'>242</span>
-<span class='line-number'>243</span>
-<span class='line-number'>244</span>
-<span class='line-number'>245</span>
-<span class='line-number'>246</span>
-<span class='line-number'>247</span>
-<span class='line-number'>248</span>
-<span class='line-number'>249</span>
-<span class='line-number'>250</span>
-<span class='line-number'>251</span>
-<span class='line-number'>252</span>
-<span class='line-number'>253</span>
-<span class='line-number'>254</span>
-<span class='line-number'>255</span>
-<span class='line-number'>256</span>
-<span class='line-number'>257</span>
-<span class='line-number'>258</span>
-<span class='line-number'>259</span>
-<span class='line-number'>260</span>
-<span class='line-number'>261</span>
-<span class='line-number'>262</span>
-<span class='line-number'>263</span>
-<span class='line-number'>264</span>
-<span class='line-number'>265</span>
-<span class='line-number'>266</span>
-<span class='line-number'>267</span>
-<span class='line-number'>268</span>
-<span class='line-number'>269</span>
-<span class='line-number'>270</span>
-<span class='line-number'>271</span>
-<span class='line-number'>272</span>
-<span class='line-number'>273</span>
-<span class='line-number'>274</span>
-<span class='line-number'>275</span>
-<span class='line-number'>276</span>
-<span class='line-number'>277</span>
-<span class='line-number'>278</span>
-<span class='line-number'>279</span>
-<span class='line-number'>280</span>
-<span class='line-number'>281</span>
-<span class='line-number'>282</span>
-<span class='line-number'>283</span>
-<span class='line-number'>284</span>
-<span class='line-number'>285</span>
-<span class='line-number'>286</span>
-<span class='line-number'>287</span>
-<span class='line-number'>288</span>
-<span class='line-number'>289</span>
-<span class='line-number'>290</span>
-<span class='line-number'>291</span>
-<span class='line-number'>292</span>
-<span class='line-number'>293</span>
-<span class='line-number'>294</span>
-<span class='line-number'>295</span>
-<span class='line-number'>296</span>
-<span class='line-number'>297</span>
-<span class='line-number'>298</span>
-<span class='line-number'>299</span>
-<span class='line-number'>300</span>
-<span class='line-number'>301</span>
-<span class='line-number'>302</span>
-<span class='line-number'>303</span>
-<span class='line-number'>304</span>
-<span class='line-number'>305</span>
-<span class='line-number'>306</span>
-<span class='line-number'>307</span>
-<span class='line-number'>308</span>
-<span class='line-number'>309</span>
-<span class='line-number'>310</span>
-<span class='line-number'>311</span>
-<span class='line-number'>312</span>
-<span class='line-number'>313</span>
-<span class='line-number'>314</span>
-<span class='line-number'>315</span>
-<span class='line-number'>316</span>
-<span class='line-number'>317</span>
-<span class='line-number'>318</span>
-<span class='line-number'>319</span>
-<span class='line-number'>320</span>
-<span class='line-number'>321</span>
-<span class='line-number'>322</span>
-<span class='line-number'>323</span>
-<span class='line-number'>324</span>
-<span class='line-number'>325</span>
-<span class='line-number'>326</span>
-<span class='line-number'>327</span>
-<span class='line-number'>328</span>
-<span class='line-number'>329</span>
-<span class='line-number'>330</span>
-<span class='line-number'>331</span>
-<span class='line-number'>332</span>
-<span class='line-number'>333</span>
-<span class='line-number'>334</span>
-<span class='line-number'>335</span>
-<span class='line-number'>336</span>
-<span class='line-number'>337</span>
-<span class='line-number'>338</span>
-<span class='line-number'>339</span>
-<span class='line-number'>340</span>
-<span class='line-number'>341</span>
-<span class='line-number'>342</span>
-<span class='line-number'>343</span>
-<span class='line-number'>344</span>
-<span class='line-number'>345</span>
-<span class='line-number'>346</span>
-<span class='line-number'>347</span>
-<span class='line-number'>348</span>
-<span class='line-number'>349</span>
-<span class='line-number'>350</span>
-<span class='line-number'>351</span>
-<span class='line-number'>352</span>
-<span class='line-number'>353</span>
-<span class='line-number'>354</span>
-<span class='line-number'>355</span>
-<span class='line-number'>356</span>
-<span class='line-number'>357</span>
-<span class='line-number'>358</span>
-<span class='line-number'>359</span>
-<span class='line-number'>360</span>
-<span class='line-number'>361</span>
-<span class='line-number'>362</span>
-<span class='line-number'>363</span>
-<span class='line-number'>364</span>
-<span class='line-number'>365</span>
-<span class='line-number'>366</span>
-<span class='line-number'>367</span>
-<span class='line-number'>368</span>
-<span class='line-number'>369</span>
-<span class='line-number'>370</span>
-<span class='line-number'>371</span>
-<span class='line-number'>372</span>
-<span class='line-number'>373</span>
-<span class='line-number'>374</span>
-<span class='line-number'>375</span>
-<span class='line-number'>376</span>
-<span class='line-number'>377</span>
-<span class='line-number'>378</span>
-<span class='line-number'>379</span>
-<span class='line-number'>380</span>
-<span class='line-number'>381</span>
-<span class='line-number'>382</span>
-<span class='line-number'>383</span>
-<span class='line-number'>384</span>
-<span class='line-number'>385</span>
-<span class='line-number'>386</span>
-<span class='line-number'>387</span>
-<span class='line-number'>388</span>
-<span class='line-number'>389</span>
-<span class='line-number'>390</span>
-<span class='line-number'>391</span>
-<span class='line-number'>392</span>
-<span class='line-number'>393</span>
-<span class='line-number'>394</span>
-<span class='line-number'>395</span>
-<span class='line-number'>396</span>
-<span class='line-number'>397</span>
-<span class='line-number'>398</span>
-<span class='line-number'>399</span>
-<span class='line-number'>400</span>
-<span class='line-number'>401</span>
-<span class='line-number'>402</span>
-<span class='line-number'>403</span>
-<span class='line-number'>404</span>
-<span class='line-number'>405</span>
-<span class='line-number'>406</span>
-<span class='line-number'>407</span>
-<span class='line-number'>408</span>
-<span class='line-number'>409</span>
-<span class='line-number'>410</span>
-<span class='line-number'>411</span>
-<span class='line-number'>412</span>
-<span class='line-number'>413</span>
-<span class='line-number'>414</span>
-<span class='line-number'>415</span>
-<span class='line-number'>416</span>
-<span class='line-number'>417</span>
-<span class='line-number'>418</span>
-<span class='line-number'>419</span>
-<span class='line-number'>420</span>
-<span class='line-number'>421</span>
-<span class='line-number'>422</span>
-<span class='line-number'>423</span>
-<span class='line-number'>424</span>
-<span class='line-number'>425</span>
-<span class='line-number'>426</span>
-<span class='line-number'>427</span>
-<span class='line-number'>428</span>
-<span class='line-number'>429</span>
-<span class='line-number'>430</span>
-<span class='line-number'>431</span>
-<span class='line-number'>432</span>
-<span class='line-number'>433</span>
-<span class='line-number'>434</span>
-<span class='line-number'>435</span>
-<span class='line-number'>436</span>
-<span class='line-number'>437</span>
-<span class='line-number'>438</span>
-<span class='line-number'>439</span>
-<span class='line-number'>440</span>
-<span class='line-number'>441</span>
-<span class='line-number'>442</span>
-<span class='line-number'>443</span>
-<span class='line-number'>444</span>
-<span class='line-number'>445</span>
-<span class='line-number'>446</span>
-<span class='line-number'>447</span>
-<span class='line-number'>448</span>
-<span class='line-number'>449</span>
-<span class='line-number'>450</span>
-<span class='line-number'>451</span>
-<span class='line-number'>452</span>
-<span class='line-number'>453</span>
-<span class='line-number'>454</span>
-<span class='line-number'>455</span>
-<span class='line-number'>456</span>
-<span class='line-number'>457</span>
-<span class='line-number'>458</span>
-<span class='line-number'>459</span>
-<span class='line-number'>460</span>
-<span class='line-number'>461</span>
-<span class='line-number'>462</span>
-<span class='line-number'>463</span>
-<span class='line-number'>464</span>
-<span class='line-number'>465</span>
-<span class='line-number'>466</span>
-<span class='line-number'>467</span>
-<span class='line-number'>468</span>
-<span class='line-number'>469</span>
-<span class='line-number'>470</span>
-<span class='line-number'>471</span>
-<span class='line-number'>472</span>
-<span class='line-number'>473</span>
-<span class='line-number'>474</span>
-<span class='line-number'>475</span>
-<span class='line-number'>476</span>
-<span class='line-number'>477</span>
-<span class='line-number'>478</span>
-<span class='line-number'>479</span>
-<span class='line-number'>480</span>
-<span class='line-number'>481</span>
-<span class='line-number'>482</span>
-<span class='line-number'>483</span>
-<span class='line-number'>484</span>
-<span class='line-number'>485</span>
-<span class='line-number'>486</span>
-<span class='line-number'>487</span>
-<span class='line-number'>488</span>
-<span class='line-number'>489</span>
-<span class='line-number'>490</span>
-<span class='line-number'>491</span>
-<span class='line-number'>492</span>
-<span class='line-number'>493</span>
-<span class='line-number'>494</span>
-<span class='line-number'>495</span>
-<span class='line-number'>496</span>
-<span class='line-number'>497</span>
-<span class='line-number'>498</span>
-<span class='line-number'>499</span>
-<span class='line-number'>500</span>
-<span class='line-number'>501</span>
-<span class='line-number'>502</span>
-<span class='line-number'>503</span>
-<span class='line-number'>504</span>
-<span class='line-number'>505</span>
-<span class='line-number'>506</span>
-<span class='line-number'>507</span>
-<span class='line-number'>508</span>
-<span class='line-number'>509</span>
-<span class='line-number'>510</span>
-<span class='line-number'>511</span>
-<span class='line-number'>512</span>
-<span class='line-number'>513</span>
-<span class='line-number'>514</span>
-<span class='line-number'>515</span>
-<span class='line-number'>516</span>
-<span class='line-number'>517</span>
-<span class='line-number'>518</span>
-<span class='line-number'>519</span>
-<span class='line-number'>520</span>
-<span class='line-number'>521</span>
-<span class='line-number'>522</span>
-<span class='line-number'>523</span>
-<span class='line-number'>524</span>
-<span class='line-number'>525</span>
-<span class='line-number'>526</span>
-<span class='line-number'>527</span>
-<span class='line-number'>528</span>
-<span class='line-number'>529</span>
-<span class='line-number'>530</span>
-<span class='line-number'>531</span>
-<span class='line-number'>532</span>
-<span class='line-number'>533</span>
-<span class='line-number'>534</span>
-<span class='line-number'>535</span>
-<span class='line-number'>536</span>
-<span class='line-number'>537</span>
-<span class='line-number'>538</span>
-<span class='line-number'>539</span>
-<span class='line-number'>540</span>
-<span class='line-number'>541</span>
-<span class='line-number'>542</span>
-<span class='line-number'>543</span>
-<span class='line-number'>544</span>
-<span class='line-number'>545</span>
-<span class='line-number'>546</span>
-<span class='line-number'>547</span>
-<span class='line-number'>548</span>
-<span class='line-number'>549</span>
-<span class='line-number'>550</span>
-<span class='line-number'>551</span>
-<span class='line-number'>552</span>
-<span class='line-number'>553</span>
-<span class='line-number'>554</span>
-<span class='line-number'>555</span>
-<span class='line-number'>556</span>
-<span class='line-number'>557</span>
-<span class='line-number'>558</span>
-<span class='line-number'>559</span>
-<span class='line-number'>560</span>
-<span class='line-number'>561</span>
-<span class='line-number'>562</span>
-<span class='line-number'>563</span>
-<span class='line-number'>564</span>
-<span class='line-number'>565</span>
-<span class='line-number'>566</span>
-<span class='line-number'>567</span>
-<span class='line-number'>568</span>
-<span class='line-number'>569</span>
-<span class='line-number'>570</span>
-<span class='line-number'>571</span>
-<span class='line-number'>572</span>
-<span class='line-number'>573</span>
-<span class='line-number'>574</span>
-<span class='line-number'>575</span>
-<span class='line-number'>576</span>
-<span class='line-number'>577</span>
-<span class='line-number'>578</span>
-<span class='line-number'>579</span>
-<span class='line-number'>580</span>
-<span class='line-number'>581</span>
-<span class='line-number'>582</span>
-<span class='line-number'>583</span>
-<span class='line-number'>584</span>
-<span class='line-number'>585</span>
-<span class='line-number'>586</span>
-<span class='line-number'>587</span>
-<span class='line-number'>588</span>
-<span class='line-number'>589</span>
-<span class='line-number'>590</span>
-<span class='line-number'>591</span>
-<span class='line-number'>592</span>
-<span class='line-number'>593</span>
-<span class='line-number'>594</span>
-<span class='line-number'>595</span>
-<span class='line-number'>596</span>
-<span class='line-number'>597</span>
-<span class='line-number'>598</span>
-<span class='line-number'>599</span>
-<span class='line-number'>600</span>
-<span class='line-number'>601</span>
-<span class='line-number'>602</span>
-<span class='line-number'>603</span>
-<span class='line-number'>604</span>
-<span class='line-number'>605</span>
-<span class='line-number'>606</span>
-<span class='line-number'>607</span>
-<span class='line-number'>608</span>
-<span class='line-number'>609</span>
-<span class='line-number'>610</span>
-<span class='line-number'>611</span>
-<span class='line-number'>612</span>
-<span class='line-number'>613</span>
-<span class='line-number'>614</span>
-<span class='line-number'>615</span>
-<span class='line-number'>616</span>
-<span class='line-number'>617</span>
-<span class='line-number'>618</span>
-<span class='line-number'>619</span>
-<span class='line-number'>620</span>
-<span class='line-number'>621</span>
-<span class='line-number'>622</span>
-<span class='line-number'>623</span>
-<span class='line-number'>624</span>
-<span class='line-number'>625</span>
-<span class='line-number'>626</span>
-<span class='line-number'>627</span>
-<span class='line-number'>628</span>
-<span class='line-number'>629</span>
-<span class='line-number'>630</span>
-<span class='line-number'>631</span>
-<span class='line-number'>632</span>
-<span class='line-number'>633</span>
-<span class='line-number'>634</span>
-<span class='line-number'>635</span>
-<span class='line-number'>636</span>
-<span class='line-number'>637</span>
-<span class='line-number'>638</span>
-<span class='line-number'>639</span>
-<span class='line-number'>640</span>
-<span class='line-number'>641</span>
-<span class='line-number'>642</span>
-<span class='line-number'>643</span>
-<span class='line-number'>644</span>
-<span class='line-number'>645</span>
-<span class='line-number'>646</span>
-<span class='line-number'>647</span>
-<span class='line-number'>648</span>
-<span class='line-number'>649</span>
-<span class='line-number'>650</span>
-<span class='line-number'>651</span>
-<span class='line-number'>652</span>
-<span class='line-number'>653</span>
-<span class='line-number'>654</span>
-<span class='line-number'>655</span>
-<span class='line-number'>656</span>
-<span class='line-number'>657</span>
-<span class='line-number'>658</span>
-<span class='line-number'>659</span>
-<span class='line-number'>660</span>
-<span class='line-number'>661</span>
-<span class='line-number'>662</span>
-<span class='line-number'>663</span>
-<span class='line-number'>664</span>
-<span class='line-number'>665</span>
-<span class='line-number'>666</span>
-<span class='line-number'>667</span>
-<span class='line-number'>668</span>
-<span class='line-number'>669</span>
-<span class='line-number'>670</span>
-<span class='line-number'>671</span>
-<span class='line-number'>672</span>
-<span class='line-number'>673</span>
-<span class='line-number'>674</span>
-<span class='line-number'>675</span>
-<span class='line-number'>676</span>
-<span class='line-number'>677</span>
-<span class='line-number'>678</span>
-<span class='line-number'>679</span>
-<span class='line-number'>680</span>
-<span class='line-number'>681</span>
-<span class='line-number'>682</span>
-<span class='line-number'>683</span>
-<span class='line-number'>684</span>
-<span class='line-number'>685</span>
-<span class='line-number'>686</span>
-<span class='line-number'>687</span>
-<span class='line-number'>688</span>
-<span class='line-number'>689</span>
-<span class='line-number'>690</span>
-<span class='line-number'>691</span>
-<span class='line-number'>692</span>
-<span class='line-number'>693</span>
-<span class='line-number'>694</span>
-<span class='line-number'>695</span>
-<span class='line-number'>696</span>
-<span class='line-number'>697</span>
-<span class='line-number'>698</span>
-<span class='line-number'>699</span>
-<span class='line-number'>700</span>
-<span class='line-number'>701</span>
-<span class='line-number'>702</span>
-<span class='line-number'>703</span>
-<span class='line-number'>704</span>
-<span class='line-number'>705</span>
-<span class='line-number'>706</span>
-<span class='line-number'>707</span>
-<span class='line-number'>708</span>
-<span class='line-number'>709</span>
-<span class='line-number'>710</span>
-<span class='line-number'>711</span>
-<span class='line-number'>712</span>
-<span class='line-number'>713</span>
-<span class='line-number'>714</span>
-<span class='line-number'>715</span>
-<span class='line-number'>716</span>
-<span class='line-number'>717</span>
-<span class='line-number'>718</span>
-<span class='line-number'>719</span>
-<span class='line-number'>720</span>
-<span class='line-number'>721</span>
-<span class='line-number'>722</span>
-<span class='line-number'>723</span>
-<span class='line-number'>724</span>
-<span class='line-number'>725</span>
-<span class='line-number'>726</span>
-<span class='line-number'>727</span>
-<span class='line-number'>728</span>
-<span class='line-number'>729</span>
-<span class='line-number'>730</span>
-<span class='line-number'>731</span>
-<span class='line-number'>732</span>
-<span class='line-number'>733</span>
-<span class='line-number'>734</span>
-<span class='line-number'>735</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#http://weibo.com/liubingshao
-</span><span class='line'>#http://t.qq.com/liubingshao
-</span><span class='line'>#https://twitter.com/liubingshao
-</span><span class='line'>#https://plus.google.com/u/0/109561121415190390031/
-</span><span class='line'>#UPDATE:2013-07-06 11:04
-</span><span class='line'>127.0.0.1 localhost
-</span><span class='line'>#Google Services START
-</span><span class='line'>203.208.46.200    0.docs.google.com
-</span><span class='line'>203.208.46.200    0.drive.google.com
-</span><span class='line'>203.208.46.200    1.docs.google.com
-</span><span class='line'>203.208.46.200    1.drive.google.com
-</span><span class='line'>203.208.46.200    10.docs.google.com
-</span><span class='line'>203.208.46.200    10.drive.google.com
-</span><span class='line'>203.208.46.200    11.docs.google.com
-</span><span class='line'>203.208.46.200    11.drive.google.com
-</span><span class='line'>203.208.46.200    12.docs.google.com
-</span><span class='line'>203.208.46.200    12.drive.google.com
-</span><span class='line'>203.208.46.200    13.docs.google.com
-</span><span class='line'>203.208.46.200    13.drive.google.com
-</span><span class='line'>203.208.46.200    14.docs.google.com
-</span><span class='line'>203.208.46.200    14.drive.google.com
-</span><span class='line'>203.208.46.200    15.docs.google.com
-</span><span class='line'>203.208.46.200    15.drive.google.com
-</span><span class='line'>203.208.46.200    16.docs.google.com
-</span><span class='line'>203.208.46.200    16.drive.google.com
-</span><span class='line'>203.208.46.200    2.docs.google.com
-</span><span class='line'>203.208.46.200    2.drive.google.com
-</span><span class='line'>203.208.46.200    3.docs.google.com
-</span><span class='line'>203.208.46.200    3.drive.google.com
-</span><span class='line'>203.208.46.200    4.docs.google.com
-</span><span class='line'>203.208.46.200    4.drive.google.com
-</span><span class='line'>203.208.46.200    5.docs.google.com
-</span><span class='line'>203.208.46.200    5.drive.google.com
-</span><span class='line'>203.208.46.200    6.docs.google.com
-</span><span class='line'>203.208.46.200    6.drive.google.com
-</span><span class='line'>203.208.46.200    7.docs.google.com
-</span><span class='line'>203.208.46.200    7.drive.google.com
-</span><span class='line'>203.208.46.200    8.docs.google.com
-</span><span class='line'>203.208.46.200    8.drive.google.com
-</span><span class='line'>203.208.46.200    9.docs.google.com
-</span><span class='line'>203.208.46.200    9.drive.google.com
-</span><span class='line'>203.208.46.200    accounts.google.com
-</span><span class='line'>203.208.46.200    accounts.l.google.com
-</span><span class='line'>203.208.46.200    answers.google.com
-</span><span class='line'>203.208.46.200    apis.google.com
-</span><span class='line'>203.208.46.200    appengine.google.com
-</span><span class='line'>203.208.46.200    apps.google.com
-</span><span class='line'>203.208.46.200    appspot.l.google.com
-</span><span class='line'>203.208.46.200    bks0.books.google.com
-</span><span class='line'>203.208.46.200    bks1.books.google.com
-</span><span class='line'>203.208.46.200    bks10.books.google.com
-</span><span class='line'>203.208.46.200    bks2.books.google.com
-</span><span class='line'>203.208.46.200    bks3.books.google.com
-</span><span class='line'>203.208.46.200    bks4.books.google.com
-</span><span class='line'>203.208.46.200    bks5.books.google.com
-</span><span class='line'>203.208.46.200    bks6.books.google.com
-</span><span class='line'>203.208.46.200    bks7.books.google.com
-</span><span class='line'>203.208.46.200    bks8.books.google.com
-</span><span class='line'>203.208.46.200    bks9.books.google.com
-</span><span class='line'>203.208.46.200    blogsearch.google.com
-</span><span class='line'>203.208.46.200    books.google.com
-</span><span class='line'>203.208.46.200    browserchannel-docs.l.google.com
-</span><span class='line'>203.208.46.200    browserchannel-spreadsheets.l.google.com
-</span><span class='line'>203.208.46.200    browsersync.google.com
-</span><span class='line'>203.208.46.200    browsersync.l.google.com
-</span><span class='line'>203.208.46.200    buzz.google.com
-</span><span class='line'>203.208.46.200    cache.l.google.com
-</span><span class='line'>203.208.46.200    cache.pack.google.com
-</span><span class='line'>203.208.46.200    calendar.google.com
-</span><span class='line'>203.208.46.200    cbk0.google.com
-</span><span class='line'>203.208.46.200    cbk1.google.com
-</span><span class='line'>203.208.46.200    cbk2.google.com
-</span><span class='line'>203.208.46.200    cbk3.google.com
-</span><span class='line'>203.208.46.200    cbks0.google.com
-</span><span class='line'>203.208.46.200    cbks1.google.com
-</span><span class='line'>203.208.46.200    cbks2.google.com
-</span><span class='line'>203.208.46.200    cbks3.google.com
-</span><span class='line'>203.208.46.200    chart.apis.google.com
-</span><span class='line'>203.208.46.221    chatenabled.mail.google.com
-</span><span class='line'>203.208.46.200    checkout.google.com
-</span><span class='line'>203.208.46.200    checkout.l.google.com
-</span><span class='line'>203.208.46.200    chrome.google.com
-</span><span class='line'>203.208.46.200    clients.l.google.com
-</span><span class='line'>203.208.46.200    clients1.google.com
-</span><span class='line'>203.208.46.200    clients2.google.com
-</span><span class='line'>203.208.46.200    clients3.google.com
-</span><span class='line'>203.208.46.200    clients4.google.com
-</span><span class='line'>203.208.46.200    clients5.google.com
-</span><span class='line'>203.208.46.200    clients6.google.com
-</span><span class='line'>203.208.46.200    clients7.google.com
-</span><span class='line'>203.208.46.200    code.google.com
-</span><span class='line'>203.208.46.200    code.l.google.com
-</span><span class='line'>203.208.46.200    csi.l.google.com
-</span><span class='line'>203.208.46.200    desktop.google.com
-</span><span class='line'>203.208.46.200    desktop.l.google.com
-</span><span class='line'>203.208.46.200    desktop2.google.com
-</span><span class='line'>203.208.46.200    developers.google.com
-</span><span class='line'>203.208.46.200    ditu.google.com
-</span><span class='line'>203.208.46.200    dl.google.com
-</span><span class='line'>203.208.46.200    dl.l.google.com
-</span><span class='line'>203.208.46.200    dl-ssl.google.com
-</span><span class='line'>203.208.46.200    docs.google.com
-</span><span class='line'>203.208.46.200    docs0.google.com
-</span><span class='line'>203.208.46.200    docs1.google.com
-</span><span class='line'>203.208.46.200    docs2.google.com
-</span><span class='line'>203.208.46.200    docs3.google.com
-</span><span class='line'>203.208.46.200    docs4.google.com
-</span><span class='line'>203.208.46.200    docs5.google.com
-</span><span class='line'>203.208.46.200    docs6.google.com
-</span><span class='line'>203.208.46.200    docs7.google.com
-</span><span class='line'>203.208.46.200    docs8.google.com
-</span><span class='line'>203.208.46.200    docs9.google.com
-</span><span class='line'>203.208.46.200    drive.google.com
-</span><span class='line'>203.208.46.200    drive0.google.com
-</span><span class='line'>203.208.46.200    drive1.google.com
-</span><span class='line'>203.208.46.200    drive2.google.com
-</span><span class='line'>203.208.46.200    drive3.google.com
-</span><span class='line'>203.208.46.200    drive4.google.com
-</span><span class='line'>203.208.46.200    drive5.google.com
-</span><span class='line'>203.208.46.200    drive6.google.com
-</span><span class='line'>203.208.46.200    drive7.google.com
-</span><span class='line'>203.208.46.200    drive8.google.com
-</span><span class='line'>203.208.46.200    drive9.google.com
-</span><span class='line'>203.208.46.200    earth.google.com
-</span><span class='line'>203.208.46.200    encrypted.google.com
-</span><span class='line'>203.208.46.200    encrypted-tbn.l.google.com
-</span><span class='line'>203.208.46.200    encrypted-tbn0.google.com
-</span><span class='line'>203.208.46.200    encrypted-tbn1.google.com
-</span><span class='line'>203.208.46.200    encrypted-tbn2.google.com
-</span><span class='line'>203.208.46.200    encrypted-tbn3.google.com
-</span><span class='line'>203.208.46.200    feedburner.google.com
-</span><span class='line'>203.208.46.200    feedproxy.google.com
-</span><span class='line'>203.208.46.221    filetransferenabled.mail.google.com
-</span><span class='line'>203.208.46.200    finance.google.com
-</span><span class='line'>203.208.46.200    fusion.google.com
-</span><span class='line'>203.208.46.200    geoauth.google.com
-</span><span class='line'>203.208.46.200    gg.google.com
-</span><span class='line'>203.208.46.200    ghs.google.com
-</span><span class='line'>203.208.46.200    ghs.l.google.com
-</span><span class='line'>203.208.46.200    ghs46.google.com
-</span><span class='line'>203.208.46.200    ghs46.l.google.com
-</span><span class='line'>203.208.46.200    google.com
-</span><span class='line'>203.208.46.200    googleapis.l.google.com
-</span><span class='line'>203.208.46.200    googleapis-ajax.google.com
-</span><span class='line'>203.208.46.200    googleapis-ajax.l.google.com
-</span><span class='line'>203.208.46.200    googlecode.l.google.com
-</span><span class='line'>203.208.46.200    google-public-dns-a.google.com
-</span><span class='line'>203.208.46.200    google-public-dns-b.google.com
-</span><span class='line'>203.208.46.200    goto.google.com
-</span><span class='line'>203.208.46.200    groups.google.com
-</span><span class='line'>203.208.46.200    groups.l.google.com
-</span><span class='line'>203.208.46.200    groups-beta.google.com
-</span><span class='line'>203.208.46.200    gxc.google.com
-</span><span class='line'>203.208.46.200    id.google.com
-</span><span class='line'>203.208.46.200    id.l.google.com
-</span><span class='line'>203.208.46.200    images.google.com
-</span><span class='line'>203.208.46.200    images.l.google.com
-</span><span class='line'>203.208.46.200    investor.google.com
-</span><span class='line'>203.208.46.200    jmt0.google.com
-</span><span class='line'>203.208.46.200    kh.google.com
-</span><span class='line'>203.208.46.200    kh.l.google.com
-</span><span class='line'>203.208.46.200    khm.google.com
-</span><span class='line'>203.208.46.200    khm.l.google.com
-</span><span class='line'>203.208.46.200    khm0.google.com
-</span><span class='line'>203.208.46.200    khm1.google.com
-</span><span class='line'>203.208.46.200    khm2.google.com
-</span><span class='line'>203.208.46.200    khm3.google.com
-</span><span class='line'>203.208.46.200    khmdb.google.com
-</span><span class='line'>203.208.46.200    khms.google.com
-</span><span class='line'>203.208.46.200    khms.l.google.com
-</span><span class='line'>203.208.46.200    khms0.google.com
-</span><span class='line'>203.208.46.200    khms1.google.com
-</span><span class='line'>203.208.46.200    khms2.google.com
-</span><span class='line'>203.208.46.200    khms3.google.com
-</span><span class='line'>203.208.46.200    labs.google.com
-</span><span class='line'>203.208.46.200    large-uploads.l.google.com
-</span><span class='line'>203.208.46.200    lh2.google.com
-</span><span class='line'>203.208.46.200    lh2.l.google.com
-</span><span class='line'>203.208.46.200    lh3.google.com
-</span><span class='line'>203.208.46.200    lh4.google.com
-</span><span class='line'>203.208.46.200    lh5.google.com
-</span><span class='line'>203.208.46.200    lh6.google.com
-</span><span class='line'>203.208.46.200    linkhelp.clients.google.com
-</span><span class='line'>203.208.46.200    local.google.com
-</span><span class='line'>203.208.46.200    m.google.com
-</span><span class='line'>203.208.46.213    mail.google.com
-</span><span class='line'>203.208.46.200    map.google.com
-</span><span class='line'>203.208.46.200    maps.google.com
-</span><span class='line'>203.208.46.200    maps.l.google.com
-</span><span class='line'>203.208.46.200    maps-api-ssl.google.com
-</span><span class='line'>203.208.46.200    mars.google.com
-</span><span class='line'>203.208.46.200    mobile.l.google.com
-</span><span class='line'>203.208.46.200    mobile-gtalk.l.google.com
-</span><span class='line'>203.208.46.200    mobilemaps.clients.google.com
-</span><span class='line'>203.208.46.200    mt.google.com
-</span><span class='line'>203.208.46.200    mt.l.google.com
-</span><span class='line'>203.208.46.200    mt0.google.com
-</span><span class='line'>203.208.46.200    mt1.google.com
-</span><span class='line'>203.208.46.200    mt2.google.com
-</span><span class='line'>203.208.46.200    mt3.google.com
-</span><span class='line'>#203.208.46.200   mtalk.google.com
-</span><span class='line'>203.208.46.200    mts.google.com
-</span><span class='line'>203.208.46.200    mts.l.google.com
-</span><span class='line'>203.208.46.200    mts0.google.com
-</span><span class='line'>203.208.46.200    mts1.google.com
-</span><span class='line'>203.208.46.200    mts2.google.com
-</span><span class='line'>203.208.46.200    mts3.google.com
-</span><span class='line'>203.208.46.200    music.google.com
-</span><span class='line'>203.208.46.200    music-streaming.l.google.com
-</span><span class='line'>203.208.46.200    mw1.google.com
-</span><span class='line'>203.208.46.200    mw2.google.com
-</span><span class='line'>203.208.46.200    news.google.com
-</span><span class='line'>203.208.46.200    news.l.google.com
-</span><span class='line'>203.208.46.200    pack.google.com
-</span><span class='line'>203.208.46.200    photos.google.com
-</span><span class='line'>203.208.46.200    photos-ugc.l.google.com
-</span><span class='line'>203.208.46.200    picasa.google.com
-</span><span class='line'>203.208.46.200    picasaweb.google.com
-</span><span class='line'>203.208.46.200    picasaweb.l.google.com
-</span><span class='line'>203.208.46.200    places.google.com
-</span><span class='line'>203.208.46.200    play.google.com
-</span><span class='line'>203.208.46.200    productforums.google.com
-</span><span class='line'>203.208.46.200    profiles.google.com
-</span><span class='line'>203.208.46.200    reader.google.com
-</span><span class='line'>203.208.46.200    safebrowsing.cache.l.google.com
-</span><span class='line'>203.208.46.200    safebrowsing.clients.google.com
-</span><span class='line'>203.208.46.200    safebrowsing.google.com
-</span><span class='line'>203.208.46.200    safebrowsing-cache.google.com
-</span><span class='line'>203.208.46.200    sandbox.google.com
-</span><span class='line'>203.208.46.200    sb.google.com
-</span><span class='line'>203.208.46.200    sb.l.google.com
-</span><span class='line'>203.208.46.200    sb-ssl.google.com
-</span><span class='line'>203.208.46.200    sb-ssl.l.google.com
-</span><span class='line'>203.208.46.200    scholar.google.com
-</span><span class='line'>203.208.46.200    scholar.l.google.com
-</span><span class='line'>203.208.46.200    script.google.com
-</span><span class='line'>203.208.46.200    services.google.com
-</span><span class='line'>203.208.46.200    sites.google.com
-</span><span class='line'>203.208.46.200    sketchup.google.com
-</span><span class='line'>203.208.46.200    sketchup.l.google.com
-</span><span class='line'>203.208.46.200    spreadsheet.google.com
-</span><span class='line'>203.208.46.200    spreadsheets.google.com
-</span><span class='line'>203.208.46.200    spreadsheets.l.google.com
-</span><span class='line'>203.208.46.200    spreadsheets0.google.com
-</span><span class='line'>203.208.46.200    spreadsheets1.google.com
-</span><span class='line'>203.208.46.200    spreadsheets2.google.com
-</span><span class='line'>203.208.46.200    spreadsheets3.google.com
-</span><span class='line'>203.208.46.200    spreadsheets4.google.com
-</span><span class='line'>203.208.46.200    spreadsheets5.google.com
-</span><span class='line'>203.208.46.200    spreadsheets6.google.com
-</span><span class='line'>203.208.46.200    spreadsheets7.google.com
-</span><span class='line'>203.208.46.200    spreadsheets8.google.com
-</span><span class='line'>203.208.46.200    spreadsheets9.google.com
-</span><span class='line'>203.208.46.200    spreadsheets-china.l.google.com
-</span><span class='line'>203.208.46.200    suggestqueries.google.com
-</span><span class='line'>203.208.46.200    suggestqueries.l.google.com
-</span><span class='line'>203.208.46.200    support.google.com
-</span><span class='line'>173.194.70.125    talk.google.com
-</span><span class='line'>203.208.46.200    talkgadget.google.com
-</span><span class='line'>203.208.46.200    tbn0.google.com
-</span><span class='line'>203.208.46.200    tbn1.google.com
-</span><span class='line'>203.208.46.200    tbn2.google.com
-</span><span class='line'>203.208.46.200    tbn3.google.com
-</span><span class='line'>203.208.46.200    toolbar.google.com
-</span><span class='line'>203.208.46.200    toolbarqueries.clients.google.com
-</span><span class='line'>203.208.46.200    toolbarqueries.google.com
-</span><span class='line'>203.208.46.200    toolbarqueries.l.google.com
-</span><span class='line'>203.208.46.200    tools.google.com
-</span><span class='line'>203.208.46.200    tools.l.google.com
-</span><span class='line'>203.208.46.200    translate.google.com
-</span><span class='line'>203.208.46.200    trends.google.com
-</span><span class='line'>203.208.46.200    upload.docs.google.com
-</span><span class='line'>203.208.46.200    upload.drive.google.com
-</span><span class='line'>203.208.46.200    uploads.code.google.com
-</span><span class='line'>203.208.46.200    uploadsj.clients.google.com
-</span><span class='line'>203.208.46.200    v3.cache1.c.docs.google.com
-</span><span class='line'>203.208.46.200    video.google.com
-</span><span class='line'>203.208.46.200    video-stats.l.google.com
-</span><span class='line'>203.208.46.200    voice.google.com
-</span><span class='line'>203.208.46.200    wallet.google.com
-</span><span class='line'>203.208.46.200    wifi.google.com
-</span><span class='line'>203.208.46.200    wifi.l.google.com
-</span><span class='line'>203.208.46.200    wire.l.google.com
-</span><span class='line'>203.208.46.200    writely.google.com
-</span><span class='line'>203.208.46.200    writely.l.google.com
-</span><span class='line'>203.208.46.200    writely-china.l.google.com
-</span><span class='line'>203.208.46.200    writely-com.l.google.com
-</span><span class='line'>203.208.46.200    www.google.com
-</span><span class='line'>203.208.46.200    www.l.google.com
-</span><span class='line'>203.208.46.200    www2.l.google.com
-</span><span class='line'>203.208.46.200    www3.l.google.com
-</span><span class='line'>203.208.46.200    www4.l.google.com
-</span><span class='line'>203.208.46.200    ytstatic.l.google.com
-</span><span class='line'>203.208.46.202    0-open-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    0-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    1-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    1-open-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    1-ps.googleusercontent.com
-</span><span class='line'>203.208.46.202    2-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    2-open-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    2-ps.googleusercontent.com
-</span><span class='line'>203.208.46.202    3-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    3-ps.googleusercontent.com
-</span><span class='line'>203.208.46.202    3hdrrlnlknhi77nrmsjnjr152ueo3soc-a-calendar-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    3-open-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    4-ps.googleusercontent.com
-</span><span class='line'>203.208.46.202    4fjvqid3r3oq66t548clrdj52df15coc-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    53rd6p0catml6vat6qra84rs0del836d-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    59cbv4l9s05pbaks9v77vc3mengeqors-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    8kubpeu8314p2efdd7jlv09an9i2ljdo-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    adstvca8k2ooaknjjmv89j22n9t676ve-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    blogger.googleusercontent.com
-</span><span class='line'>203.208.46.202    bt26mravu2qpe56n8gnmjnpv2inl84bf-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    clients1.googleusercontent.com
-</span><span class='line'>203.208.46.202    clients2.googleusercontent.com
-</span><span class='line'>203.208.46.202    clients3.googleusercontent.com
-</span><span class='line'>203.208.46.202    clients4.googleusercontent.com
-</span><span class='line'>203.208.46.202    clients5.googleusercontent.com
-</span><span class='line'>203.208.46.202    clients6.googleusercontent.com
-</span><span class='line'>203.208.46.202    clients7.googleusercontent.com
-</span><span class='line'>203.208.46.202    code-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    debh8vg7vd93bco3prdajidmm7dhql3f-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    doc-00-7o-docs.googleusercontent.com
-</span><span class='line'>203.208.46.202    doc-08-7o-docs.googleusercontent.com
-</span><span class='line'>203.208.46.202    doc-0c-7o-docs.googleusercontent.com
-</span><span class='line'>203.208.46.202    doc-0g-7o-docs.googleusercontent.com
-</span><span class='line'>203.208.46.202    doc-0s-7o-docs.googleusercontent.com
-</span><span class='line'>203.208.46.202    doc-10-7o-docs.googleusercontent.com
-</span><span class='line'>203.208.46.202    doc-14-7o-docs.googleusercontent.com
-</span><span class='line'>203.208.46.202    feedback.googleusercontent.com
-</span><span class='line'>203.208.46.202    googlehosted.l.googleusercontent.com
-</span><span class='line'>203.208.46.202    gp0.googleusercontent.com
-</span><span class='line'>203.208.46.202    gp1.googleusercontent.com
-</span><span class='line'>203.208.46.202    gp2.googleusercontent.com
-</span><span class='line'>203.208.46.202    gp3.googleusercontent.com
-</span><span class='line'>203.208.46.202    gp4.googleusercontent.com
-</span><span class='line'>203.208.46.202    gp5.googleusercontent.com
-</span><span class='line'>203.208.46.202    gp6.googleusercontent.com
-</span><span class='line'>203.208.46.202    hsco54a20sh11q9jkmb51ad2n3hmkmrg-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    i8brh95qor6r54nkl52hidj2ggcs4jgm-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images1-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images2-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images3-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images4-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images5-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images6-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images7-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images8-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images9-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images-docs-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    images-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    k6v18tjr24doa89b55o3na41kn4v73eb-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    lh1.googleusercontent.com
-</span><span class='line'>203.208.46.202    lh2.googleusercontent.com
-</span><span class='line'>203.208.46.202    lh3.googleusercontent.com
-</span><span class='line'>203.208.46.202    lh4.googleusercontent.com
-</span><span class='line'>203.208.46.202    lh5.googleusercontent.com
-</span><span class='line'>203.208.46.202    lh6.googleusercontent.com
-</span><span class='line'>203.208.46.202    mail-attachment.googleusercontent.com
-</span><span class='line'>203.208.46.202    music.googleusercontent.com
-</span><span class='line'>203.208.46.202    music-onebox.googleusercontent.com
-</span><span class='line'>203.208.46.202    oauth.googleusercontent.com
-</span><span class='line'>203.208.46.202    ob7f2qc0i50kbjnc81vkhgmb5hsv7a8l-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    ode25pfjgmvpquh3b1oqo31ti5ibg5fr-a-calendar.opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    qhie5b8u979rnch1q0hqbrmbkn9estf7-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    r70rmsn4s0rhk6cehcbbcbfbs31pu0va-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    rbjhe237k979f79d87gmenp3gejfonu9-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    s1.googleusercontent.com
-</span><span class='line'>203.208.46.202    s2.googleusercontent.com
-</span><span class='line'>203.208.46.202    s3.googleusercontent.com
-</span><span class='line'>203.208.46.202    s4.googleusercontent.com
-</span><span class='line'>203.208.46.202    s5.googleusercontent.com
-</span><span class='line'>203.208.46.202    s6.googleusercontent.com
-</span><span class='line'>203.208.46.202    spreadsheets-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    static.googleusercontent.com
-</span><span class='line'>203.208.46.202    t.doc-0-0-sj.sj.googleusercontent.com
-</span><span class='line'>203.208.46.202    themes.googleusercontent.com
-</span><span class='line'>203.208.46.202    translate.googleusercontent.com
-</span><span class='line'>203.208.46.202    u807isd5egseeabjccgcns005p2miucq-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    upt14k1i2veesusrda9nfotcrbp9d7p5-a-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    webcache.googleusercontent.com
-</span><span class='line'>203.208.46.202    www.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-calendar-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-fc-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-focus-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-gm-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-kix-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-open-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-opensocial-sandbox.googleusercontent.com
-</span><span class='line'>203.208.46.202    www-oz-opensocial.googleusercontent.com
-</span><span class='line'>203.208.46.207    csi.gstatic.com
-</span><span class='line'>203.208.46.207    g0.gstatic.com
-</span><span class='line'>203.208.46.207    g1.gstatic.com
-</span><span class='line'>203.208.46.207    g2.gstatic.com
-</span><span class='line'>203.208.46.207    g3.gstatic.com
-</span><span class='line'>203.208.46.207    maps.gstatic.com
-</span><span class='line'>203.208.46.207    mt0.gstatic.com
-</span><span class='line'>203.208.46.207    mt1.gstatic.com
-</span><span class='line'>203.208.46.207    mt2.gstatic.com
-</span><span class='line'>203.208.46.207    mt3.gstatic.com
-</span><span class='line'>203.208.46.207    mt4.gstatic.com
-</span><span class='line'>203.208.46.207    mt5.gstatic.com
-</span><span class='line'>203.208.46.207    mt6.gstatic.com
-</span><span class='line'>203.208.46.207    mt7.gstatic.com
-</span><span class='line'>203.208.46.207    ssl.gstatic.com
-</span><span class='line'>203.208.46.207    t0.gstatic.com
-</span><span class='line'>203.208.46.207    t1.gstatic.com
-</span><span class='line'>203.208.46.207    t2.gstatic.com
-</span><span class='line'>203.208.46.207    t3.gstatic.com
-</span><span class='line'>203.208.46.207    www.gstatic.com
-</span><span class='line'>203.208.46.170    lh1.ggpht.com
-</span><span class='line'>203.208.46.170    lh2.ggpht.com
-</span><span class='line'>203.208.46.170    lh3.ggpht.com
-</span><span class='line'>203.208.46.170    lh4.ggpht.com
-</span><span class='line'>203.208.46.170    lh5.ggpht.com
-</span><span class='line'>203.208.46.170    lh6.ggpht.com
-</span><span class='line'>203.208.46.170    nt0.ggpht.com
-</span><span class='line'>203.208.46.170    nt1.ggpht.com
-</span><span class='line'>203.208.46.170    nt2.ggpht.com
-</span><span class='line'>203.208.46.170    nt3.ggpht.com
-</span><span class='line'>203.208.46.170    nt4.ggpht.com
-</span><span class='line'>203.208.46.170    nt5.ggpht.com
-</span><span class='line'>203.208.46.200    appspot.com
-</span><span class='line'>173.194.64.141    chrometophone.appspot.com
-</span><span class='line'>203.208.46.200    evolutionofweb.appspot.com
-</span><span class='line'>203.208.46.200    googcloudlabs.appspot.com
-</span><span class='line'>203.208.46.200    gv-gadget.appspot.com
-</span><span class='line'>203.208.46.200    magnifier.blogspot.com
-</span><span class='line'>203.208.46.200    moderator.appspot.com
-</span><span class='line'>203.208.46.200    newsfeed-dot-latest-dot-rovio-ad-engine.appspot.com
-</span><span class='line'>203.208.46.200    productideas.appspot.com
-</span><span class='line'>203.208.46.200    project-slingshot-gp.appspot.com
-</span><span class='line'>203.208.46.200    r2303.latest.project-slingshot-hr.appspot.com
-</span><span class='line'>203.208.46.200    r3085-dot-latest-dot-project-slingshot-gp.appspot.com
-</span><span class='line'>203.208.46.200    r3091-dot-latest-dot-project-slingshot-gp.appspot.com
-</span><span class='line'>203.208.46.200    r3101-dot-latest-dot-project-slingshot-gp.appspot.com
-</span><span class='line'>203.208.46.200    r3269-dot-latest-dot-project-slingshot-gp.appspot.com
-</span><span class='line'>203.208.46.200    r3432-dot-latest-dot-project-slingshot-hr.appspot.com
-</span><span class='line'>203.208.46.200    r4681-dot-latest-dot-project-slingshot-hr.appspot.com
-</span><span class='line'>203.208.46.170    r7647-dot-latest-dot-project-slingshot-hr.appspot.com
-</span><span class='line'>203.208.46.200    wcproxyx.appspot.com
-</span><span class='line'>203.208.46.200    www.appspot.com
-</span><span class='line'>203.208.46.200    ajax.googleapis.com
-</span><span class='line'>203.208.46.200    chart.googleapis.com
-</span><span class='line'>203.208.46.200    fonts.googleapis.com
-</span><span class='line'>203.208.46.200    maps.googleapis.com
-</span><span class='line'>203.208.46.200    mt0.googleapis.com
-</span><span class='line'>203.208.46.200    mt1.googleapis.com
-</span><span class='line'>203.208.46.200    mt2.googleapis.com
-</span><span class='line'>203.208.46.200    mt3.googleapis.com
-</span><span class='line'>203.208.46.200    redirector-bigcache.googleapis.com
-</span><span class='line'>203.208.46.200    translate.googleapis.com
-</span><span class='line'>173.194.66.95 www.googleapis.com
-</span><span class='line'>203.208.46.200    autoproxy-gfwlist.googlecode.com
-</span><span class='line'>203.208.46.200    chromium.googlecode.com
-</span><span class='line'>203.208.46.200    closure-library.googlecode.com
-</span><span class='line'>203.208.46.200    earth-api-samples.googlecode.com
-</span><span class='line'>203.208.46.200    gmaps-samples-flash.googlecode.com
-</span><span class='line'>203.208.46.200    google-code-feed-gadget.googlecode.com
-</span><span class='line'>203.208.46.200    blogsearch.google.cn
-</span><span class='line'>203.208.46.200    ditu.google.cn
-</span><span class='line'>203.208.46.200    gg.google.cn
-</span><span class='line'>203.208.46.200    id.google.cn
-</span><span class='line'>203.208.46.200    maps.gstatic.cn
-</span><span class='line'>203.208.46.200    m.google.cn
-</span><span class='line'>203.208.46.200    mt.google.cn
-</span><span class='line'>203.208.46.200    mt0.google.cn
-</span><span class='line'>203.208.46.200    mt1.google.cn
-</span><span class='line'>203.208.46.200    mt2.google.cn
-</span><span class='line'>203.208.46.200    mt3.google.cn
-</span><span class='line'>203.208.46.200    news.google.cn
-</span><span class='line'>203.208.46.200    scholar.google.cn
-</span><span class='line'>203.208.46.200    translate.google.cn
-</span><span class='line'>203.208.46.200    www.google.cn
-</span><span class='line'>203.208.46.200    www.gstatic.cn
-</span><span class='line'>203.208.46.200    accounts.google.com.hk
-</span><span class='line'>203.208.46.200    blogsearch.google.com.hk
-</span><span class='line'>203.208.46.200    books.google.com.hk
-</span><span class='line'>203.208.46.200    clients1.google.com.hk
-</span><span class='line'>203.208.46.200    desktop.google.com.hk
-</span><span class='line'>203.208.46.200    encrypted.google.com.hk
-</span><span class='line'>203.208.46.200    groups.google.com.hk
-</span><span class='line'>203.208.46.200    gxc.google.com.hk
-</span><span class='line'>203.208.46.200    id.google.com.hk
-</span><span class='line'>203.208.46.200    images.google.com.hk
-</span><span class='line'>203.208.46.200    m.google.com.hk
-</span><span class='line'>203.208.46.200    maps.google.com.hk
-</span><span class='line'>203.208.46.200    news.google.com.hk
-</span><span class='line'>203.208.46.200    picasaweb.google.com.hk
-</span><span class='line'>203.208.46.200    plus.url.google.com.hk
-</span><span class='line'>203.208.46.200    scholar.google.com.hk
-</span><span class='line'>203.208.46.200    toolbar.google.com.hk
-</span><span class='line'>203.208.46.200    toolbarqueries.google.com.hk
-</span><span class='line'>203.208.46.200    translate.google.com.hk
-</span><span class='line'>203.208.46.200    translate.google.com.hk
-</span><span class='line'>203.208.46.200    wenda.google.com.hk
-</span><span class='line'>203.208.46.200    www.google.com.hk
-</span><span class='line'>203.208.46.200    accounts.blogger.com
-</span><span class='line'>203.208.46.200    android.googlesource.com
-</span><span class='line'>203.208.46.200    auth.keyhole.com
-</span><span class='line'>203.208.46.200    chrome.angrybirds.com
-</span><span class='line'>203.208.46.200    developer.android.com
-</span><span class='line'>203.208.46.200    domains.googlesyndication.com
-</span><span class='line'>203.208.46.200    earthengine.googlelabs.com
-</span><span class='line'>203.208.46.200    feeds.feedburner.com
-</span><span class='line'>203.208.46.200    g.co
-</span><span class='line'>203.208.46.200    goo.gl
-</span><span class='line'>203.208.46.162    listen.googlelabs.com
-</span><span class='line'>203.208.46.200    m.googlemail.com
-</span><span class='line'>203.208.46.200    market.android.com
-</span><span class='line'>203.208.46.163    ngrams.googlelabs.com
-</span><span class='line'>173.194.37.99 panoramio.com
-</span><span class='line'>203.208.46.222    smarthosts.googlecode.com
-</span><span class='line'>203.208.46.222    ssl.google-analytics.com
-</span><span class='line'>173.194.76.128    static.panoramio.com
-</span><span class='line'>203.208.46.200    www.blogger.com
-</span><span class='line'>203.208.46.200    www.googleadservices.com
-</span><span class='line'>203.208.46.222    www.google-analytics.com
-</span><span class='line'>203.208.46.200    www.googlelabs.com
-</span><span class='line'>203.208.46.222    www.googlesource.com
-</span><span class='line'>173.194.37.99 www.panoramio.com
-</span><span class='line'>203.208.46.200    plus.google.com
-</span><span class='line'>203.208.46.200    plus.url.google.com
-</span><span class='line'>203.208.46.200    plusone.google.com
-</span><span class='line'>#Google Services END
-</span><span class='line'>#Facebook Start
-</span><span class='line'>173.252.112.28    api-read.facebook.com
-</span><span class='line'>173.252.112.28    api.facebook.com
-</span><span class='line'>173.252.112.28    apps.facebook.com
-</span><span class='line'>61.213.189.98 b.static.ak.facebook.com
-</span><span class='line'>61.213.189.120    b.static.ak.fbcdn.net
-</span><span class='line'>66.220.145.63 bigzipfiles.facebook.com
-</span><span class='line'>61.213.189.113    creative.ak.fbcdn.net
-</span><span class='line'>66.152.103.74 external.ak.fbcdn.net
-</span><span class='line'>66.220.149.88 c.facebook.com
-</span><span class='line'>69.171.227.26 chat.facebook.com
-</span><span class='line'>66.220.147.96 check4.facebook.com
-</span><span class='line'>184.31.111.139    connect.facebook.net
-</span><span class='line'>69.171.227.19 creativeupload.facebook.com
-</span><span class='line'>69.171.240.99 d.facebook.com
-</span><span class='line'>173.252.100.17    developers.facebook.com
-</span><span class='line'>66.220.149.90 error.facebook.com
-</span><span class='line'>173.252.100.18    facebook.com
-</span><span class='line'>61.213.189.113    fbcdn.net
-</span><span class='line'>64.213.102.26 fbcdn-profile-a.akamaihd.net
-</span><span class='line'>173.223.232.67    fbcdn-sphotos-a.akamaihd.net
-</span><span class='line'>173.252.112.28    graph.facebook.com
-</span><span class='line'>66.220.151.33 hphotos-ak-snc1.facebook.com
-</span><span class='line'>66.220.151.33 hphotos-ak-snc3.facebook.com
-</span><span class='line'>69.171.240.10 hphotos-ash4.fbcdn.net
-</span><span class='line'>69.63.183.200 hphotos-pao1.fbcdn.net
-</span><span class='line'>66.220.151.33 hphotos-snc1.fbcdn.net
-</span><span class='line'>66.220.151.32 hphotos-snc3.fbcdn.net
-</span><span class='line'>66.220.151.22 hphotos-snc6.fbcdn.net
-</span><span class='line'>69.171.227.24 hphotos-snc7.fbcdn.net
-</span><span class='line'>66.220.144.43 ldap.thefacebook.com
-</span><span class='line'>173.252.100.25    m.facebook.com
-</span><span class='line'>66.220.149.96 o.facebook.com
-</span><span class='line'>173.252.112.28    orcart.facebook.com
-</span><span class='line'>69.171.245.18 photos-ak-ash1.facebook.com
-</span><span class='line'>69.171.245.18 photos-ash1.facebook.com
-</span><span class='line'>66.220.149.90 pixel.facebook.com
-</span><span class='line'>118.214.190.105   profile.ak.facebook.com
-</span><span class='line'>61.213.189.114    profile.ak.fbcdn.net
-</span><span class='line'>69.171.247.22 s-static.facebook.com
-</span><span class='line'>61.213.189.113    s-hprofile-sf2p.fbcdn.net
-</span><span class='line'>184.26.194.110    s-static.ak.facebook.com
-</span><span class='line'>23.5.157.177  s-static.ak.fbcdn.net
-</span><span class='line'>69.171.227.30 secure-media.facebook.com
-</span><span class='line'>69.171.227.30 secure-media.fbcdn.net
-</span><span class='line'>66.220.149.96 ssl.facebook.com
-</span><span class='line'>69.171.247.38 ssl.connect.facebook.com
-</span><span class='line'>69.63.189.76  star.facebook.com
-</span><span class='line'>61.213.189.98 static.ak.facebook.com
-</span><span class='line'>65.32.34.136  static.ak.fbcdn.net
-</span><span class='line'>69.171.229.17 upload.facebook.com
-</span><span class='line'>66.220.144.41 vpn.tfbnw.net
-</span><span class='line'>120.29.145.50 vthumb.ak.fbcdn.net
-</span><span class='line'>66.220.151.31 vupload.facebook.com
-</span><span class='line'>69.171.225.31 www.connect.facebook.com
-</span><span class='line'>173.252.112.28    www.facebook.com
-</span><span class='line'>173.252.112.28    zh-CN.facebook.com
-</span><span class='line'>#Facebook End
-</span><span class='line'>#Flickr START
-</span><span class='line'>98.136.43.76  geo.yahoo.com
-</span><span class='line'>68.142.250.161    l.yimg.com
-</span><span class='line'>96.6.93.227   s.yimg.com
-</span><span class='line'>98.137.88.88  d.yimg.com
-</span><span class='line'>68.142.196.57 c5.ah.yahoo.com
-</span><span class='line'>124.108.120.124   sa.edit.yahoo.com
-</span><span class='line'>66.163.168.247    open.login.yahoo.com
-</span><span class='line'>124.108.97.193    login.yahoo.com
-</span><span class='line'>209.191.92.115    edit.yahoo.com
-</span><span class='line'>209.191.121.31    up.flickr.com
-</span><span class='line'>209.191.105.102   adjax.flickr.yahoo.com
-</span><span class='line'>204.0.5.35    content.yieldmanager.edgesuite.net
-</span><span class='line'>204.0.5.34    us.js2.yimg.com
-</span><span class='line'>#data from HostsX
-</span><span class='line'>68.142.214.24 flickr.com
-</span><span class='line'>66.196.66.157 www.flickr.com
-</span><span class='line'>68.142.214.43 static.flickr.com
-</span><span class='line'>77.238.160.184    static.flickr.com
-</span><span class='line'>209.191.105.102   adjax.flickr.yahoo.com
-</span><span class='line'>68.142.214.43 farm1.staticflickr.com
-</span><span class='line'>68.142.214.43 mud.farm1.staticflickr.com
-</span><span class='line'>69.147.90.159 farm2.staticflickr.com
-</span><span class='line'>69.147.90.159 sp1.farm2.staticflickr.com
-</span><span class='line'>77.238.160.184    farm3.staticflickr.com
-</span><span class='line'>98.137.205.236    bf1.farm3.staticflickr.com
-</span><span class='line'>216.39.54.34  gq1.farm3.staticflickr.com
-</span><span class='line'>69.147.90.215 sp1.farm3.staticflickr.com
-</span><span class='line'>76.13.18.77   farm4.staticflickr.com
-</span><span class='line'>76.13.18.77   ac4.farm4.staticflickr.com
-</span><span class='line'>67.195.19.62  gq1.farm4.staticflickr.com
-</span><span class='line'>76.13.18.79   farm5.staticflickr.com
-</span><span class='line'>67.195.19.65  gq1.farm5.staticflickr.com
-</span><span class='line'>98.136.171.208    farm6.staticflickr.com
-</span><span class='line'>98.139.21.45  bf1.farm6.staticflickr.com
-</span><span class='line'>98.136.171.208    gq1.farm6.staticflickr.com
-</span><span class='line'>98.138.250.88 farm7.staticflickr.com
-</span><span class='line'>98.139.235.135    bf1.farm7.staticflickr.com
-</span><span class='line'>98.138.250.88 ne1.farm7.staticflickr.com
-</span><span class='line'>#Flickr END
-</span><span class='line'>#Twitter START
-</span><span class='line'>199.16.156.18 twitter.com
-</span><span class='line'>199.16.156.18 mobile.twitter.com
-</span><span class='line'>199.16.156.18 api.twitter.com
-</span><span class='line'>199.16.156.47 pic.twitter.com
-</span><span class='line'>199.59.148.136    stream.twitter.com
-</span><span class='line'>199.59.148.137    sitestream.twitter.com
-</span><span class='line'>199.59.148.135    betastream.twitter.com
-</span><span class='line'>199.59.148.148    upload.twitter.com
-</span><span class='line'>199.59.149.137    dev.twitter.com
-</span><span class='line'>199.59.149.91 pay.twitter.com
-</span><span class='line'>199.59.148.149    urls-real.api.twitter.com
-</span><span class='line'>199.16.156.81 userstream.twitter.com
-</span><span class='line'>199.16.156.12 support.twitter.com
-</span><span class='line'>#199.59.148.210   t.co
-</span><span class='line'>69.58.188.34  bitly.com
-</span><span class='line'>208.87.33.151 api.mobilepicture.com
-</span><span class='line'>199.59.148.16 a0.twimg.com
-</span><span class='line'>199.59.148.16 a1.twimg.com
-</span><span class='line'>199.59.148.16 p.twimg.com
-</span><span class='line'>184.169.75.33 si0.twimg.com
-</span><span class='line'>184.169.75.33 si1.twimg.com
-</span><span class='line'>184.169.75.33 si2.twimg.com
-</span><span class='line'>184.169.75.33 si3.twimg.com
-</span><span class='line'>184.169.75.33 si4.twimg.com
-</span><span class='line'>184.169.75.33 si5.twimg.com
-</span><span class='line'>199.16.156.77 image-proxy-origin.twimg.com
-</span><span class='line'>209.17.70.144 oi40.tinypic.com
-</span><span class='line'>209.17.70.143 oi41.tinypic.com
-</span><span class='line'>209.17.70.143 oi42.tinypic.com
-</span><span class='line'>209.17.70.143 oi43.tinypic.com
-</span><span class='line'>209.17.70.143 oi44.tinypic.com
-</span><span class='line'>209.17.70.143 oi45.tinypic.com
-</span><span class='line'>209.17.70.143 oi46.tinypic.com
-</span><span class='line'>209.17.70.143 oi47.tinypic.com
-</span><span class='line'>209.17.70.143 oi48.tinypic.com
-</span><span class='line'>209.17.70.143 oi49.tinypic.com
-</span><span class='line'>209.17.70.143 oi50.tinypic.com
-</span><span class='line'>209.17.70.144 oi51.tinypic.com
-</span><span class='line'>209.17.70.144 oi52.tinypic.com
-</span><span class='line'>209.17.70.144 oi53.tinypic.com
-</span><span class='line'>209.17.70.144 oi54.tinypic.com
-</span><span class='line'>209.17.70.144 oi55.tinypic.com
-</span><span class='line'>209.17.70.144 oi56.tinypic.com
-</span><span class='line'>50.97.168.42  web1.twitpic.com
-</span><span class='line'>50.23.200.233 web10.twitpic.com
-</span><span class='line'>50.97.168.43  web2.twitpic.com
-</span><span class='line'>50.97.168.43  web3.twitpic.com
-</span><span class='line'>50.97.168.40  web4.twitpic.com
-</span><span class='line'>50.97.168.41  web5.twitpic.com
-</span><span class='line'>50.23.200.231 web6.twitpic.com
-</span><span class='line'>50.23.200.232 web7.twitpic.com
-</span><span class='line'>50.23.200.229 web8.twitpic.com
-</span><span class='line'>50.23.200.228 web9.twitpic.com
-</span><span class='line'>174.37.33.172 m1.twitpic.com
-</span><span class='line'>50.23.200.230 twitpic.com
-</span><span class='line'>208.94.0.61   a.yfrog.com
-</span><span class='line'>208.94.0.61   yfrog.com
-</span><span class='line'>208.94.0.61   www.yfrog.com
-</span><span class='line'>#Twitter END
-</span><span class='line'>#Adobe Activation START
-</span><span class='line'>0.0.0.0   3dns-2.adobe.com
-</span><span class='line'>0.0.0.0   3dns-3.adobe.com
-</span><span class='line'>0.0.0.0   activate.adobe.com
-</span><span class='line'>0.0.0.0   activate-sea.adobe.com
-</span><span class='line'>0.0.0.0   activate-sjc0.adobe.com
-</span><span class='line'>0.0.0.0   adobe-dns.adobe.com
-</span><span class='line'>0.0.0.0   adobe-dns-2.adobe.com
-</span><span class='line'>0.0.0.0   adobe-dns-3.adobe.com
-</span><span class='line'>0.0.0.0   ereg.adobe.com
-</span><span class='line'>0.0.0.0   hl2rcv.adobe.com
-</span><span class='line'>0.0.0.0   practivate.adobe.com
-</span><span class='line'>0.0.0.0   wip3.adobe.com
-</span><span class='line'>0.0.0.0   activate.wip3.adobe.com
-</span><span class='line'>0.0.0.0   ereg.wip3.adobe.com
-</span><span class='line'>0.0.0.0   wwis-dubc1-vip60.adobe.com
-</span><span class='line'>#Adobe Activation END
-</span><span class='line'>#YouTube START
-</span><span class='line'>203.208.46.206    accounts.youtube.com
-</span><span class='line'>203.208.46.206    apiblog.youtube.com
-</span><span class='line'>203.208.46.206    help.youtube.com
-</span><span class='line'>203.208.46.206    i.ytimg.com
-</span><span class='line'>203.208.46.206    i1.ytimg.com
-</span><span class='line'>203.208.46.206    i2.ytimg.com
-</span><span class='line'>203.208.46.206    i3.ytimg.com
-</span><span class='line'>203.208.46.206    i4.ytimg.com
-</span><span class='line'>203.208.46.206    insight.youtube.com
-</span><span class='line'>203.208.46.206    m.youtube.com
-</span><span class='line'>203.208.46.206    s.ytimg.com
-</span><span class='line'>203.208.46.206    www.youtube.com
-</span><span class='line'>203.208.46.206    ytimg.l.google.com
-</span><span class='line'>#YouTube END
-</span><span class='line'>#GitHub START
-</span><span class='line'>204.232.175.78    documentcloud.github.com
-</span><span class='line'>207.97.227.239    github.com
-</span><span class='line'>204.232.175.94    gist.github.com
-</span><span class='line'>107.20.136.254    help.github.com
-</span><span class='line'>207.97.227.252    nodeload.github.com
-</span><span class='line'>199.27.76.130 raw.github.com
-</span><span class='line'>107.22.3.110  status.github.com
-</span><span class='line'>204.232.175.78    training.github.com
-</span><span class='line'>207.97.227.243    www.github.com
-</span><span class='line'>#GitHub END
-</span><span class='line'>#Feedly START
-</span><span class='line'>173.194.79.141    feedly-beta.appspot.com
-</span><span class='line'>173.194.74.121    s3.feedly.com
-</span><span class='line'>#Feedly END
-</span><span class='line'>#Others START
-</span><span class='line'>38.229.72.14  www.torproject.org
-</span><span class='line'>#Others END</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用octopress快速建立个人博客]]></title>
-    <link href="http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke/"/>
-    <updated>2013-06-16T11:25:00+08:00</updated>
-    <id>http://justin-lu.github.io/blog/2013/06/16/shi-yong-octopresskuai-su-jian-li-ge-ren-bo-ke</id>
-    <content type="html"><![CDATA[<p>本文介绍如何用Octopress款速搭建你的博客.</p>
-
-<!-- More -->
-
-
-<h1>Octopress是什么?</h1>
-
-<p>一个通过<code>Markdwon</code>语法，快速生成HTML，并可以发布到<code>github</code>等服务器的<code>Ruby</code>开源项目</p>
-
-<h2>Octopress有哪些功能？</h2>
-
-<ul>
-<li>快速切换主题功能</li>
-<li>关联github、facebook、google+</li>
-<li>使用disqus获取评论功能</li>
-<li>直接部署至githbub</li>
-<li>&hellip;</li>
-</ul>
-
-
-<h3>配置octpress</h3>
-
-<ul>
-<li>克隆octopress项目，并进行配置</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">git</span> <span class="n">clone</span> <span class="nl">git</span><span class="p">:</span><span class="c1">//github.com/imathis/octopress.git blog</span>
-</span><span class='line'><span class="n">cd</span> <span class="n">blog</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>修改<code>.rvmrc</code>文件内容，设置默认ruby版本（如果不使用rvm则不需要）,更新相应的gem</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">rvm</span> <span class="n">use</span> <span class="mf">1.9.3</span><span class="o">-</span><span class="n">p374</span>
-</span><span class='line'><span class="n">bundle</span> <span class="n">update</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>获取ctopress主题,这个几个比较好的主题<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">3rd Party Octopress Themes</a></h3>
-
-<ul>
-<li><p>配置主题</p>
-
-<ul>
-<li>使用submodule</li>
-</ul>
-
-
-<pre><code class="``c">  cd your_octopress_dir
-  git submodule add https://github.com/alexgaribay/octoflat .themes/octoflat
-  rake install['octoflat']
-  rake generate
-  git submodule update
-</code></pre>
-
-<ul>
-<li>使用<code>github clone</code></li>
-</ul>
-
-
-<pre><code class="``c">  cd your_octopress_dir
-  git clone https://github.com/alexgaribay/octoflat .themes/octoflat
-  rake install['octoflat']
-  rake generate
-</code></pre></li>
-<li><p>配置_config.yml</p></li>
-<li><p>新建一个测试博客</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">rake</span> <span class="n">new_post</span><span class="p">[</span><span class="err">&#39;</span><span class="n">hello_word</span><span class="err">&#39;</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>生成动态站点</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">rake</span> <span class="n">generate</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>配置github信息</h3>
-
-<ul>
-<li><p>gihtub上新建一个项目</p></li>
-<li><p>添加远程仓库</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">cd</span> <span class="n">blog</span>
-</span><span class='line'><span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="nl">com</span><span class="p">:</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="o">/</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">git</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>配置octopress与github连接</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">rake</span> <span class="n">setup_github_pages</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>按照提示填入项目地址如：</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="nl">com</span><span class="p">:</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="o">/</span><span class="n">justin</span><span class="o">-</span><span class="n">lu</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">git</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>部署到github</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">rake</span> <span class="n">deploy</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>高级功能
-
-<ul>
-<li>新浪微博秀</li>
-<li>github</li>
-<li>评论</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="err">现在你就可以打开</span>
-</span><span class='line'><span class="n">justn</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span>
-</span><span class='line'><span class="err">浏览你的个人</span><span class="n">blog</span><span class="err">啦。</span>
-</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>
