@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: webservice | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/webservice/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2016-03-15T20:12:33+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[  ]]></title>
+    <link href="http://justin-lu.github.io/blog/2015/11/06/web-service-jian-dan-shi-yong/"/>
+    <updated>2015-11-06T12:15:07+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2015/11/06/web-service-jian-dan-shi-yong</id>
+    <content type="html"><![CDATA[<h1>WebService 简单使用</h1>
+
+<p>标签（空格分隔）： 未分类</p>
+
+<hr />
+
+<h2>什么是Web Services？</h2>
+
+<p> Web Services 是独立的（self-contained）并可自我描述
+  - Web Services 可通过使用UDDI来发现
+  - Web Services 可被其他应用程序使用
+  - XML 是 Web Services 的基础</p>
+
+<h2>Web services 平台的元素</h2>
+
+<ul>
+<li>SOAP (简易对象访问协议)</li>
+<li>UDDI (通用描述、发现及整合)</li>
+<li>WSDL (Web services 描述语言)</li>
+</ul>
+
+
+<h3>什么是 SOAP？</h3>
+
+<blockquote><p>基本的 Web services 平台是 XML + HTTP。</p></blockquote>
+
+<ul>
+<li>SOAP 指简易对象访问协议</li>
+<li>SOAP 是一种通信协议</li>
+<li>SOAP 用于应用程序之间的通信</li>
+<li>SOAP 是一种用于发送消息的格式</li>
+<li>SOAP 被设计用来通过因特网进行通信</li>
+<li>SOAP 独立于平台</li>
+<li>SOAP 独立于语言</li>
+<li>SOAP 基于 XML</li>
+<li>SOAP 很简单并可扩展</li>
+<li>SOAP 允许您绕过防火墙</li>
+<li>SOAP 将作为 W3C 标准来发展</li>
+</ul>
+
+
+<h3>什么是 WSDL?</h3>
+
+<blockquote><p>WSDL 是基于 XML 的用于描述 Web Services 以及如何访问 Web Services 的语言。</p></blockquote>
+
+<ul>
+<li>WSDL 指网络服务描述语言</li>
+<li>WSDL 使用 XML 编写</li>
+<li>WSDL 是一种 XML 文档</li>
+<li>WSDL 用于描述网络服务</li>
+<li>WSDL 也可用于定位网络服务</li>
+<li>WSDL 还不是 W3C 标准</li>
+<li><a href="http://www.thomas-bayer.com/axis2/services/BLZService?wsdl">wsdl例子</a></li>
+</ul>
+
+
+<h3>什么是UDDI？</h3>
+
+<ul>
+<li>UDDI 是一种目录服务，通过它，企业可注册并搜索 Web services。</li>
+<li>UDDI 指通用的描述、发现以及整合（Universal Description, Discovery and Integration）。</li>
+<li>UDDI 是一种用于存储有关 web services 的信息的目录。</li>
+<li>UDDI 是一种由 WSDL 描述的网络服务接口目录。</li>
+<li>UDDI 经由 SOAP 进行通迅。</li>
+<li>UDDI 被构建于 Microsoft .NET 平台之中。</li>
+</ul>
+
+
+<h3>调试工具</h3>
+
+<ul>
+<li><a href="http://www.soapui.org/downloads/soapui/open-source.html">SOAP UI 工具</a></li>
+<li><a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/soap/cxf.html">使用CXF客户端</a></li>
+<li><a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/soap/java_client.html">使用JDK客户端</a></li>
+</ul>
+
+
+<h3>SOAP和HTTP区别</h3>
+
+<ul>
+<li>请求消息格式不同</li>
+<li>响应消息格式不同</li>
+<li>安全机制不同</li>
+<li>客户端调用方式不同</li>
+<li>并发处理能力的不同</li>
+</ul>
+
+
+<h3>在Rails下如何调用SOAP接口</h3>
+
+<p>官方文档
+```ruby</p>
+
+<h1>create a client for the service</h1>
+
+<p>client = Savon.client(wsdl: &lsquo;<a href="http://service.example.com?wsdl">http://service.example.com?wsdl</a>&rsquo;)</p>
+
+<p>client.operations</p>
+
+<h1>=> [:find_user, :list_users]</h1>
+
+<h1>call the &lsquo;findUser&rsquo; operation</h1>
+
+<p>response = client.call(:find_user, message: { id: 42 })</p>
+
+<p>response.body</p>
+
+<h1>=> { find_user_response: { id: 42, name: &lsquo;Hoff&rsquo; } }</h1>
+
+<pre><code>
+实际例子
+</code></pre>
+
+<p>class SoapWithSavon
+  class &lt;&lt; self
+    # TODO: should use settin
+    def client
+      @client ||= Savon.client do
+        # WSDL 接口
+        wsdl &ldquo;<a href="http://192.168.0.22:8000/sap/bc/srt/wsdl/srvc_5618AD468DEB07E0E1008000C0A80016/wsdl11/allinone/ws_policy/document?sap-client=300">http://192.168.0.22:8000/sap/bc/srt/wsdl/srvc_5618AD468DEB07E0E1008000C0A80016/wsdl11/allinone/ws_policy/document?sap-client=300</a>&rdquo;
+        # 用户验证
+        basic_auth &ldquo;CRMINTERFACE&rdquo;, &ldquo;123456&rdquo;
+      end
+    end</p>
+
+<pre><code># 默认同步昨天的设备数据
+def get_devices (start_at = 1.day.ago, end_at = 1.day.ago)
+  start_at_format = start_at.strftime("%Y-%m-%d")
+  end_at_format = end_at.strftime("%Y-%m-%d")
+  response = call_and_fail_gracefully(:z_wl_material, :message =&gt; { "EAssetMatnr" =&gt; {}, "ImUdate1" =&gt; start_at_format, "ImUdate2" =&gt; end_at_format  })
+
+  if response.body[:z_wl_material_response][:e_msgty] == "E"
+    logger.info response.body[:z_wl_material_response][:e_ermsg]
+    []
+  else
+    response.body[:z_wl_material_response][:e_asset_matnr][:item]
+  end
+end
+
+def logger
+  @@logger ||= Logger.new('./log/soap_with_savon.log')
+end
+
+def call_and_fail_gracefully(*args, &amp;block)
+  client.call(*args, &amp;block)
+rescue Savon::SOAPFault =&gt; e
+  logger.info e
+rescue Savon::HTTPError =&gt; e
+  # HTTP Error
+  logger.info e
+rescue Savon::InvalidResponseError =&gt; e
+  # InvalidResponseError
+  logger.info e
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>```</p>
+
+<p>参考文档
+<a href="https://github.com/savonrb/savon">savon</a>
+<a href="https://docs.awspaas.com/reference-guide/aws-paas-api-guide/index.html">AWS PaaS API参考指南</a></p>
+]]></content>
+  </entry>
+  
+</feed>
