@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 部署 | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/bu-shu/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-15T20:24:25+08:00</updated>
+  <updated>2016-03-15T20:31:28+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -28,6 +28,9 @@
 <li>Passenger 4.0+</li>
 <li>Nginx（由 Passenger 编译）</li>
 </ul>
+
+
+<!-- More -->
 
 
 <h2>创建帐号</h2>
@@ -138,7 +141,7 @@ passenger_instance_registry_dir /var/run/passenger-instreg;
 
 <p>可以看到这个，说明已经成功运行</p>
 
-<p><img src="quiver-image-url/36FF0FFBAC4DC86FB7F27AB8039F3103.jpg" alt="1__deploy_zhouyi__etc__ssh_.jpg" /></p>
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f1xto1spynj20w40hcwhy.jpg" alt="" /></p>
 
 <h2>安装Nodejs</h2>
 
