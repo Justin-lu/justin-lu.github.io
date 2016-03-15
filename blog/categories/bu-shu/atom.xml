@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 部署 | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/bu-shu/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-15T20:12:33+08:00</updated>
+  <updated>2016-03-15T20:13:38+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -34,59 +34,59 @@
 
 <p>假设你已经用 root 帐号通过 SSH 登陆服务器, 没有登录的可以通过</p>
 
-<pre><code class="shell">$ ssh root@ip
+<pre><code class="sh">$ ssh root@ip
 </code></pre>
 
 <p>出于安全考虑，不要使用 root 帐号运行 web 应用。这里新建一个专门用于部署的用户，例如 deploy 或者其它你喜欢的名字。运行以下命令创建用户：</p>
 
-<pre><code class="shell"># useradd -m -s /bin/bash deploy
+<pre><code class="sh"># useradd -m -s /bin/bash deploy
 </code></pre>
 
 <p>将用户加入 sudo 群组，以便使用 sudo 命令：</p>
 
-<pre><code class="shell"># adduser deploy sudo
+<pre><code class="sh"># adduser deploy sudo
 </code></pre>
 
 <p>为 deploy 用户设置密码：</p>
 
-<pre><code class="shell"># passwd deploy
+<pre><code class="sh"># passwd deploy
 </code></pre>
 
 <p>为deploy用户添加管理员权限</p>
 
-<pre><code class="shell">$ sudo echo "$USER ALL=(ALL:ALL) ALL" &gt;&gt; /etc/sudoers
+<pre><code class="sh">$ sudo echo "$USER ALL=(ALL:ALL) ALL" &gt;&gt; /etc/sudoers
 </code></pre>
 
 <p>退出当前 SSH 链接，用 deploy 帐号重新登陆。</p>
 
-<pre><code class="shell">ssh deploy@ip
+<pre><code class="sh">ssh deploy@ip
 </code></pre>
 
 <h2>安装 RVM 和 Ruby</h2>
 
 <p>更新 yum，并安装 curl：</p>
 
-<pre><code class="shell">$ sudo yum update
+<pre><code class="sh">$ sudo yum update
 $ sudo yum install curl
 </code></pre>
 
 <p>然后安装 RVM：</p>
 
-<pre><code class="shell">$ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+<pre><code class="sh">$ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 $ \curl -sSL https://get.rvm.io | bash -s stable
 $ rvm requirements
 </code></pre>
 
 <p>RVM 安装完毕后，重新登陆 SSH，让 RVM 配置生效。然后安装 Ruby 2.1.2：</p>
 
-<pre><code class="shell">$ rvm use --install --default 2.2.2
+<pre><code class="sh">$ rvm use --install --default 2.2.2
 $ rvm use 2.2.2@deploy --create --default
 $ gem install bundle
 </code></pre>
 
 <p>安装完毕后，确认目前的 Ruby 版本：</p>
 
-<pre><code class="shell">$ ruby -v
+<pre><code class="sh">$ ruby -v
 </code></pre>
 
 <p>应该看到 <code>ruby 2.2.2p95 (2015-04-13 revision 50295) [x86_64-linux]</code> 字样。</p>
@@ -97,7 +97,7 @@ $ gem install bundle
 
 <p>安装 Passenger 最简单的方法是通过 yum 安装，首先导入 Passenger 的密钥（<a href="https://www.phusionpassenger.com/library/install/nginx/install/oss/el7/">官方文档</a>）：</p>
 
-<pre><code class="shell"># 安装 EPEL and 和其他依赖
+<pre><code class="sh"># 安装 EPEL and 和其他依赖
 $ sudo yum install -y epel-release pygpgme curl
 
 # 添加el7仓库
@@ -123,17 +123,17 @@ passenger_instance_registry_dir /var/run/passenger-instreg;
 
 <p>重启Nginx:</p>
 
-<pre><code class="shell">sudo service nginx restart
+<pre><code class="sh">sudo service nginx restart
 </code></pre>
 
 <p>检查是否安装成功</p>
 
-<pre><code class="shell">sudo passenger-config validate-install
+<pre><code class="sh">sudo passenger-config validate-install
 </code></pre>
 
 <p>查看nginx和passgenr是否运行成功</p>
 
-<pre><code class="shell">sudo passenger-memory-stats
+<pre><code class="sh">sudo passenger-memory-stats
 </code></pre>
 
 <p>可以看到这个，说明已经成功运行</p>
@@ -164,7 +164,7 @@ end
 
 <h3>生成<code>cap</code>文件,在终端运行，会自动生成<code>Capfile</code>和<code>config/deploy.rb</code></h3>
 
-<pre><code class="shell">$ capify .
+<pre><code class="sh">$ capify .
 </code></pre>
 
 <h3>修改<code>deploy</code>文件，配置项就不逐一介绍了，可以阅读 Capistrano 的文档 2.x Getting Started。主要是修改 :rvm_ruby_string 和 :repository 两个，其它再按需修改。</h3>
@@ -507,13 +507,13 @@ production:
 
 <p>你可以按如下命令来生成sshkey</p>
 
-<pre><code class="shell">ssh-keygen -t rsa -C "xxxxx@xxxxx.com"
+<pre><code class="sh">ssh-keygen -t rsa -C "xxxxx@xxxxx.com"
 cat ~/.ssh/id_rsa.pub
 </code></pre>
 
 <h3>初始化<code>cap</code></h3>
 
-<pre><code class="shell">cap deploy:setup
+<pre><code class="sh">cap deploy:setup
 cap deploy:check
 cap deploy:update
 cap db:create
@@ -522,24 +522,24 @@ cap deploy:migrate
 
 <h3>以后就可以通过跑以下命令，部署你的应用了</h3>
 
-<pre><code class="shell">cap deploy:migrations 或者 cap deploy 
+<pre><code class="sh">cap deploy:migrations 或者 cap deploy 
 </code></pre>
 
 <h3>修改 Nginx 配置</h3>
 
 <p>删除原有的默认网站配置：</p>
 
-<pre><code class="shell">$ rm /etc/nginx/sites-enabled/default
+<pre><code class="sh">$ rm /etc/nginx/sites-enabled/default
 </code></pre>
 
 <p>新建网站配置：</p>
 
-<pre><code class="shell">$ touch /etc/nginx/sites-enabled/example.com.conf
+<pre><code class="sh">$ touch /etc/nginx/sites-enabled/example.com.conf
 </code></pre>
 
 <p>编辑<code>/etc/nginx/sites-enabled/example.com.conf</code>，写入以下内容：</p>
 
-<pre><code class="shell">server {
+<pre><code class="sh">server {
     listen 80 default;
     server_name example.com; # 这里填写你真实域名
     root /var/www/example.com/current/public;
@@ -549,7 +549,7 @@ cap deploy:migrate
 
 <p>重启Nginx</p>
 
-<pre><code class="shell">$ sudo service nginx restart
+<pre><code class="sh">$ sudo service nginx restart
 </code></pre>
 
 <h2>完成</h2>
