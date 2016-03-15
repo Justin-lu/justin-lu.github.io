@@ -4,7 +4,7 @@
   <title><![CDATA[Category: soap | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/soap/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-15T20:31:28+08:00</updated>
+  <updated>2016-03-15T20:36:23+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -18,21 +18,15 @@
     <link href="http://justin-lu.github.io/blog/2015/11/06/web-service-jian-dan-shi-yong/"/>
     <updated>2015-11-06T12:15:07+08:00</updated>
     <id>http://justin-lu.github.io/blog/2015/11/06/web-service-jian-dan-shi-yong</id>
-    <content type="html"><![CDATA[<h1>WebService 简单使用</h1>
-
-<!-- More -->
-
-
-<p>标签（空格分隔）： 未分类</p>
-
-<hr />
-
-<h2>什么是Web Services？</h2>
+    <content type="html"><![CDATA[<h2>什么是Web Services？</h2>
 
 <p> Web Services 是独立的（self-contained）并可自我描述
   - Web Services 可通过使用UDDI来发现
   - Web Services 可被其他应用程序使用
   - XML 是 Web Services 的基础</p>
+
+<!-- More -->
+
 
 <h2>Web services 平台的元素</h2>
 
