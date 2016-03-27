@@ -1,0 +1,796 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>详解JS类概念的实现 - Hi I'm Justin-lu</title>
+    <meta name="author" content="Justin-lu">
+    
+	<meta name="description" content="众所周知，JS并没有类(class)的概念,虽然说ES6开始有了类的概念，但是，这并不是说JS有了像Ruby、Java这些基于类的面向对象语言一样，有了全新的继承模型。ES6中的类，仅仅只是基于现有的原型继承的一种语法糖，下面我们好好分析一下，具体是如何实现的 面向对象思想 在讲正题之前， &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Hi I'm Justin-lu" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.ico" rel="shortcut icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+    <link href='http://fonts.googleapis.com/css?family=Slackey' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Amethysta' rel='stylesheet' type='text/css'>
+	<script type="text/javascript" src="/javascripts/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+    <script type="text/javascript" src="/javascripts/jquery-tapir.js"></script>
+
+    <!-- remove or comment it to disable ajaxification -->
+    <script type="text/javascript" src="/javascripts/ajaxify.js"></script>
+
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6ebf04dfe14a2e57a8b36abe0b1bae71";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+    
+    
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-42406282-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+    <div id="wrapper">
+    <header id="header" class="inner"><!-- for more effects see _animate.scss -->
+<h1 class="animated bounceInDown">
+    <div id="headerbg">
+        Justin-lu
+    </div>
+</h1>
+<br>
+
+<ul id="social-links" style="text-align:center">
+  
+  <!-- GitHub -->
+  <li>
+  <a href="https://github.com/Justin-lu" class="github" title="Github"></a>
+  </li>
+  
+  
+  <!-- Google Plus -->
+  <li>
+  <a href="http://plus.google.com/Justin-lu?rel=author" class="google" title="Google+"></a>
+  </li>
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- Sina Weibo -->
+  <li>
+    <a href="http://weibo.com/luxiaoyong17" target="_blank">
+      <svg width="40" height="40" class="sina-weibo" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <path fill="" d="M9.641,17.231c-3.799,0.374-7.079-1.343-7.326-3.838c-0.246-2.494,2.634-4.82,6.434-5.196  c3.798-0.377,7.079,1.34,7.326,3.835C16.32,14.529,13.44,16.855,9.641,17.231 M17.24,8.952c-0.322-0.098-0.544-0.163-0.375-0.587  c0.365-0.921,0.403-1.718,0.007-2.286c-0.745-1.063-2.783-1.005-5.12-0.027c0-0.002-0.734,0.321-0.546-0.261  c0.359-1.156,0.305-2.123-0.254-2.682c-1.267-1.271-4.639,0.047-7.53,2.936C1.257,8.209,0,10.504,0,12.488  c0,3.796,4.866,6.104,9.628,6.104c6.241,0,10.393-3.627,10.393-6.506C20.021,10.347,18.557,9.358,17.24,8.952" />
+        <path fill="" d="M21.384,2.005c-1.507-1.671-3.73-2.308-5.782-1.872l0,0c-0.475,0.102-0.778,0.569-0.676,1.043  c0.101,0.473,0.567,0.777,1.043,0.674c1.459-0.31,3.039,0.145,4.111,1.332c1.069,1.188,1.362,2.806,0.902,4.225v0.001  c-0.149,0.462,0.104,0.957,0.566,1.106c0.461,0.149,0.956-0.104,1.105-0.565c0,0,0-0.002,0-0.004  C23.299,5.95,22.894,3.674,21.384,2.005" />
+        <path fill="" d="M19.07,4.094c-0.734-0.814-1.817-1.123-2.817-0.912c-0.409,0.088-0.671,0.49-0.581,0.899  c0.088,0.407,0.489,0.67,0.896,0.58v0.001c0.488-0.104,1.019,0.047,1.379,0.445c0.359,0.398,0.455,0.941,0.301,1.416l0,0  c-0.127,0.398,0.09,0.825,0.488,0.954c0.396,0.127,0.824-0.091,0.952-0.488C20,6.017,19.805,4.908,19.07,4.094" />
+        <path fill="" d="M9.85,12.713c-0.132,0.229-0.426,0.338-0.656,0.242c-0.227-0.094-0.297-0.348-0.169-0.572  c0.132-0.221,0.416-0.328,0.64-0.239C9.895,12.227,9.978,12.483,9.85,12.713 M8.64,14.268c-0.367,0.586-1.154,0.843-1.747,0.57  c-0.584-0.265-0.756-0.945-0.389-1.518c0.362-0.568,1.124-0.824,1.712-0.574C8.811,12.998,9.001,13.675,8.64,14.268 M10.021,10.118  c-1.808-0.47-3.852,0.431-4.637,2.023c-0.8,1.624-0.026,3.428,1.801,4.017c1.892,0.612,4.122-0.324,4.898-2.078  C12.848,12.367,11.891,10.602,10.021,10.118" />
+      </svg>
+    </a>
+  </li>
+  
+  
+  <!-- Tencent Weibo -->
+  <li>
+    <a href="http://t.qq.com/gdjyluxiaoyong" target="_blank">
+      <svg width="40" height="40" class="tencent-weibo" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <circle fill="" cx="8.229" cy="10.478" r="2.543" />
+        <path fill="" d="M8.229,18.163c-0.615,0-1.227-0.073-1.82-0.217  c-0.364-0.088-0.587-0.455-0.499-0.819c0.088-0.364,0.455-0.588,0.819-0.5c0.488,0.119,0.993,0.178,1.5,0.178  c3.49,0,6.33-2.839,6.33-6.329c0-3.49-2.839-6.33-6.33-6.33c-3.49,0-6.329,2.84-6.329,6.33c0,1.123,0.297,2.226,0.861,3.189  c0.189,0.323,0.08,0.739-0.243,0.928s-0.739,0.08-0.928-0.243c-0.685-1.172-1.046-2.511-1.046-3.875  c0-4.238,3.448-7.686,7.686-7.686c4.238,0,7.686,3.448,7.686,7.686C15.915,14.716,12.467,18.163,8.229,18.163z" />
+        <path fill="" d="M2.066,24.549c-0.277,0-0.51-0.216-0.526-0.496c-0.021-0.351-0.451-8.643,5.989-13.397  c0.234-0.173,0.565-0.124,0.738,0.111c0.173,0.234,0.123,0.565-0.111,0.738C2.186,15.913,2.589,23.909,2.593,23.99  c0.018,0.29-0.204,0.541-0.495,0.558C2.087,24.548,2.077,24.549,2.066,24.549z" />
+        <circle fill="" cx="22.443" cy="5.184" r="1.536" />
+        <path fill="" d="M26.739,6.946c-0.141,0.344-0.322,0.669-0.538,0.967  c-0.133,0.184-0.389,0.224-0.572,0.091s-0.225-0.389-0.091-0.572c0.178-0.246,0.327-0.514,0.443-0.797  c0.8-1.951-0.136-4.188-2.086-4.988c-1.951-0.8-4.188,0.136-4.988,2.086c-0.8,1.951,0.136,4.188,2.086,4.988  c0.628,0.257,1.312,0.344,1.98,0.25c0.224-0.031,0.431,0.125,0.463,0.349c0.032,0.224-0.125,0.431-0.349,0.463  c-0.812,0.114-1.643,0.009-2.405-0.304c-2.369-0.971-3.505-3.688-2.534-6.057c0.972-2.369,3.688-3.505,6.058-2.534  C26.574,1.86,27.71,4.577,26.739,6.946z" />
+        <path fill="" d="M28.895,11.854c-0.063,0.154-0.237,0.234-0.397,0.18c-0.201-0.068-4.934-1.729-6.115-6.419  c-0.043-0.17,0.061-0.343,0.231-0.386c0.171-0.043,0.344,0.06,0.388,0.231c1.095,4.348,5.656,5.956,5.703,5.971  c0.167,0.057,0.255,0.238,0.198,0.404C28.899,11.843,28.897,11.848,28.895,11.854z" />
+      </svg>
+    </a>
+  </li>
+  
+</ul>
+
+
+<!-- use full url including 'index.html' for navigation bar if you are using ajax -->
+<ul id="nav">
+	<li id="ajax"><a href="/index.html">Home</a></li>
+	<li id="ajax"><a href="/blog/archives/index.html">Archives</a></li>
+    <li id="ajax"><a href="/about-me/index.html">About Me</a></li>
+    <li><a href="/atom.xml">RSS</a></li>
+    
+    <li>
+    <div id="dark">
+        <form method="get" action="/search.html" id="search">
+            <input name="query" type="text" placeholder="Search..." x-webkit-speech />
+        </form>
+    </div>
+    </li>
+    
+</ul>
+
+
+
+
+</header>
+
+<div id="toload">
+<!-- begin toload --> 
+    <div id="content" class="inner">
+        <article class="post">
+	<h2 class="title">详解JS类概念的实现</h2>
+	<div class="entry-content"><p>众所周知，JS并没有类(class)的概念,虽然说ES6开始有了类的概念，但是，这并不是说JS有了像Ruby、Java这些基于类的面向对象语言一样，有了全新的继承模型。ES6中的类，仅仅只是基于现有的原型继承的一种语法糖，下面我们好好分析一下，具体是如何实现的</p>
+
+<!-- More -->
+
+
+<h2><a href="https://zh.wikipedia.org/wiki/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1">面向对象思想</a></h2>
+
+<p>在讲正题之前，我们先来讨论一下各种面试题都可能出现的一个问题，什么是<code>面向对象编程（OOP）</code>?</p>
+
+<ul>
+<li>类：定义某一事物的抽象特点，包含属性和方法，举个栗子，<code>狗</code>这个类包含狗的一些基础特征，如毛皮颜色，吠叫等能力。</li>
+<li>对象：类的一个实例，还是举个栗子，小明家的白色的狗和小红家红色的狗。</li>
+<li>属性：对象的特征，比如刚提到的狗皮毛的颜色。</li>
+<li>方法：对象的行为，比如刚才提到的狗的吠叫能力。</li>
+<li>封装性：通过限制只有特定类的对象可以访问特定类的成员，一般包含<code>public</code> <code>protected</code> <code>private</code> 三种，不同语言的实现不同。</li>
+<li>继承性：一个类会有<code>子类</code>,这个<code>子类</code>是更具体化的一个抽象，它包含<code>父类</code>的一些属性和方法，并且有可能有不同于<code>父类</code>的属性和方法。</li>
+<li>多态性：多意为‘许多’，态意为‘形态’。不同类可以定义相同的方法或属性。</li>
+<li>抽象性：复杂现实问题转化为类定义的途径，包括以上所有内容。</li>
+</ul>
+
+
+<h2>如何实现对象（类）的定义</h2>
+
+<p>由于JS并没有<code>类(class)</code>的概念，更多的时候我们把它叫做<code>对象（function）</code>，然后把<code>对象</code>叫做<code>实例(instance)</code>，跟团队里面的人讨论OOP的时候，经常会有概念上的一些误解，特此说明一下。</p>
+
+<h3>构造函数：一个指明了对象类型的函数，通常我们可以通过构造函数类创建</h3>
+
+<p>在js里面，我们通常都是通过构造函数来创建<code>对象(class)</code>,然后通过<code>new</code>这个关键字来实例化一个对象，如:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Dog</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">d1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">(</span><span class="s2">&quot;dodo&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">d1</span><span class="p">.</span><span class="nx">constructor</span>
+</span><span class='line'><span class="c1">// Dog(name){</span>
+</span><span class='line'><span class="c1">//  this.name = name;</span>
+</span><span class='line'><span class="c1">// }</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">d2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">(</span><span class="s1">&#39;do2do&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>为什么通过<code>构造函数</code>可以实现<code>对象（class）</code>属性的定义呢？首先，我们必须理解这个语法<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/new"><code>new constructor[([arguments])]</code></a></p>
+
+<p>我们来具体看看当<code>new Dog('name')</code>时，具体做了哪些事情
+1. 一个新实例被创建。它继承自<code>Dog.prototype</code>
+2. 构造函数被执行，相应的参数会被传入，同时上下文(<code>this</code>)会指向这个新的实例
+3. 除非明确返回值，否则返回新的实例</p>
+
+<p>至此，我们实现了OOP里面的类(Dog)、对象(d1,d2)、和属性(name)的概念，<code>d1</code>和<code>d2</code>有相同的<code>name</code>属性，但是值并不相同,即属性是私有的。</p>
+
+<blockquote><p>注: 新创建的实例，都包含一个<code>constructor</code>属性，改属性指向他们的构造函数<code>Dog</code></p></blockquote>
+
+<h3>原型对象(prototype)</h3>
+
+<p>接下来，我们即将讨论如何定义方法，其实，我们完全可以这样定义我们的方法，如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Dog</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">bark</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot; bark&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">d1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">(</span><span class="s2">&quot;dodo&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">d1</span><span class="p">.</span><span class="nx">bark</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// dodo bark</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是，一般我们不推荐这么做，正如我们所知<code>Dog</code>是一个构造函数，每次实例化时，都会执行这个函数，也就是说，<code>bark</code> 这个方法每次都会被定义, 比较浪费内存。但是我们通常可以用<code>constructor</code>和闭包的方式来实现私有属性，如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Dog</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// barkCount 是私有属性，因为实例并不知道这个属性</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">barkCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">bark</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">barkCount</span> <span class="o">++</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot; bark&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">getBarkCount</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot; has barked &quot;</span> <span class="o">+</span> <span class="nx">barkCount</span> <span class="o">+</span> <span class="s2">&quot; times&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">d1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">(</span><span class="s2">&quot;dodo&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">d1</span><span class="p">.</span><span class="nx">bark</span><span class="p">();</span>
+</span><span class='line'><span class="nx">d1</span><span class="p">.</span><span class="nx">bark</span><span class="p">();</span>
+</span><span class='line'><span class="nx">d1</span><span class="p">.</span><span class="nx">getBarkCount</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好像扯得有点远，我们回归我们的主角<code>prototype</code>，函数<code>Dog</code>有一个特殊的属性，这个属性就叫原型，如上所述，当用<code>new</code>运算符创建实例时，会把<code>Dog</code>的原型对象的引用复制到新的实例内部的[[Prototype]]属性，即<code>d1.[[Prototype]] = Dog.prototype</code>，因为所有的实例的[[Prototype]]都指向<code>Dog</code>的原型对象，那么，我们就可以很方便的定义我们的方法了，如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Dog</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Dog</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">bark</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot; bark&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">d1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">(</span><span class="s2">&quot;dodo&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">d1</span><span class="p">.</span><span class="nx">bark</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// dodo bark</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以通过<code>d1.__proto__ == Dog.prototype</code>，来验证我们的想法。用原型对象还有一个好处，由于实例化的对象的[[Prototype]]指向<code>Dog</code>的原型对象，那么我们可以通过添加<code>Dog</code>的原型对象的方法，来添加已经实例化后的实例<code>d1</code>的方法。如:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Dog</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">run</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot; is running!&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">d1</span><span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// dodo is running!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>注：所有对象的<code>__proto__</code>都指向其构造器的<code>prototype</code></p></blockquote>
+
+<h3>原型链</h3>
+
+<p>上面已经描述如何定义一个<code>类</code>，接下来我们将要了解，如何实现<code>类的继承</code>。在此之前，我们先了解js里一个老生常谈的概念：<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain">原型链</a>：每个对象都有一个指向它的原型（prototype）对象的内部链接。这个原型对象又有自己的原型，直到某个对象的原型为 null 为止（也就是不再有原型指向），组成这条链的最后一环。这种一级一级的链结构就称为原型链</p>
+
+<p>mozilla给出一个挺好的例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 假定有一个对象 o, 其自身的属性（own properties）有 a 和 b：</span>
+</span><span class='line'><span class="c1">// {a: 1, b: 2}</span>
+</span><span class='line'><span class="c1">// o 的原型 o.[[Prototype]]有属性 b 和 c：</span>
+</span><span class='line'><span class="c1">// {b: 3, c: 4}</span>
+</span><span class='line'><span class="c1">// 最后, o.[[Prototype]].[[Prototype]] 是 null.</span>
+</span><span class='line'><span class="c1">// 这就是原型链的末尾，即 null，</span>
+</span><span class='line'><span class="c1">// 根据定义，null 没有[[Prototype]].</span>
+</span><span class='line'><span class="c1">// 综上，整个原型链如下: </span>
+</span><span class='line'><span class="c1">// {a:1, b:2} ---&gt; {b:3, c:4} ---&gt; null</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span> <span class="c1">// 1</span>
+</span><span class='line'><span class="c1">// a是o的自身属性吗？是的，该属性的值为1</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">b</span><span class="p">);</span> <span class="c1">// 2</span>
+</span><span class='line'><span class="c1">// b是o的自身属性吗？是的，该属性的值为2</span>
+</span><span class='line'><span class="c1">// o.[[Prototype]]上还有一个&#39;b&#39;属性,但是它不会被访问到.这种情况称为&quot;属性遮蔽 (property shadowing)&quot;.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">c</span><span class="p">);</span> <span class="c1">// 4</span>
+</span><span class='line'><span class="c1">// c是o的自身属性吗？不是，那看看o.[[Prototype]]上有没有.</span>
+</span><span class='line'><span class="c1">// c是o.[[Prototype]]的自身属性吗？是的,该属性的值为4</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">d</span><span class="p">);</span> <span class="c1">// undefined</span>
+</span><span class='line'><span class="c1">// d是o的自身属性吗？不是,那看看o.[[Prototype]]上有没有.</span>
+</span><span class='line'><span class="c1">// d是o.[[Prototype]]的自身属性吗？不是，那看看o.[[Prototype]].[[Prototype]]上有没有.</span>
+</span><span class='line'><span class="c1">// o.[[Prototype]].[[Prototype]]为null，停止搜索，</span>
+</span><span class='line'><span class="c1">// 没有d属性，返回undefined</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在我们可以通过我们理解的构造函数和原型对象来实现继承的概念了，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Dog</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 这种写法会修改dog实例的constructor，可以通过Dog.prototype.constructor = Dog来重置</span>
+</span><span class='line'><span class="nx">Dog</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">bark</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot; bark&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 重置Dog实例的构造函数为本身</span>
+</span><span class='line'><span class="nx">Dog</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">Dog</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Haski 的构造函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">Haski</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">// 继承Dog的构造函数</span>
+</span><span class='line'>  <span class="nx">Dog</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// 可以补充更多Haski的属性</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s2">&quot;Haski&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 1. 设置Haski的prototype为Dog的实例对象</span>
+</span><span class='line'><span class="c1">// 2. 此时Haski的原型链是 Haski -&gt; Dog的实例 -&gt; Dog -&gt; Object</span>
+</span><span class='line'><span class="c1">// 3. 此时，Haski包含了Dog的所有属性和方法，而且还有一个指针，指向Dog的原型对象</span>
+</span><span class='line'><span class="c1">// 4. 这种做法是不推荐的，下面会改进</span>
+</span><span class='line'><span class="nx">Haski</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 重置Haski实例的构造函数为本身</span>
+</span><span class='line'><span class="nx">Haski</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">Haski</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 可以为子类添加更多的方法</span>
+</span><span class='line'><span class="nx">Haski</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">say</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;I&#39;m &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ha</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Haski</span><span class="p">(</span><span class="s2">&quot;Ha&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// Ha bark</span>
+</span><span class='line'><span class="nx">ha</span><span class="p">.</span><span class="nx">bark</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// Ha bark</span>
+</span><span class='line'><span class="nx">ha</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// I&#39;m Ha</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>注： 子类在定义prototype时，不可直接使用<code>Haski.prototype = {}</code>定义，这样会重写Haski的原型链，把Haski的原型当做<code>Object</code>的实例，而非<code>Dog</code>的实例</p></blockquote>
+
+<p>但是，当我想找一下<code>ha</code>的原型链时，会发现<code>ha</code>的原型对象指向的是<code>Dog</code>的实例，而且还有一个值为<code>undefined</code>的<code>name</code>属性，在实例化时，name是没必要的, 如下图：</p>
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3jw1f2bmnt5qn4j20d50a4abw.jpg" alt="" /></p>
+
+<p>所以，我们需要修改一下我们的实现，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 修改前</span>
+</span><span class='line'><span class="nx">Haski</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 修改后</span>
+</span><span class='line'><span class="nx">Haski</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">Dog</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3jw1f2bp2gl1sij20qs0iogpa.jpg" alt="" /></p>
+
+<blockquote><p>注: <code>__proto__</code> 方法已弃用，从 ECMAScript 6 开始, [[Prototype]] 可以用Object.getPrototypeOf()和Object.setPrototypeOf()访问器来访问</p></blockquote>
+
+<p>自此，我们已经实现继承的概念，父类有自己的方法，子类继承了父类的属性和方法，而且还可以定义自己的属性和方法。</p>
+
+<h2>ES6 如何实现</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 声明 Dog 类</span>
+</span><span class='line'><span class="kr">class</span> <span class="nx">Dog</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// 构造函数</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 普通方法</span>
+</span><span class='line'>  <span class="nx">dark</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;bark&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 静态方法，也叫类方法</span>
+</span><span class='line'>  <span class="kr">static</span> <span class="nx">staticMethod</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;I&#39;m static method!&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 通过`extends`关键字来实现继承</span>
+</span><span class='line'><span class="kr">class</span> <span class="nx">Haski</span> <span class="kr">extends</span> <span class="nx">Dog</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">){</span>
+</span><span class='line'>    <span class="c1">// 调用父类的构造函数</span>
+</span><span class='line'>    <span class="kr">super</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s2">&quot;Haski&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 定义子类方法</span>
+</span><span class='line'>  <span class="nx">say</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;I&#39;m&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在ES6中，我们只需通过<code>class</code> <code>extends</code> <code>super</code> <code>constructor</code> 即可比较方便的完成原来使用JS比较难理解的实现，我们可以通过babel的解析器，来看看babel是怎么把这些语法糖转成JS的实现的。具体代码可以参考</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">_createClass</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="kd">function</span> <span class="nx">defineProperties</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">props</span><span class="p">)</span> <span class="p">{</span> <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">props</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">descriptor</span> <span class="o">=</span> <span class="nx">props</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">enumerable</span> <span class="o">=</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">enumerable</span> <span class="o">||</span> <span class="kc">false</span><span class="p">;</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">configurable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;value&quot;</span> <span class="k">in</span> <span class="nx">descriptor</span><span class="p">)</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">writable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">descriptor</span><span class="p">.</span><span class="nx">key</span><span class="p">,</span> <span class="nx">descriptor</span><span class="p">);</span> <span class="p">}</span> <span class="p">}</span> <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">Constructor</span><span class="p">,</span> <span class="nx">protoProps</span><span class="p">,</span> <span class="nx">staticProps</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="nx">protoProps</span><span class="p">)</span> <span class="nx">defineProperties</span><span class="p">(</span><span class="nx">Constructor</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">protoProps</span><span class="p">);</span> <span class="k">if</span> <span class="p">(</span><span class="nx">staticProps</span><span class="p">)</span> <span class="nx">defineProperties</span><span class="p">(</span><span class="nx">Constructor</span><span class="p">,</span> <span class="nx">staticProps</span><span class="p">);</span> <span class="k">return</span> <span class="nx">Constructor</span><span class="p">;</span> <span class="p">};</span> <span class="p">}();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">_possibleConstructorReturn</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">call</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">ReferenceError</span><span class="p">(</span><span class="s2">&quot;this hasn&#39;t been initialised - super() hasn&#39;t been called&quot;</span><span class="p">);</span> <span class="p">}</span> <span class="k">return</span> <span class="nx">call</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">call</span> <span class="o">===</span> <span class="s2">&quot;object&quot;</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">call</span> <span class="o">===</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="o">?</span> <span class="nx">call</span> <span class="o">:</span> <span class="nx">self</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">_inherits</span><span class="p">(</span><span class="nx">subClass</span><span class="p">,</span> <span class="nx">superClass</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">superClass</span> <span class="o">!==</span> <span class="s2">&quot;function&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">superClass</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s2">&quot;Super expression must either be null or a function, not &quot;</span> <span class="o">+</span> <span class="k">typeof</span> <span class="nx">superClass</span><span class="p">);</span> <span class="p">}</span> <span class="nx">subClass</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">superClass</span> <span class="o">&amp;&amp;</span> <span class="nx">superClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span> <span class="nx">constructor</span><span class="o">:</span> <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">subClass</span><span class="p">,</span> <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">});</span> <span class="k">if</span> <span class="p">(</span><span class="nx">superClass</span><span class="p">)</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">setPrototypeOf</span> <span class="o">?</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">setPrototypeOf</span><span class="p">(</span><span class="nx">subClass</span><span class="p">,</span> <span class="nx">superClass</span><span class="p">)</span> <span class="o">:</span> <span class="nx">subClass</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">=</span> <span class="nx">superClass</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">_classCallCheck</span><span class="p">(</span><span class="nx">instance</span><span class="p">,</span> <span class="nx">Constructor</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">instance</span> <span class="k">instanceof</span> <span class="nx">Constructor</span><span class="p">))</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot call a class as a function&quot;</span><span class="p">);</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 声明 Dog 类</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Dog</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// 构造函数</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">function</span> <span class="nx">Dog</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">_classCallCheck</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">Dog</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 普通方法</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">_createClass</span><span class="p">(</span><span class="nx">Dog</span><span class="p">,</span> <span class="p">[{</span>
+</span><span class='line'>    <span class="nx">key</span><span class="o">:</span> <span class="s2">&quot;dark&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">value</span><span class="o">:</span> <span class="kd">function</span> <span class="nx">dark</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;bark&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 静态方法，也叫类方法</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}],</span> <span class="p">[{</span>
+</span><span class='line'>    <span class="nx">key</span><span class="o">:</span> <span class="s2">&quot;staticMethod&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">value</span><span class="o">:</span> <span class="kd">function</span> <span class="nx">staticMethod</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;I&#39;m static method!&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">Dog</span><span class="p">;</span>
+</span><span class='line'><span class="p">}();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 通过`extends`关键字来实现继承</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Haski</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">_Dog</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">_inherits</span><span class="p">(</span><span class="nx">Haski</span><span class="p">,</span> <span class="nx">_Dog</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">function</span> <span class="nx">Haski</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">_classCallCheck</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">Haski</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">_this</span> <span class="o">=</span> <span class="nx">_possibleConstructorReturn</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getPrototypeOf</span><span class="p">(</span><span class="nx">Haski</span><span class="p">).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">name</span><span class="p">));</span>
+</span><span class='line'>    <span class="c1">// 调用父类的构造函数</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">_this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s2">&quot;Haski&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_this</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">_createClass</span><span class="p">(</span><span class="nx">Haski</span><span class="p">,</span> <span class="p">[{</span>
+</span><span class='line'>    <span class="nx">key</span><span class="o">:</span> <span class="s2">&quot;say&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">value</span><span class="o">:</span> <span class="kd">function</span> <span class="nx">say</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;I&#39;m&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">Haski</span><span class="p">;</span>
+</span><span class='line'><span class="p">}(</span><span class="nx">Dog</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p><code>教是最好的学</code>，我正在尝试把我自己理解的内容分享出来，希望我能讲清楚，如果描述有误，欢迎指正。</p></blockquote>
+
+<h3>参考文献</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript">Introduction to Object-Oriented JavaScript</a>
+<a href="ttps://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes">Classes</a>
+<a href="http://stackoverflow.com/questions/9772307/declaring-javascript-object-method-in-constructor-function-vs-in-prototype">Declaring javascript object method in constructor function vs. in prototype </a>
+<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript">Inheritance and the prototype chain</a></p>
+</div>
+
+<div class="meta">
+	
+		<span class="comments"><a href="/blog/2016/02/27/xiang-jie-jslei-gai-nian-de-shi-xian/#disqus_thread">Comments</a></span>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+
+    </div>
+    <footer id="footer">
+    <div style="display:inline">
+    Copyright &copy; 2016
+
+    Justin-lu
+. Powered by <a href="http://octopress.org">Octopress</a> | 
+    Theme <a href="http://github.com/panks/fabric">fabric</a> by <a href="http://panks.me">Pankaj Kumar</a>
+</div>
+
+
+    </footer>
+    <script src="/javascripts/fabric.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'justin-lu-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://justin-lu.github.io/blog/2016/02/27/xiang-jie-jslei-gai-nian-de-shi-xian/';
+        var disqus_url = 'http://justin-lu.github.io/blog/2016/02/27/xiang-jie-jslei-gai-nian-de-shi-xian/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+<!-- end toload --> 
+</div>
+</div>
+<script src="/javascripts/jquery.ui.totop.js" type="text/javascript"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+;(function($){$().UItoTop({easingType:'easeOutCirc'});})(jQuery); 
+/*]]>*/
+</script><!-- remove it to remove the scroll to top button -->
+</body>
+</html>

@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: js | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/js/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2016-03-27T21:52:03+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[详解JS类概念的实现]]></title>
+    <link href="http://justin-lu.github.io/blog/2016/02/27/xiang-jie-jslei-gai-nian-de-shi-xian/"/>
+    <updated>2016-02-27T21:50:35+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2016/02/27/xiang-jie-jslei-gai-nian-de-shi-xian</id>
+    <content type="html"><![CDATA[<p>众所周知，JS并没有类(class)的概念,虽然说ES6开始有了类的概念，但是，这并不是说JS有了像Ruby、Java这些基于类的面向对象语言一样，有了全新的继承模型。ES6中的类，仅仅只是基于现有的原型继承的一种语法糖，下面我们好好分析一下，具体是如何实现的</p>
+
+<!-- More -->
+
+
+<h2><a href="https://zh.wikipedia.org/wiki/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1">面向对象思想</a></h2>
+
+<p>在讲正题之前，我们先来讨论一下各种面试题都可能出现的一个问题，什么是<code>面向对象编程（OOP）</code>?</p>
+
+<ul>
+<li>类：定义某一事物的抽象特点，包含属性和方法，举个栗子，<code>狗</code>这个类包含狗的一些基础特征，如毛皮颜色，吠叫等能力。</li>
+<li>对象：类的一个实例，还是举个栗子，小明家的白色的狗和小红家红色的狗。</li>
+<li>属性：对象的特征，比如刚提到的狗皮毛的颜色。</li>
+<li>方法：对象的行为，比如刚才提到的狗的吠叫能力。</li>
+<li>封装性：通过限制只有特定类的对象可以访问特定类的成员，一般包含<code>public</code> <code>protected</code> <code>private</code> 三种，不同语言的实现不同。</li>
+<li>继承性：一个类会有<code>子类</code>,这个<code>子类</code>是更具体化的一个抽象，它包含<code>父类</code>的一些属性和方法，并且有可能有不同于<code>父类</code>的属性和方法。</li>
+<li>多态性：多意为‘许多’，态意为‘形态’。不同类可以定义相同的方法或属性。</li>
+<li>抽象性：复杂现实问题转化为类定义的途径，包括以上所有内容。</li>
+</ul>
+
+
+<h2>如何实现对象（类）的定义</h2>
+
+<p>由于JS并没有<code>类(class)</code>的概念，更多的时候我们把它叫做<code>对象（function）</code>，然后把<code>对象</code>叫做<code>实例(instance)</code>，跟团队里面的人讨论OOP的时候，经常会有概念上的一些误解，特此说明一下。</p>
+
+<h3>构造函数：一个指明了对象类型的函数，通常我们可以通过构造函数类创建</h3>
+
+<p>在js里面，我们通常都是通过构造函数来创建<code>对象(class)</code>,然后通过<code>new</code>这个关键字来实例化一个对象，如:</p>
+
+<pre><code class="javascript">function Dog(name){
+  this.name = name;
+}
+var d1 = new Dog("dodo");
+d1.constructor
+// Dog(name){
+//  this.name = name;
+// }
+
+var d2 = new Dog('do2do');
+</code></pre>
+
+<p>为什么通过<code>构造函数</code>可以实现<code>对象（class）</code>属性的定义呢？首先，我们必须理解这个语法<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/new"><code>new constructor[([arguments])]</code></a></p>
+
+<p>我们来具体看看当<code>new Dog('name')</code>时，具体做了哪些事情
+1. 一个新实例被创建。它继承自<code>Dog.prototype</code>
+2. 构造函数被执行，相应的参数会被传入，同时上下文(<code>this</code>)会指向这个新的实例
+3. 除非明确返回值，否则返回新的实例</p>
+
+<p>至此，我们实现了OOP里面的类(Dog)、对象(d1,d2)、和属性(name)的概念，<code>d1</code>和<code>d2</code>有相同的<code>name</code>属性，但是值并不相同,即属性是私有的。</p>
+
+<blockquote><p>注: 新创建的实例，都包含一个<code>constructor</code>属性，改属性指向他们的构造函数<code>Dog</code></p></blockquote>
+
+<h3>原型对象(prototype)</h3>
+
+<p>接下来，我们即将讨论如何定义方法，其实，我们完全可以这样定义我们的方法，如：</p>
+
+<pre><code class="javascript">function Dog(name){
+  this.name = name;
+  this.bark = function(){
+    console.log(this.name + " bark");
+  };
+}
+var d1 = new Dog("dodo");
+d1.bark();
+// dodo bark
+</code></pre>
+
+<p>但是，一般我们不推荐这么做，正如我们所知<code>Dog</code>是一个构造函数，每次实例化时，都会执行这个函数，也就是说，<code>bark</code> 这个方法每次都会被定义, 比较浪费内存。但是我们通常可以用<code>constructor</code>和闭包的方式来实现私有属性，如：</p>
+
+<pre><code class="javascript">function Dog(name){
+  this.name = name;
+
+  // barkCount 是私有属性，因为实例并不知道这个属性
+  var barkCount = 0;
+  this.bark = function(){
+    barkCount ++;
+    console.log(this.name + " bark");
+  };
+  this.getBarkCount = function(){
+    console.log(this.name + " has barked " + barkCount + " times");
+  };
+}
+var d1 = new Dog("dodo");
+d1.bark();
+d1.bark();
+d1.getBarkCount();
+</code></pre>
+
+<p>好像扯得有点远，我们回归我们的主角<code>prototype</code>，函数<code>Dog</code>有一个特殊的属性，这个属性就叫原型，如上所述，当用<code>new</code>运算符创建实例时，会把<code>Dog</code>的原型对象的引用复制到新的实例内部的[[Prototype]]属性，即<code>d1.[[Prototype]] = Dog.prototype</code>，因为所有的实例的[[Prototype]]都指向<code>Dog</code>的原型对象，那么，我们就可以很方便的定义我们的方法了，如：</p>
+
+<pre><code class="javascript">function Dog(name){
+  this.name = name;
+}
+
+Dog.prototype = {
+  bark: function(){
+    console.log(this.name + " bark");
+  }
+};
+
+var d1 = new Dog("dodo");
+d1.bark();
+// dodo bark
+</code></pre>
+
+<p>我们可以通过<code>d1.__proto__ == Dog.prototype</code>，来验证我们的想法。用原型对象还有一个好处，由于实例化的对象的[[Prototype]]指向<code>Dog</code>的原型对象，那么我们可以通过添加<code>Dog</code>的原型对象的方法，来添加已经实例化后的实例<code>d1</code>的方法。如:</p>
+
+<pre><code class="javascript">Dog.prototype.run = function(){
+  console.log(this.name + " is running!");
+}
+d1.run();
+// dodo is running!
+</code></pre>
+
+<blockquote><p>注：所有对象的<code>__proto__</code>都指向其构造器的<code>prototype</code></p></blockquote>
+
+<h3>原型链</h3>
+
+<p>上面已经描述如何定义一个<code>类</code>，接下来我们将要了解，如何实现<code>类的继承</code>。在此之前，我们先了解js里一个老生常谈的概念：<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain">原型链</a>：每个对象都有一个指向它的原型（prototype）对象的内部链接。这个原型对象又有自己的原型，直到某个对象的原型为 null 为止（也就是不再有原型指向），组成这条链的最后一环。这种一级一级的链结构就称为原型链</p>
+
+<p>mozilla给出一个挺好的例子：</p>
+
+<pre><code class="javascript">// 假定有一个对象 o, 其自身的属性（own properties）有 a 和 b：
+// {a: 1, b: 2}
+// o 的原型 o.[[Prototype]]有属性 b 和 c：
+// {b: 3, c: 4}
+// 最后, o.[[Prototype]].[[Prototype]] 是 null.
+// 这就是原型链的末尾，即 null，
+// 根据定义，null 没有[[Prototype]].
+// 综上，整个原型链如下: 
+// {a:1, b:2} ---&gt; {b:3, c:4} ---&gt; null
+
+console.log(o.a); // 1
+// a是o的自身属性吗？是的，该属性的值为1
+
+console.log(o.b); // 2
+// b是o的自身属性吗？是的，该属性的值为2
+// o.[[Prototype]]上还有一个'b'属性,但是它不会被访问到.这种情况称为"属性遮蔽 (property shadowing)".
+
+console.log(o.c); // 4
+// c是o的自身属性吗？不是，那看看o.[[Prototype]]上有没有.
+// c是o.[[Prototype]]的自身属性吗？是的,该属性的值为4
+
+console.log(o.d); // undefined
+// d是o的自身属性吗？不是,那看看o.[[Prototype]]上有没有.
+// d是o.[[Prototype]]的自身属性吗？不是，那看看o.[[Prototype]].[[Prototype]]上有没有.
+// o.[[Prototype]].[[Prototype]]为null，停止搜索，
+// 没有d属性，返回undefined
+</code></pre>
+
+<p>现在我们可以通过我们理解的构造函数和原型对象来实现继承的概念了，代码如下：</p>
+
+<pre><code class="javascript">function Dog(name){
+  this.name = name;
+}
+
+// 这种写法会修改dog实例的constructor，可以通过Dog.prototype.constructor = Dog来重置
+Dog.prototype = {
+  bark: function(){
+    console.log(this.name + " bark");
+  }
+};
+
+// 重置Dog实例的构造函数为本身
+Dog.prototype.constructor = Dog;
+
+// Haski 的构造函数
+function Haski(name){
+  // 继承Dog的构造函数
+  Dog.call(this, name);
+  // 可以补充更多Haski的属性
+  this.type = "Haski";
+};
+
+// 1. 设置Haski的prototype为Dog的实例对象
+// 2. 此时Haski的原型链是 Haski -&gt; Dog的实例 -&gt; Dog -&gt; Object
+// 3. 此时，Haski包含了Dog的所有属性和方法，而且还有一个指针，指向Dog的原型对象
+// 4. 这种做法是不推荐的，下面会改进
+Haski.prototype = new Dog();
+
+// 重置Haski实例的构造函数为本身
+Haski.prototype.constructor = Haski;
+
+// 可以为子类添加更多的方法
+Haski.prototype.say = function(){
+  console.log("I'm " + this.name);
+}
+
+var ha = new Haski("Ha");
+// Ha bark
+ha.bark();
+// Ha bark
+ha.say();
+// I'm Ha
+</code></pre>
+
+<blockquote><p>注： 子类在定义prototype时，不可直接使用<code>Haski.prototype = {}</code>定义，这样会重写Haski的原型链，把Haski的原型当做<code>Object</code>的实例，而非<code>Dog</code>的实例</p></blockquote>
+
+<p>但是，当我想找一下<code>ha</code>的原型链时，会发现<code>ha</code>的原型对象指向的是<code>Dog</code>的实例，而且还有一个值为<code>undefined</code>的<code>name</code>属性，在实例化时，name是没必要的, 如下图：</p>
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3jw1f2bmnt5qn4j20d50a4abw.jpg" alt="" /></p>
+
+<p>所以，我们需要修改一下我们的实现，代码如下：</p>
+
+<pre><code class="javascript">// 修改前
+Haski.prototype = new Dog();
+
+// 修改后
+Haski.prototype = Object.create(Dog.prototype);
+</code></pre>
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3jw1f2bp2gl1sij20qs0iogpa.jpg" alt="" /></p>
+
+<blockquote><p>注: <code>__proto__</code> 方法已弃用，从 ECMAScript 6 开始, [[Prototype]] 可以用Object.getPrototypeOf()和Object.setPrototypeOf()访问器来访问</p></blockquote>
+
+<p>自此，我们已经实现继承的概念，父类有自己的方法，子类继承了父类的属性和方法，而且还可以定义自己的属性和方法。</p>
+
+<h2>ES6 如何实现</h2>
+
+<pre><code class="js">'use strict';
+// 声明 Dog 类
+class Dog {
+  // 构造函数
+  constructor(name){
+    this.name = name;
+  }
+
+  // 普通方法
+  dark(){
+    console.log(this.name + "bark");
+  }
+
+  // 静态方法，也叫类方法
+  static staticMethod(){
+    console.log("I'm static method!");
+  }
+}
+
+// 通过`extends`关键字来实现继承
+class Haski extends Dog {
+  constructor(name){
+    // 调用父类的构造函数
+    super(name);
+    this.type = "Haski";
+  }
+
+  // 定义子类方法
+  say(){
+    console.log("I'm" + this.name);
+  }
+}
+</code></pre>
+
+<p>在ES6中，我们只需通过<code>class</code> <code>extends</code> <code>super</code> <code>constructor</code> 即可比较方便的完成原来使用JS比较难理解的实现，我们可以通过babel的解析器，来看看babel是怎么把这些语法糖转成JS的实现的。具体代码可以参考</p>
+
+<pre><code class="js">"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i &lt; props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call &amp;&amp; (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" &amp;&amp; superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass &amp;&amp; superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// 声明 Dog 类
+
+var Dog = function () {
+  // 构造函数
+
+  function Dog(name) {
+    _classCallCheck(this, Dog);
+
+    this.name = name;
+  }
+
+  // 普通方法
+
+
+  _createClass(Dog, [{
+    key: "dark",
+    value: function dark() {
+      console.log(this.name + "bark");
+    }
+
+    // 静态方法，也叫类方法
+
+  }], [{
+    key: "staticMethod",
+    value: function staticMethod() {
+      console.log("I'm static method!");
+    }
+  }]);
+
+  return Dog;
+}();
+
+// 通过`extends`关键字来实现继承
+
+
+var Haski = function (_Dog) {
+  _inherits(Haski, _Dog);
+
+  function Haski(name) {
+    _classCallCheck(this, Haski);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Haski).call(this, name));
+    // 调用父类的构造函数
+
+
+    _this.type = "Haski";
+    return _this;
+  }
+
+  _createClass(Haski, [{
+    key: "say",
+    value: function say() {
+      console.log("I'm" + this.name);
+    }
+  }]);
+
+  return Haski;
+}(Dog);
+</code></pre>
+
+<blockquote><p><code>教是最好的学</code>，我正在尝试把我自己理解的内容分享出来，希望我能讲清楚，如果描述有误，欢迎指正。</p></blockquote>
+
+<h3>参考文献</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript">Introduction to Object-Oriented JavaScript</a>
+<a href="ttps://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes">Classes</a>
+<a href="http://stackoverflow.com/questions/9772307/declaring-javascript-object-method-in-constructor-function-vs-in-prototype">Declaring javascript object method in constructor function vs. in prototype </a>
+<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript">Inheritance and the prototype chain</a></p>
+]]></content>
+  </entry>
+  
+</feed>
