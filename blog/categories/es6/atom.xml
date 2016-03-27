@@ -4,7 +4,7 @@
   <title><![CDATA[Category: es6 | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/es6/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-27T21:56:42+08:00</updated>
+  <updated>2016-03-27T21:58:42+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -68,7 +68,7 @@ var d2 = new Dog('do2do');
 
 <p>至此，我们实现了OOP里面的类(Dog)、对象(d1,d2)、和属性(name)的概念，<code>d1</code>和<code>d2</code>有相同的<code>name</code>属性，但是值并不相同,即属性是私有的。</p>
 
-<blockquote><p>注: 新创建的实例，都包含一个<code>constructor</code>属性，改属性指向他们的构造函数<code>Dog</code></p></blockquote>
+<blockquote><p>注: 新创建的实例，都包含一个<code>constructor</code>属性，该属性指向他们的构造函数<code>Dog</code></p></blockquote>
 
 <h3>原型对象(prototype)</h3>
 

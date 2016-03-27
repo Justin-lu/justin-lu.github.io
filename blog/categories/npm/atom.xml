@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: npm | Hi I'm Justin-lu]]></title>
+  <link href="http://justin-lu.github.io/blog/categories/npm/atom.xml" rel="self"/>
+  <link href="http://justin-lu.github.io/"/>
+  <updated>2016-03-27T21:58:42+08:00</updated>
+  <id>http://justin-lu.github.io/</id>
+  <author>
+    <name><![CDATA[Justin-lu]]></name>
+    <email><![CDATA[gdjyluxiaoyong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[如何发布一个NPM包]]></title>
+    <link href="http://justin-lu.github.io/blog/2016/03/27/ru-he-fa-bu-%5B%3F%5D-ge-npmbao/"/>
+    <updated>2016-03-27T21:58:10+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2016/03/27/ru-he-fa-bu-[?]-ge-npmbao</id>
+    <content type="html"><![CDATA[<p>TODO</p>
+]]></content>
+  </entry>
+  
+</feed>

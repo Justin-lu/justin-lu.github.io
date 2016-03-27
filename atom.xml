@@ -4,7 +4,7 @@
   <title><![CDATA[Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-27T21:56:42+08:00</updated>
+  <updated>2016-03-27T21:58:42+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何发布一个NPM包]]></title>
+    <link href="http://justin-lu.github.io/blog/2016/03/27/ru-he-fa-bu-%5B%3F%5D-ge-npmbao/"/>
+    <updated>2016-03-27T21:58:10+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2016/03/27/ru-he-fa-bu-[?]-ge-npmbao</id>
+    <content type="html"><![CDATA[<p>TODO</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS 上使用 Nginx Passenger 部署 Ruby on Rails]]></title>
@@ -1031,7 +1040,7 @@
 
 <p>至此，我们实现了OOP里面的类(Dog)、对象(d1,d2)、和属性(name)的概念，<code>d1</code>和<code>d2</code>有相同的<code>name</code>属性，但是值并不相同,即属性是私有的。</p>
 
-<blockquote><p>注: 新创建的实例，都包含一个<code>constructor</code>属性，改属性指向他们的构造函数<code>Dog</code></p></blockquote>
+<blockquote><p>注: 新创建的实例，都包含一个<code>constructor</code>属性，该属性指向他们的构造函数<code>Dog</code></p></blockquote>
 
 <h3>原型对象(prototype)</h3>
 
@@ -5153,240 +5162,6 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
 </pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">remove</span> <span class="n">ibus</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ubuntu常用指令]]></title>
-    <link href="http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-zhi-ling/"/>
-    <updated>2013-07-12T09:19:00+08:00</updated>
-    <id>http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-zhi-ling</id>
-    <content type="html"><![CDATA[<p>基本的Ubuntu指令的使用介绍</p>
-
-<!-- More -->
-
-
-<h3>基本的Ubuntu指令</h3>
-
-<hr />
-
-<p><code>sudo apt－get install</code> 软件名 安装软件命令</p>
-
-<p><code>sudo apt-get autoremove</code> 软件名 卸载软件命令</p>
-
-<p><code>sudo nautilus</code>打开文件（有root权限）</p>
-
-<p><code>su root</code> 切换到“root”</p>
-
-<p><code>ls</code> 列出当前目录文件（不包括隐含文件）</p>
-
-<p><code>ls -a</code> 列出当前目录文件（包括隐含文件）</p>
-
-<p><code>ls -l</code> 列出当前目录下文件的详细信息</p>
-
-<p><code>cd ..</code> 回当前目录的上一级目录</p>
-
-<p><code>cd -</code> 回上一次所在的目录</p>
-
-<p><code>cd ~</code>或 <code>cd</code> 回当前用户的宿主目录</p>
-
-<p><code>mkdir</code> 目录名 创建一个目录</p>
-
-<p><code>rmdir</code> 空目录名 删除一个空目录</p>
-
-<p><code>rm</code> 文件名 文件名 删除一个文件或多个文件</p>
-
-<p><code>rm -rf</code> 非空目录名 删除一个非空目录下的一切</p>
-
-<p><code>mv 路经/文件 /经/文件</code>移动相对路经下的文件到绝对路经下</p>
-
-<p><code>mv 文件名 新名称</code> 在当前目录下改名</p>
-
-<p><code>find 路经 -name “字符串”</code>查找路经所在范围内满足字符串匹配的文件和目录</p>
-
-<p><code>ack-grep 字符串</code> 同上</p>
-
-<p><code>fdisk fdisk -l</code> 查看系统分区信息</p>
-
-<p><code>fdisk fdisk /dev/sdb</code> 为一块新的SCSI硬盘进行分区</p>
-
-<p><code>chown chown root /home</code> 把/home的属主改成root用户</p>
-
-<p><code>chgrp chgrp root /home</code> 把/home的属组改成root组</p>
-
-<p><code>Useradd</code> 创建一个新的用户</p>
-
-<p><code>Groupadd 组名</code> 创建一个新的组</p>
-
-<p><code>Passwd 用户名</code>为用户创建密码</p>
-
-<p><code>Passwd -d用户名</code> 删除用户密码也能登陆</p>
-
-<p><code>Passwd -S用户名</code> 查询账号密码</p>
-
-<p><code>Usermod -l</code> 新用户名 老用户名 为用户改名</p>
-
-<p><code>Userdel–r</code> 用户名 删除用户一切</p>
-
-<p><code>tar -c 创建包 –x 释放包 -v 显示命令过程 –z 代表压缩包</code></p>
-
-<p><code>tar –cvf benet.tar /home/benet</code> 把/home/benet目录打包</p>
-
-<p><code>tar –zcvf benet.tar.gz /mnt</code> 把目录打包并压缩</p>
-
-<p><code>tar –zxvf benet.tar.gz</code> 压缩包的文件解压恢复</p>
-
-<p><code>tar –jxvf benet.tar.bz2</code> 解压缩</p>
-
-<p><code>make</code>编译</p>
-
-<p><code>make install</code> 安装编译好的源码包</p>
-
-<p><code>reboot Init 6</code>重启LINUX系统</p>
-
-<p><code>Halt Init 0 Shutdown –h now</code> 关闭LINUX系统</p>
-
-<p><code>uname -a</code> 查看内核版本</p>
-
-<p><code>cat /etc/issue</code>查看ubuntu版本</p>
-
-<p><code>lsusb</code> 查看usb设备</p>
-
-<p><code>sudo ethtool eth0</code> 查看网卡状态</p>
-
-<p><code>cat /proc/cpuinfo</code> 查看cpu信息</p>
-
-<p><code>lshw</code> 查看当前硬件信息</p>
-
-<p><code>sudo fdisk -l</code>查看磁盘信息</p>
-
-<p><code>df -h</code>查看硬盘剩余空间</p>
-
-<p><code>free -m</code>查看当前的内存使用情况</p>
-
-<p><code>ps -A</code> 查看当前有哪些进程</p>
-
-<p>kill 进程号(就是ps -A中的第一列的数字)或者 killall 进程名( 杀死一个进程)</p>
-
-<p><code>kill -9 进程号</code>强制杀死一个进程</p>
-
-<h3>常用apt命令：</h3>
-
-<p><code>apt-cache search package</code> 搜索包</p>
-
-<p><code>apt-cache show package</code> 获取包的相关信息，如说明、大小、版本等</p>
-
-<p><code>sudo apt-get install package</code>安装包</p>
-
-<p><code>sudo apt-get install package - - reinstall</code> 重新安装包</p>
-
-<p><code>sudo apt-get -f install</code> 修复安装”-f = –fix-missing”</p>
-
-<p><code>sudo apt-get remove package</code> 删除包</p>
-
-<p><code>sudo apt-get remove package - - purge</code> 删除包，包括删除配置文件等</p>
-
-<p><code>sudo apt-get update</code> 更新源</p>
-
-<p><code>sudo apt-get upgrade</code> 更新已安装的包</p>
-
-<p><code>sudo apt-get dist-upgrade</code> 升级系统</p>
-
-<p><code>sudo apt-get dselect-upgrade</code> 使用 dselect 升级</p>
-
-<p><code>apt-cache depends package</code> 了解使用依赖</p>
-
-<p><code>apt-cache rdepends package</code> 是查看该包被哪些包依赖</p>
-
-<p><code>sudo apt-get build-dep package</code> 安装相关的编译环境</p>
-
-<p><code>apt-get source package</code> 下载该包的源代码</p>
-
-<p><code>sudo apt-get clean</code> &amp;&amp; sudo apt-get autoclean 清理无用的包</p>
-
-<p><code>sudo apt-get check</code> 检查是否有损坏的依赖</p>
-
-<p><code>sudo apt-get clean</code> 清理所有软件缓存（即缓存在/var/cache/apt/archives目录里的deb包）</p>
-
-<h3>wget下载工具</h3>
-
-<blockquote><p>wget是一种非交互式的网络文件下载工具，在linux下可以使用该工具快速地从网络上下载
-所需要的文件而不需要经由本</p></blockquote>
-
-<p>wget[参数列表]URL</p>
-
-<p>最简单的用法:</p>
-
-<p><code>wgethttp://targetdomain.com/file.tar</code></p>
-
-<p>wget的常用参数：</p>
-
-<p><code>-t[nuberoftimes]</code> 尝试次数，当wget无法与服务器建立连接时，尝试连接多少次。</p>
-
-<p>比如”-t120″表示尝试120次。当这一项为”0″的时候，指定尝试无穷多次直到连接成功为止，这个设置非常有用，当对方服务器突然关机或者网络突然中断的时候，可以在恢复正常后继续下载没有传完的文件；</p>
-
-<p><code>-c</code>：断点续传，这也是个非常有用的设置，特别当下载比较大的文件的时候，如果中途意外中断，那么连接恢复的时候会从上次没传完的地方接着传，而不是又从头开始，使用这一项需要远程服务器也支持断点续传，一般UNIX/linux的Web/FTP服务器都支持断点续传；</p>
-
-<p><code>-T[numberofseconds]</code>：超时时间，指定多长时间远程服务器没有响应就中断连接，开始下一次尝试。比如”-T120″表示如果120秒以后远程服务器没有发过来数据，就重新尝试连接。如果网络速度比较快，这个时间可以设置的短些，相反，可以设置的长一些，一般最多不超过900，通常也不少于60，一般120左右比较合适；</p>
-
-<p><code>w[numberofseconds]</code>：在两次尝试之间等待多少秒，比如”-w100″表示两次尝试之间等待100秒；</p>
-
-<p><code>-nd</code>：不下载目录结构，把从服务器所有指定目录下载的文件都堆到当前目录里；-x：与”-nd”设置刚好相反，创建完整的目录结构，例如
-<code>wget-ndhttp://www.gnu.org/</code>
-实际的目录结构一级一级建下去，直到所有的文件都传完为止；</p>
-
-<p><code>-nH</code>：不创建以目标主机域名为目录名的目录，将目标主机的目录结构直接下到当前目录下；</p>
-
-<p><code>-r</code>：递归下载，在本录结构；-l[depth]：下载远程服务器目录结构的深度，例如”-l5″下载目录深度小于或者等于5以内的目录结构或者文件；</p>
-
-<p><code>-m</code>：做站点镜像时的选项，如果你想做一个站点的镜像，使用这个选项，它将自动设定其他合适的选项以便于站点镜像；</p>
-
-<p><code>-np</code>：只下载目标站点指定目录及其子目录的内容。这也是一个非常有用的选项，我们假设某个人的个人主页里面有一个指向这个站点其他人个人主页的连接，而我们只想下载这个人的个人主页，如果不设置这个选项，甚至-有可能把整个站点给抓下来，这显然是我们通常不希望的；-http-user=username-http-passwd=password：</p>
-
-<p>如果Web服务器需要指定用户名和口令，用这两项来设定；-O将数据写入文件中。</p>
-
-<h3>常用的tar命令</h3>
-
-<p>tar命令的使用方法如下：
-tar[参数列表][文件名]
-参数列表：</p>
-
-<blockquote><p>-c生成新的备份，并同时覆盖旧的备份文件</p>
-
-<p>-x从备份文件中解压缩</p>
-
-<p>-t列出备份文件内的文件目录</p>
-
-<p>-v显示所有被操作文件列表</p>
-
-<p>-f在指定位置生成备份</p>
-
-<p>-u将不存在于备份中的文件，或将已经被更改的文件加入该备份中。
-举例说明：</p></blockquote>
-
-<p><code>tar cvf filename.tar</code> /<em>制作备份</em>/</p>
-
-<p><code>tar cvf tarfile.tar</code> ./filename /<em>将filename的文件备份到tarfile.tar里面</em>/</p>
-
-<p><code>tar tvf filename.tar</code> /<em>列出tar文档的内容</em>/</p>
-
-<p><code>tar xvf filename.tar</code>/<em>从tar文档中导出文件</em>/</p>
-
-<p><code>tar zxpvf filename.tar.gz</code> /<em>从tar.gz文档中导出文件</em>/</p>
-
-<p><code>tar zxvf filename.tar.gz</code>/<em>同上</em>/</p>
-
-<p><code>tar xvf tarfile.tar ./filename /</code><em>导出tar文件中的单个文件</em>/</p>
-
-<p><code>tar -xzf filename.tar.gz</code> 解压</p>
-
-<p>打包文件供下载 将目录./www打包到文件www.tar.gz</p>
-
-<p><code>tar czvf www.tar.gz ./www</code></p>
-
-<p>或者直接更简单的 <code>zip ./www</code></p>
-
-<hr />
 ]]></content>
   </entry>
   
