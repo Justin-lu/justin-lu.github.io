@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-03-27T22:07:32+08:00</updated>
+  <updated>2016-06-30T17:25:06+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -12,6 +12,351 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Reddot RubyConf 2016 总结]]></title>
+    <link href="http://justin-lu.github.io/blog/2016/06/30/reddot-rubyconf-2016-zong-jie/"/>
+    <updated>2016-06-30T17:24:04+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2016/06/30/reddot-rubyconf-2016-zong-jie</id>
+    <content type="html"><![CDATA[<p>今年代表公司（<a href="http://beansmile.com/">Beansmile</a>）前往新加坡参加<code>Reddot RubyConf</code>, 收获满满，趁现在有时间，简单总结一下，供自己接下来的学习方向和目标，查漏补缺，  也给未到场的朋友分享一下。
+以下内容，仅供参考，如若有误，请指正。</p>
+
+<!-- More -->
+
+
+<p>首先，我们来看下日程表</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f59mpaj2ghj20kz0oa0xg.jpg" alt="" /></p>
+
+<p>满满的都是干货，满满的都是大神，看得我那个鸡冻~~</p>
+
+<h2>Day 1</h2>
+
+<h3>Yukihiro (Matz) Matsumoto – <a href="https://engineers.sg/v/800">Keynote: Ruby Typing</a></h3>
+
+<blockquote><p><code>Don't care about small things</code></p></blockquote>
+
+<p>第一个讲的是Ruby之父<code>Matz</code>，以O型血的人不在意细节，分析动态语言和静态语言的区别入题, 借此引入Ruby 3新Feature<code>Soft Typing</code></p>
+
+<ul>
+<li>Types(part of ruby 3)
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Duck_typing">Duck typing</a> in ruby(runtime)</li>
+<li>Don&rsquo;t check type on Programming</li>
+<li>Just care about behavior</li>
+<li>example for String.IO</li>
+<li>Don&rsquo;t care small things</li>
+<li>Soft Typing</li>
+<li>Don&rsquo;t challenge 100% coverage</li>
+</ul>
+</li>
+</ul>
+
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f59pdhnuysj21kw16otp6.jpg" alt="" /></p>
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f59xnm36gaj20p00xcq69.jpg" alt="" /></p>
+
+<h3>Jason Yeo – <a href="https://speakerdeck.com/jsyeo/slaying-the-dragon-1">Slaying the Dragon</a></h3>
+
+<ul>
+<li>先调侃了Matz，设计了<code>Matzlisp</code>的<code>Logo</code>，注册了<code>matzLisp.org</code>等等。</li>
+</ul>
+
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f5a5jaw6gfj21jq11qn6v.jpg" alt="" /></p>
+
+<ul>
+<li>简单介绍<a href="https://github.com/kanaka/mal">mal</a>的用法,了解Lisp的基本概念</li>
+</ul>
+
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f5a6xko44vj212i0lcdh4.jpg" alt="" /></p>
+
+<ul>
+<li><a href="http://rubinius.com/">Rubinius</a></li>
+<li><a href="https://github.com//queenfrankie/lani">lani</a></li>
+<li><a href="https://github.com/jsyeo/malady">malady</a></li>
+</ul>
+
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f59tvw7lm3j21kw16oqjl.jpg" alt="" /></p>
+
+<h3>Kristine Joy Paas – <a href="https://engineers.sg/v/802">Let&rsquo;s Play Ruby Golf</a></h3>
+
+<ul>
+<li>各种Ruby黑魔法，请自我对比一下</li>
+</ul>
+
+
+<p>正常情况</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5a7fkhgunj21600swdij.jpg" alt="" /></p>
+
+<p>黑魔法情况下</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f5a7h7v0q5j21eo0j0dhg.jpg" alt="" /></p>
+
+<p>这是正常人看不懂的代码，所以通常情况下，这些写法在团队都是不推荐的，权当学习哈~</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f59x8eak14j20zk0jz0t2.jpg" alt="" /></p>
+
+<h3>Prathamesh Sonpatki – <a href="https://speakerdeck.com/chaitanya/secrets-of-testing-rails-5-apps-red-dot-ruby-conf-edition">Secrets of testing Rails 5 apps</a></h3>
+
+<ul>
+<li>来自<a href="https://www.bigbinary.com/">bigbinary</a>的博主，分享关于Rails5的一些内容</li>
+<li>Rails 5 integration test are default</li>
+<li>Rails 5 controller test are deprecated</li>
+<li>Active Job Async adapter</li>
+</ul>
+
+
+<p>需要了解更多细节，请前往<a href="http://blog.bigbinary.com/categories/Rails-5/">Rails-5</a>，里面满满的都是干货。</p>
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f59um0rclrj21kw16owxh.jpg" alt="" /></p>
+
+<h3>Godfrey Chan – Keynote (<em>coming soon</em>)</h3>
+
+<ul>
+<li>授人以鱼不如授人以渔</li>
+<li>Probelm Solving</li>
+<li>Disruption</li>
+<li>The Traditional Path</li>
+<li>All abstractions leak</li>
+<li>Debugging</li>
+</ul>
+
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f59ub69y6sj21kw16otrf.jpg" alt="" />
+<img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f59udw4s2jj21kw16oae7.jpg" alt="" /></p>
+
+<h3>Grzegorz Witek – <a href="https://speakerdeck.com/arnvald/your-api-is-too-slow">Your API is too slow!</a></h3>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f59uj3f5p7j21kw16o7nl.jpg" alt="" /></p>
+
+<ul>
+<li>Web app optimization</li>
+</ul>
+
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f5a7md4rokj21kw0vygsu.jpg" alt="" /></p>
+
+<ul>
+<li>Web API optimization</li>
+</ul>
+
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f5a7mwny95j21kw0vqwka.jpg" alt="" /></p>
+
+<ul>
+<li>gem &lsquo;ruby-prof&rsquo;</li>
+<li>gem &lsquo;rack-mini-profiler&rsquo;</li>
+<li>gem &lsquo;newrelic&rsquo;</li>
+<li>gem &lsquo;skylight&rsquo;</li>
+</ul>
+
+
+<h3><em>Ligtning talks</em></h3>
+
+<h4>Jo Cranford – <a href="https://engineers.sg/v/806">Where Did Everybody Go?</a></h4>
+
+<p>主要是问卷调查，详情请看视频</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f59xb2rnc6j20zk0jzwew.jpg" alt="" /></p>
+
+<h4>SHIBATA Hiroshi – <a href="http://www.slideshare.net/hsbt/how-to-begin-developing-ruby-core">How to Begin Developing Ruby Core</a></h4>
+
+<ul>
+<li>介绍如何为ruby贡献源码</li>
+</ul>
+
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f59xbkuta1j20zk0jzgm6.jpg" alt="" /></p>
+
+<h4>Ankita Gupta – <a href="https://engineers.sg/v/808">Speeding Up Your Test Suite</a></h4>
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f59uo16zyqj21kw16owlx.jpg" alt="" /></p>
+
+<h4>Giovanni Sakti – <a href="https://speakerdeck.com/giosakti/flexible-authorization">Flexible Authorization</a></h4>
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f59v5y2evjj20xc0p040t.jpg" alt="" /></p>
+
+<h3>Tim Riley – <a href="http://dry-rb.org/resources/reddotrubyconf-2016">Next-generation Ruby web apps with dry-rb, rom-rb, and Roda</a></h3>
+
+<ul>
+<li>简单介绍下一代Web框架<a href="http://dry-rb.org/">dry-rb</a>，及各种主件</li>
+<li><a href="https://github.com/dry-rb">dry-rb</a> 源码</li>
+<li><a href="https://github.com/rom-rb/rom">rom-rb</a></li>
+<li><a href="https://github.com/jeremyevans/roda">roda</a></li>
+<li><a href="https://github.com/dry-rb/dry-web">dry-web</a> - Lightweight web application stack with pluggable routing front-ends</li>
+</ul>
+
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f59v6oig8xj21kw16oaf9.jpg" alt="" /></p>
+
+<h3>Sau Sheong Chang – <a href="https://speakerdeck.com/sausheong/programming-complexity">Programming Complexity</a></h3>
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f59ukhlo69j21kw16owxs.jpg" alt="" /></p>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f59uqlvqp5j20xc0p00v0.jpg" alt="" /></p>
+
+<h2>Day 2</h2>
+
+<h3>Aaron Patterson – <a href="https://engineers.sg/v/812">Keynote: Taking Out The Trash</a></h3>
+
+<ul>
+<li><a href="https://github.com/tenderlove/widen">https://github.com/tenderlove/widen</a></li>
+<li>We don&rsquo;t care about small things, so we are removing downcase in Ruby 2.5</li>
+<li>Glossary</li>
+<li>Something About GC</li>
+<li>Find Unlink Node</li>
+<li>Remembered Set</li>
+<li>Incremental GC</li>
+<li>Algorithm</li>
+<li>Compacting</li>
+<li>heap layout</li>
+<li><a href="https://engineering.heroku.com/blogs/2015-02-04-incremental-gc/">https://engineering.heroku.com/blogs/2015-02-04-incremental-gc/</a></li>
+<li>Ruby menmory Page &amp;&amp; OS menmory page</li>
+<li>GC::Profiler.report</li>
+<li><a href="http://ruby-doc.org/core-2.2.0/GC/Profiler.html">http://ruby-doc.org/core-2.2.0/GC/Profiler.html</a></li>
+</ul>
+
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f5aphue0c1j21kw16oh2b.jpg" alt="" />
+<img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f5apijx905j21kw16otpo.jpg" alt="" /></p>
+
+<h3>Sameer Deshmukh – <a href="https://speakerdeck.com/v0dro/scientific-computing-in-ruby-rdrc-2016">Scientific Computing in Ruby</a></h3>
+
+<ul>
+<li>Sameer Deshmukh</li>
+<li><a href="http://sciruby.com/">http://sciruby.com/</a></li>
+<li><a href="https://github.com/domitry/nyaplot">https://github.com/domitry/nyaplot</a></li>
+<li><a href="https://github.com/v0dro/daru">https://github.com/v0dro/daru</a></li>
+<li><a href="https://t.co/22I21IxkMx">https://t.co/22I21IxkMx</a></li>
+</ul>
+
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f5apiwo48pj21kw16owyg.jpg" alt="" /></p>
+
+<h3>Konstantin Hasse – <a href="https://speakerdeck.com/rkh/how-we-replaced-salary-negotiations-with-a-sinatra-app">How We Replaced Salary Negotiations with a Sinatra App</a></h3>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5apjnax8aj21kw1kwqso.jpg" alt="" />
+<img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f5apk02vyfj21kw1kwaz4.jpg" alt="" /></p>
+
+<h3>Vipul Amler – <a href="https://speakerdeck.com/vipulnsward/rails-frontend-2016-edition">Rails Frontend: 2016 edition</a></h3>
+
+<ul>
+<li><a href="https://www.bigbinary.com/building-modern-web-applications-with-reactjs">https://www.bigbinary.com/building-modern-web-applications-with-reactjs</a></li>
+<li><a href="https://engineering.heroku.com/blogs/2016-02-18-speeding-up-sprockets/">https://engineering.heroku.com/blogs/2016-02-18-speeding-up-sprockets/</a></li>
+<li>Sprockets Feature</li>
+<li>Headers(ETag,http_cache_forever)</li>
+<li>Caching(Action/View/ActionMailer,SQL)</li>
+<li>Layouts and Tags(async-defer)</li>
+</ul>
+
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f5aplexdqhj21kw1kwqqx.jpg" alt="" />
+<img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5aplqljqsj21kw1kwh91.jpg" alt="" /></p>
+
+<h3>Sayanee Basu – <a href="https://talks.sayan.ee/sense">Sense and Sensibility</a></h3>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5apmj5abqj21kw1kw7sz.jpg" alt="" /></p>
+
+<h3>Yasuko Ohba – <a href="https://engineers.sg/v/817">Our Fight Against Super Bad Patterns in Legacy Rails Apps</a></h3>
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f5apmunnbfj21kw16owyt.jpg" alt="" /></p>
+
+<h3><em>Lightning talks</em></h3>
+
+<h4>Kenji Mori – <a href="https://speakerdeck.com/morizyun/learning-through-blogging-ruby-blogging-benefits">Learning Through Blogging: Ruby Blogging Benefits</a></h4>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5aqni6tihj21380tawhe.jpg" alt="" /></p>
+
+<h4>Jack Chen Songyong – <a href="https://speakerdeck.com/aquajach/grow-from-small-simple-steps">Grow from Small Simple Steps</a></h4>
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f5apyrxhvdj21kw16oaso.jpg" alt="" /></p>
+
+<h4>Yuki Nishijima – <a href="https://speakerdeck.com/yuki24/20-tools-and-techniques-that-make-you-more-creative">20 Tools and Techniques that Make You More Creative</a></h4>
+
+<ul>
+<li>gem &ldquo;did you mean/experimental&rdquo;</li>
+<li>budnle config &ndash;global jobs 16</li>
+<li>app.get &ldquo;/&rdquo;</li>
+<li>minitest-power_assert</li>
+<li>mv /path/{old, new}.rb/</li>
+<li>ctrl + R</li>
+<li>tree</li>
+<li>ag/ lick ack</li>
+<li>curl xxxxx | jq .dependecies.development</li>
+<li>pagmentize   alise &lsquo;more&rsquo;=<code>pagmentize -g</code></li>
+</ul>
+
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f5aq5c3a7lj20zk0qoq4n.jpg" alt="" /></p>
+
+<h4>Steven Yap – <a href="https://engineers.sg/v/821">Building Real-Time App with React/Redux/Rails/RethinkDB</a></h4>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5aq5tg4cjj20zk0qoq49.jpg" alt="" /></p>
+
+<h4>Xin Tian – <a href="https://engineers.sg/v/822">Journey to becoming a techlady</a></h4>
+
+<p><img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f5aqpgzch4j21kw0udtf2.jpg" alt="" /></p>
+
+<h3>Kir Shatrov – <a href="https://gist.github.com/kirs/a0b69608a96b7845f669822bd7852d9f">Building a ChatOps framework</a></h3>
+
+<ul>
+<li><a href="lita">https://github.com/litaio/lita</a></li>
+</ul>
+
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3gw1f5apodvprfj21kw16oh5d.jpg" alt="" /></p>
+
+<h3>Terence Lee - <a href="https://www.youtube.com/watch?v=5WZmE3uXRWw&amp;list=PLECEw2eFfW7iiJpXtb_cYeKv5_A6Pd1tl&amp;index=24">Closing Keynote: After a Decade, Still a Rubyist - RedDotRubyConf 2016</a></h3>
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f5apov9qcfj21kw16owxi.jpg" alt="" /></p>
+
+<h3>图片</h3>
+
+<p>中国参会Rubyist合照</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/785cd1e3jw1f5aptfdeupj21kw16oh5f.jpg" alt="" /></p>
+
+<h4>新加坡美景</h4>
+
+<p>夜景
+<img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5apuw09klj21kw16o7qw.jpg" alt="" /></p>
+
+<p>标志性建筑
+<img src="http://ww4.sinaimg.cn/large/785cd1e3gw1f5apvdxmqfj21kw16oh7a.jpg" alt="" /></p>
+
+<p><img src="http://ww3.sinaimg.cn/large/785cd1e3gw1f5apw7akyqj21kw16o1kp.jpg" alt="" /></p>
+
+<p><img src="http://ww2.sinaimg.cn/large/785cd1e3gw1f5apwlsz4mj21kw16o1hv.jpg" alt="" /></p>
+
+<h3>各种资源</h3>
+
+<h4>官网</h4>
+
+<ul>
+<li><a href="http://www.reddotrubyconf.com/">http://www.reddotrubyconf.com/</a></li>
+</ul>
+
+
+<h4>直播视频</h4>
+
+<ul>
+<li><a href="https://www.youtube.com/watch?v=_3sz2Oex2YQ">Day 1</a></li>
+<li><a href="https://www.youtube.com/watch?v=nu3oVW1c66A">Day 2</a></li>
+<li>完整视频播放列表 📺<a href="https://www.youtube.com/playlist?list=PLECEw2eFfW7iiJpXtb_cYeKv5_A6Pd1tl">https://www.youtube.com/playlist?list=PLECEw2eFfW7iiJpXtb_cYeKv5_A6Pd1tl</a></li>
+</ul>
+
+
+<h4><a href="https://gist.github.com/cheeaun/43843c8b1c764825b9f3d63ed8f5bd78">RedDotRubyConf 2016 links &amp; resources</a></h4>
+
+<h4><a href="https://theta360.com/s/mLWd3XTvDsBTQVikyhOtt7wMm">现场3D图</a></h4>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Google map with ionic]]></title>
@@ -957,92 +1302,6 @@ end
 <li>在<code>/app/application_controller.rb</code>里面添加<code>&lt;%= javascript_include_tag params[:controller]/params[:action] %&gt;</code>或者<code>&lt;%= stylesheet_link_tag params[:controller]/params[:action] %&gt;</code>加载每个页面所使用到的Js和CSS文件</li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby on Rails配置]]></title>
-    <link href="http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi/"/>
-    <updated>2013-07-12T11:32:00+08:00</updated>
-    <id>http://justin-lu.github.io/blog/2013/07/12/ruby-on-railspei-zhi</id>
-    <content type="html"><![CDATA[<p>安装Ruby On Rails 脚本.</p>
-
-<!-- More -->
-
-
-<ul>
-<li><p>把下面内容复制到一个后缀为<code>RVM配置ROR.sh</code>新文件</p></li>
-<li><p><code>chmod +x RVM配置ROR.sh</code> #变为可执行文件</p></li>
-<li><p><code>./RVM配置ROR.sh</code>  执行文件</p></li>
-</ul>
-
-
-<pre><code class="c">echo "==========  安装函数库 ================="
-sudo apt-get install curl bison build-essential git-core
-sudo apt-get install zlib1g-dev libssl-dev libreadline5-dev libxml2-dev
-
-echo "========== 安装rvm ==================="
-mkdir -p ~/.rvm/src/ &amp;&amp; cd ~/.rvm/src &amp;&amp; rm -rf ./rvm/ &amp;&amp; git clone git://github.com/wayneeseguin/rvm.git &amp;&amp; cd rvm &amp;&amp; ./install
-
-echo "========== 打开另一个终端，执行 vim ~/.bashrc ================="
-echo "========== 并且将下面内容复制到.bashrc最后 ==========="
-echo " if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
-source "$HOME/.rvm/scripts/rvm";
-fi
-[[ -s "$HOME/.rvm/scripts/rvm" ]] &amp;&amp; source "$HOME/.rvm/scripts/rvm"
-"
-echo "========== 修改完后请按回车键继续: =========="
-read var
-
-type rvm | head -1
-
-rvm requirements
-
-sudo apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
-
-echo "=================================="
-source ~/.bashrc  
-
-echo "==================================="
-sudo apt-get install rubygems
-
-echo "========= 安装ruby1.9.2 ==========="
-rvm install 1.9.2-p290
-
-echo "======== 安装rails3.0.3 ==========="
-gem install rails -v=3.0.3
-
-echo "========= 安装ruby ==========="
-rvm install 1.8.7
-
-echo "======== 安装rails ==========="
-gem install rails -v=2.3.5
-
-echo "======= 安装mysql ============"
-sudo apt-get install mysql-server
-sudo apt-get install mysql-client
-
-echo "====== 安装mysql驱动 ========="
-sudo apt-get install libmysqlclient-dev 
-sudo gem install mysql2 
-
-echo "======设置默认版本=========="
-rvm use --default 1.8.7
-
-echo "============更新使用于2.3.5的rubygem========="
-gem update --system 1.5.3
-
-echo "========== 打开另一个终端，执行 vim ~/.bash_profile ================="
-echo "========== 并且将下面内容复制到.bash_profile最后 ==========="
-echo " 
-source ~/.bashrc
-"
-echo "========== 修改完后请按回车键继续: =========="
-read var
-
-echo "===== 如果在此过程中，没有错误，那么Ruby on rails 环境搭配成功(Justin-lu)!! ======== "
-echo "=====   QQ：448426851 ========================== "
-</code></pre>
 ]]></content>
   </entry>
   
