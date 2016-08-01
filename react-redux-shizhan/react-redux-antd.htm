@@ -1,0 +1,904 @@
+<!--
+    Powered By nodePPT - This is probably the best web presentation tool so far!
+    version: 1.4.2
+    site: https://github.com/ksky521/nodePPT
+    date: 
+-->
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>React Redux 实战经验 - By Justin Lu</title>
+    <link rel="stylesheet" media="all" href="./css/nodeppt.css">
+    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./css/phone.css">
+    
+    <link rel="stylesheet" href="./js/highlight/styles/monokai_sublime.css">
+    <link rel="stylesheet" href="./css/font-awesome.css">
+    
+<link rel="stylesheet" href="./css/theme.dark.css">
+</head>
+<body>
+<div class="slides">
+    <slides id="container">
+        <slide class="slide hasnote"><aside class="note">
+<section>
+<ol>
+<li>大家下午好，先做个自我介绍，我叫陆晓勇，主要做Ruby/Rail后端开发，喜欢JavaScript</li>
+<li>大家对这两个icon应该都比较熟悉了吧，今天我要分享的内容就是最近比较火的react/redux的一些经验</li>
+<li>我的分享主要从以下几个方面介绍</li>
+</ol>
+
+</section>
+</aside><section class="slide-wrapper"><hgroup>
+<div>
+  <img src="./react.png" height="200" width="200">
+  <img src="./redux.png" height="200" width="200">
+</div>
+</hgroup><article>
+
+<h1>React Redux 实战经验</h1>
+<h2>Justin Lu@<a href="http://beansmile.com/" target="_blank">Beansmile</a></h2>
+<div>
+  <span>2016-07-31</span>
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><hgroup>
+<h1>主要内容</h1>
+
+</hgroup><article>
+
+<ol class="rollIn">
+<li><code>React</code> + <code>Redux</code> 项目相关技术栈</li>
+<li><code>Webpack</code> 的构建流程</li>
+<li><code>Redux</code>相关概念</li>
+<li>如何写测试</li>
+<li>其他一些Tips</li>
+</ol>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>1. <code>React</code> + <code>Redux</code> 项目相关技术栈</h2>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vleft">
+<h1>相关技术栈</h1>
+<table>
+<thead>
+<tr>
+<th>技术栈</th>
+<th>介绍</th>
+<th>相关资料</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React</td>
+<td>React 是一个 Facebook 和 Instagram 用来创建用户界面的 JavaScript 库</td>
+<td><a href="https://facebook.github.io/react/docs/getting-started.html" target="_blank">Getting started</a></td>
+</tr>
+<tr>
+<td>Redux</td>
+<td>单一数据源，State 是只读的,使用纯函数来执行修改</td>
+<td><a href="http://camsong.github.io/redux-in-chinese/docs/introduction/PriorArt.html" target="_blank">Redux 中文</a></td>
+</tr>
+<tr>
+<td>React Router</td>
+<td>React的路由管理, 最好配合redux-router来使用</td>
+<td><a href="https://github.com/reactjs/react-router/tree/master/docs" target="_blank">Guide</a></td>
+</tr>
+<tr>
+<td>Babel</td>
+<td>ES6/ES7 写的代码转换为 ES5 代码的编译器/转换器</td>
+<td><a href="http://es6.ruanyifeng.com/" target="_blank">ES6入门</a> <a href="babeljs.io/repl/" target="_blank">Babel 在线转换</a></td>
+</tr>
+<tr>
+<td>Webpack</td>
+<td>web项目的模块打包工具,支持热替换,模块打包等功能</td>
+<td><a href="http://webpack.toobug.net/zh-cn/index.html" target="_blank">Webpack 指南</a></td>
+</tr>
+<tr>
+<td>Browsersync</td>
+<td>实时、快速响应您的文件更改并自动刷新页面,可以同时在PC、平板、手机等设备下进项调试</td>
+<td><a href="http://www.browsersync.cn/" target="_blank">Browsersync</a></td>
+</tr>
+</tbody>
+</table>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vleft">
+<h1>相关技术栈</h1>
+<table>
+<thead>
+<tr>
+<th>技术栈</th>
+<th>介绍</th>
+<th>相关资料</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mocha</td>
+<td>JS测试框架</td>
+<td><a href="mochajs.org" target="_blank">mocha</a></td>
+</tr>
+<tr>
+<td>Isparta</td>
+<td>ES6代码测试覆盖率工具</td>
+<td><a href="https://github.com/douglasduteil/isparta" target="_blank">Github</a></td>
+</tr>
+<tr>
+<td>TrackJS</td>
+<td>JS 错误收集/统计工具</td>
+<td><a href="https://trackjs.com/" target="_blank">TrackJS</a></td>
+</tr>
+<tr>
+<td>ESLint</td>
+<td>代码质量检查工具, 可添加插件</td>
+<td><a href="https://www.npmjs.com/package/eslint" target="_blank">ESlint</a></td>
+</tr>
+<tr>
+<td>SASS</td>
+<td>成熟、稳定、强大的 CSS 扩展语言</td>
+<td><a href="http://www.sasschina.com/" target="_blank">sass 中文</a></td>
+</tr>
+<tr>
+<td>npm Scripts</td>
+<td>构建脚本</td>
+<td><a href="http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/" target="_blank">npm scripts</a></td>
+</tr>
+</tbody>
+</table>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>2. <code>Webpack</code> 的构建流程</h2>
+
+</article></section></slide>
+<slide class="slide"   data-on-build="Slide.magic" data-on-enter="Slide.magic.init"><section class="slide-wrapper"><div class="magic"><div class="magicItem current pagedown"  data-transition="earthquake"><article>
+<div class="magic-wrapper">
+<article>
+<pre><code class="javascript">// &quot;start&quot;: &quot;npm-run-all --parallel test:watch open:src lint:watch&quot;
+npm run start
+</code></pre>
+<div>
+  <img src="./npm-start.jpg" width="100%">
+</div>
+</article>
+</div>
+</article></div>
+<div class="magicItem next pagedown"  data-transition="earthquake"><article>
+<div class="magic-wrapper">
+<article>
+<pre><code class="javascript">// &quot;start:prod&quot;: &quot;npm run build &amp;&amp; npm run open:dist&quot;
+npm run start:prod
+</code></pre>
+<div>
+  <img src="./npm-start-prod.jpg" width="100%">
+</div>
+</article>
+</div>
+</article></div>
+<div class="magicItem far-next pagedown"  data-transition="earthquake"><article>
+<div class="magic-wrapper">
+<article>
+<pre><code class="javascript">//  &quot;prebuild&quot;: &quot;npm run clean-dist &amp;&amp; npm run lint &amp;&amp; npm run test&quot;
+# &quot;build&quot;: &quot;babel-node tools/build.js&quot;
+npm run build
+</code></pre>
+<div>
+  <img src="./npm-build.jpg" width="100%">
+</div>
+</article>
+</div>
+</article></div>
+<div class="magicItem "  data-transition="earthquake"><article>
+<div class="magic-wrapper">
+<article>
+<pre><code class="javascript">//  &quot;start:mock&quot;: &quot;babel-node tools/mock.js&quot;
+npm run start:mock
+</code></pre>
+<div>
+  <img src="./npm-mock.jpg" width="100%">
+</div>
+</article>
+</div>
+</article></div>
+<div class="magicItem "  data-transition="earthquake"><article>
+<div class="magic-wrapper">
+<article>
+<pre><code class="javascript">//  &quot;test&quot;: &quot;mocha tools/testSetup.js \&quot;src/**/*.spec.js\&quot;&quot;
+npm run test
+npm run test:cover
+</code></pre>
+<div>
+  <img src="./npm-test-cover.jpg" width="100%">
+</div>
+</article>
+</div>
+</article></div></div></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>3. <code>Redux</code>相关概念</h2>
+
+</article></section></slide>
+<slide class="slide hasnote"><aside class="note">
+<section>
+<p>在UI展示页面，需要演示获取用户，并强调
+点击获取（分页，filter） -&gt; 显示loading -&gt; 隐藏loading</p>
+
+</section>
+</aside><section class="slide-wrapper"><hgroup>
+<h2>UI 展示</h2>
+
+</hgroup><article>
+
+<div>
+  <img src="./ui.jpg" width="100%">
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<div>
+  <img src="./redux-flow.gif" height="100%" width="100%">
+</div>
+</article></section></slide>
+<slide class="slide hasnote"><aside class="note">
+<section>
+<div>
+  <img src="./redux-flow.gif" height="100%" width="100%">
+</div>
+</section>
+</aside><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Action/异步Action</h1>
+<blockquote>
+<p>描述将要发生什么?</p>
+</blockquote>
+<pre><code class="javascript">// src/actions/users.js
+import {
+  USERS_QERUEST, USERS_SUCCESS, USERS_FAILURE
+} from &#39;./../constants/actionTypes&#39;;
+import cFetch from &#39;./../utils/cFetch&#39;;
+
+import { API_CONFIG } from &#39;./../config/api&#39;;
+import { message } from &#39;antd&#39;;
+
+function requestUsers() {
+  return {
+    type: USERS_QERUEST,
+    isFetching: true
+  };
+}
+
+function receiveUsers(users) {
+  return {
+    type: USERS_SUCCESS,
+    isFetching: false,
+    users
+  };
+}
+
+function usersError(message) {
+  return {
+    type: USERS_FAILURE,
+    isFetching: false,
+    message
+  };
+}
+
+export function fetchUsers(params = { page: 1, per_page: 10 }) {
+  return dispatch =&gt; {
+    dispatch(requestUsers());
+    return cFetch(API_CONFIG.users, { method: &quot;GET&quot;, params: params }).then((response) =&gt; {
+      if (response.jsonResult.error_code === 4001) {
+        dispatch(usersError(response.jsonResult.error_message));
+        message.error(response.jsonResult.error_message);
+      } else {
+        dispatch(receiveUsers(response.jsonResult));
+      }
+    });
+  };
+}
+</code></pre>
+
+</article></section></slide>
+<slide class="slide hasnote"><aside class="note">
+<section>
+<div>
+  <img src="./redux-flow.gif" height="100%" width="100%">
+</div>
+</section>
+</aside><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Reducer</h1>
+<blockquote>
+<p>指明应用如何更新 state</p>
+</blockquote>
+<pre><code class="javascript">// src/reducers/users.js
+import { USERS_QERUEST, USERS_SUCCESS, USERS_FAILURE } from &#39;./../constants/actionTypes&#39;;
+import initialState from &#39;./initialState&#39;;
+
+export default function users(state = initialState.users, action) {
+  switch (action.type) {
+    case USERS_QERUEST:
+      return Object.assign({}, state, {
+        isFetching: true
+      });
+    case USERS_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        data: action.users.data
+      });
+    case USERS_FAILURE:
+      return Object.assign({}, state, {
+        isFetching: false,
+        errorMessage: action.message
+      });
+    default:
+      return state;
+  }
+}
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Store</h1>
+<ul class="rollIn">
+<li>维持应用的 state</li>
+<li>提供 getState() 方法获取 state；</li>
+<li>提供 dispatch(action) 方法更新 state</li>
+<li>通过 subscribe(listener) 注册监听器;</li>
+<li>通过 subscribe(listener) 返回的函数注销监听器</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Container</h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Container</th>
+<th>Component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>位置</td>
+<td>最顶层，路由处理</td>
+<td>中间和子组件</td>
+</tr>
+<tr>
+<td>使用 Redux</td>
+<td>是(Smart)</td>
+<td>否(Dumb)</td>
+</tr>
+<tr>
+<td>读取数据</td>
+<td>从 Redux 获取 state</td>
+<td>从 props 获取数据</td>
+</tr>
+<tr>
+<td>修改数据</td>
+<td>向 Redux 发起 actions</td>
+<td>从 props 调用回调函数</td>
+</tr>
+</tbody>
+</table>
+
+</article></section></slide>
+<slide class="slide hasnote"><aside class="note">
+<section>
+<div>
+  <img src="./redux-flow.gif" height="100%" width="100%">
+</div>
+</section>
+</aside><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>代码演示</h1>
+<pre><code class="javascript">// src/containers/UsersPage.js
+// 从 Redux 获取 state
+function mapStateToProps(state) {
+  const { users } = state;
+  return {
+    users
+  };
+}
+
+// 从 Redux 获取 dispatch
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchUsers: (params) =&gt; dispatch(fetchUsers(params))
+  };
+}
+
+export class UsersPage extends React.Component {
+  componentDidMount() {
+    // 向 Redux 发起 actions
+    this.props.fetchUsers(  );
+  }
+
+  render() {
+    const { users: { data, isFetching } } = this.props;
+    return (
+      &lt;CustomTable
+        columns={columns}
+        dataSource={data}
+        loading={isFetching}
+        bordered
+      /&gt;
+    );
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UsersPage);
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>4. 如何写测试</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vleft">
+<h1>测试工具介绍</h1>
+<ul class="rollIn">
+<li>jsdom (构建符合W3标准的DOM, 用户模拟浏览器环境)</li>
+<li>mocha (JS测试框架)</li>
+<li>chai (Node BDD/TDD 断言库)</li>
+<li>enzyme (airbnb出的React测试工具)</li>
+<li>isparta (ES6代码测试覆盖率工具)</li>
+<li>nock (HTTP 模拟 库)</li>
+<li>redux-mock-store(用于测试异步请求或者中间件时，模拟store)</li>
+<li>sinon (用于 JavaScript 的测试监视(spy)、桩(stub)和仿制(mock)功能)</li>
+<li>sinon-chai (拓展 chai, 为 sinon 提供更多断言)</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>环境准备</h1>
+<h3>因为默认测试环境是没有提供浏览器环境(window,document...)，所以<code>react</code>的一些生命周期是不会执行的(componentDidMount)</h3>
+<pre><code class="javascript">// tools/testSetup.js
+const jsdom = require(&#39;jsdom&#39;).jsdom;
+
+const exposedProperties = [&#39;window&#39;, &#39;navigator&#39;, &#39;document&#39;];
+
+global.document = jsdom(&#39;&#39;);
+global.window = document.defaultView;
+Object.keys(document.defaultView).forEach((property) =&gt; {
+  if (typeof global[property] === &#39;undefined&#39;) {
+    exposedProperties.push(property);
+    global[property] = document.defaultView[property];
+  }
+});
+
+global.navigator = {
+  userAgent: &#39;node.js&#39;
+};
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>测试 Action</h1>
+<pre><code class="javascript">// src/actions/users.spec.js
+import configureMockStore from &#39;redux-mock-store&#39;;
+import thunk from &#39;redux-thunk&#39;;
+import nock from &#39;nock&#39;;
+import { expect } from &#39;chai&#39;;
+import {
+  USERS_QERUEST, USERS_SUCCESS
+} from &#39;./../constants/actionTypes&#39;;
+import { fetchUsers } from &#39;./users&#39;;
+import { API_CONFIG } from &#39;./../config/api&#39;;
+
+const middlewares = [ thunk ];
+const mockStore = configureMockStore(middlewares);
+const db = require(&#39;./../data/db.json&#39;);
+
+describe(&#39;Users actions&#39;, function() {
+  afterEach(() =&gt; {
+    nock.cleanAll();
+  });
+  it(&#39;should create USERS_SUCCESS when fetching users has been done&#39;, () =&gt; {
+    nock(API_CONFIG.host)
+      .get((uri) =&gt; {
+        return uri.indexOf(API_CONFIG.users) &gt;= 0;
+      })
+      .reply(200, db.users);
+    const expectedActions = [
+      { type: USERS_QERUEST, isFetching: true },
+      { type: USERS_SUCCESS, isFetching: false, users: db.users }
+    ];
+    const store = mockStore();
+
+    return store.dispatch(fetchUsers())
+      .then(() =&gt; {
+        expect(store.getActions()).to.deep.equal(expectedActions);
+      });
+  });
+});
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>测试 Reducer</h1>
+<pre><code class="javascript">// src/reducers/users.spec.js
+import { expect } from &#39;chai&#39;;
+import users from &#39;./users&#39;;
+import initialState from &#39;./initialState&#39;;
+import { USERS_SUCCESS } from &#39;./../constants/actionTypes&#39;;
+
+const db = require(&#39;./../data/db.json&#39;);
+
+describe(&#39;Users reducer&#39;,() =&gt; {
+  it(&#39;should return the initialState&#39;, () =&gt; {
+    expect(users(undefined, {})).to.deep.equal(initialState.users);
+  });
+
+  it(&#39;should handle USERS_SUCCESS&#39;, () =&gt; {
+    expect(
+      users([], {
+        type: USERS_SUCCESS,
+        users: db.users
+      })
+    ).to.deep.equal({
+      isFetching: false,
+      errorMessage: &#39;&#39;,
+      meta: {
+        total: db.users.meta.total,
+        perPage: db.users.meta.per_page,
+        page: db.users.meta.page
+      },
+      data: db.users.data
+    });
+  });
+});
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>测试 Container</h1>
+<pre><code class="javascript">// src/containers/UsersPage.spec.js
+const db = require(&#39;./../data/db.json&#39;);
+
+chai.use(sinonChai);
+
+function setup() {
+  const props = {
+    fetchUsers: sinon.spy(),
+    users: {
+      isFetching: false,
+      errorMessage: &#39;&#39;,
+      meta: {
+        total: db.users.meta.total,
+        perPage: db.users.meta.per_page,
+        page: db.users.meta.page
+      },
+      data: db.users.data
+    }
+  };
+
+  // Shallow Rendering
+  const enzymeWrapper = shallow(&lt;UsersPage {...props} /&gt;);
+  // Full DOM Rendering
+  const mountWrapper = mount(&lt;UsersPage {...props} /&gt;);
+
+  return {
+    props,
+    enzymeWrapper,
+    mountWrapper
+  };
+}
+
+describe(&#39;UsersPage container&#39;, () =&gt; {
+  it(&#39;should render self with props&#39;, () =&gt; {
+    // componentDidMount
+    const { mountWrapper, props } = setup();
+    expect(props.fetchUsers).to.have.been.calledOnce;
+
+    // simulates click to trigger handleTableChange with page 2
+    mountWrapper.find(&#39;.ant-pagination-item-2&#39;).simulate(&#39;click&#39;);
+    expect(props.fetchUsers).to.have.been.calledWith({ page: 2, per_page: db.users.meta.per_page });
+  });
+
+  it(&#39;should render two &lt;Col /&gt; components&#39;, () =&gt; {
+    const { enzymeWrapper } = setup();
+    expect(enzymeWrapper.find(Col)).to.have.length(2);
+  });
+
+  it(&#39;should render &lt;CustomTable /&gt; components and props&#39;, () =&gt; {
+    const { enzymeWrapper } = setup();
+    const tableProps = enzymeWrapper.find(&#39;CustomTable&#39;).props();
+    expect(tableProps.dataSource).to.deep.equal(db.users.data);
+  });
+});
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><hgroup>
+<h1>测试报告</h1>
+
+</hgroup><article>
+
+<div>
+  <img src="./coverage.jpg" width="100%">
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vleft">
+<h1>5. 其他一些Tips</h1>
+<ul class="rollIn">
+<li>react/redux 开发工具</li>
+<li>如何使用eslint进行语法检查</li>
+<li>如何更方便的<code>Mock</code>数据</li>
+<li>如何解决<code>brower history</code>刷新问题</li>
+<li>更多</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>react/redux 开发工具</h1>
+<div>
+  <img src="./react-plugin.jpg" height="200" width="200">
+  <img src="./redux-plugin.jpg" height="200" width="200">
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>如何使用eslint进行语法检查</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Terminal</h1>
+<ul class="rollIn">
+<li>eslint</li>
+<li>eslint-plugin-react 提供 react 相关规则</li>
+<li>eslint-watch 提供eslint自动检查功能，用于 <code>terminal</code></li>
+<li>eslint-plugin-import 提供 es6 import export 等相关规则</li>
+<li>babel-eslint 允许检查新babel语法( class properties, decorators, async/await, types)</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Terminal</h1>
+<div>
+  <img src="./terminal-eslint.jpg" width="100%">
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><hgroup>
+<h1>Editor</h1>
+<ul class="rollIn">
+<li>SublimeLinter + SublimeLinter-eslint 支持实时检查subl语法</li>
+<li>Vim, 可安装插件<a href="https://github.com/scrooloose/syntastic" target="_blank">syntastic</a></li>
+<li>如Atom, 可安装插件 <code>linter-eslint</code> ，勾选选项 <code>Use global ESLint installation</code></li>
+</ul>
+
+</hgroup><article class="rollIn">
+
+
+<div>
+  <img src="./editor-eslint.jpg" width="100%">
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><hgroup>
+<h1>Git hook</h1>
+<ul class="rollIn">
+<li>git hook pre-commit 用于再提交commit之前，保证所提交文件不符合eslint规则</li>
+</ul>
+
+</hgroup><article class="rollIn">
+
+
+<div>
+  <img src="./pre-commit-eslint.jpg" width="100%">
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>如何更方便的<code>Mock</code>数据</h1>
+<h2><a href="https://github.com/typicode/json-server" target="_blank">json-server</a></h2>
+<blockquote>
+<p>Get a full fake REST API with zero coding in less than 30 seconds (seriously)</p>
+</blockquote>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>如何更方便的<code>Mock</code>数据</h1>
+<pre><code class="javascript">// db.json
+{
+  &quot;posts&quot;: [
+    { &quot;id&quot;: 1, &quot;title&quot;: &quot;json-server&quot;, &quot;author&quot;: &quot;typicode&quot; }
+  ],
+  &quot;comments&quot;: [
+    { &quot;id&quot;: 1, &quot;body&quot;: &quot;some comment&quot;, &quot;postId&quot;: 1 }
+  ],
+  &quot;profile&quot;: { &quot;name&quot;: &quot;typicode&quot; }
+}
+</code></pre>
+<pre><code class="shell"># start json server
+$ json-server --watch db.json
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>包含以下API</h1>
+<ul class="rollIn">
+<li>GET    /posts</li>
+<li>GET    /posts/1</li>
+<li>POST   /posts</li>
+<li>PUT    /posts/1</li>
+<li>PATCH  /posts/1</li>
+<li>DELETE /posts/1</li>
+<li>更多功能: Filter、Slice、Sort、Operators、Full-text search、Relationships</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>如何解决brower-history路由访问刷新问题</h1>
+<ul class="rollIn">
+<li><p>开发环境下，可以使用 <code>connect-history-api-fallback</code></p>
+<pre><code class="javascript">// tools/srcServer.js
+import historyApiFallback from &#39;connect-history-api-fallback&#39;;
+browserSync({
+server: {
+  baseDir: &#39;src&#39;,
+  middleware: [
+    historyApiFallback()
+  ]
+}
+})
+</code></pre>
+</li>
+<li><p>生产环境下，可以通过修改nginx配置，例如</p>
+<pre><code class="shell">location / {
+error_page 404 =200 /;
+}
+</code></pre>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vleft">
+<h1>更多</h1>
+<ul class="rollIn">
+<li>reselect — 受 NuclearJS 启发，有效派生数据的选择器, 减少无效的数据计算</li>
+<li>normalizr — 为了让 reducers 更好的消化数据，将API返回的嵌套数据范式化</li>
+<li>redux-immutablejs — 将Redux 和 Immutable 整合到一起的工具</li>
+<li>redux-saga — Redux 应用的另一种副作用 model(可用来代替 redux-thunk)</li>
+<li>dva - 基于 react, redux, react-router and redux-saga 进行二次封装，最核心的是提供了 app.model 方法，用于把 reducer, initialState, action, saga 封装到一起</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>dva</h1>
+<pre><code class="javascript">app.model({
+  // 对应 reducer 在 combine 到 rootReducer 时的 key 值
+  namespace: &#39;products&#39;,
+  // 对应 reducer 的 initialState
+  state: {
+    list: [],
+    loading: false,
+  },
+  // 对应 saga，并简化了使用
+  effects: {
+    [&#39;products/query&#39;]: function*() {
+      yield call(delay(800));
+      yield put({
+        type: &#39;products/query/success&#39;,
+        payload: [&#39;ant-tool&#39;, &#39;roof&#39;],
+      });
+    },
+  },
+  // 对应 reducer
+  reducers: {
+    [&#39;products/query&#39;](state) {
+      return { ...state, loading: true, };
+    },
+    [&#39;products/query/success&#39;](state, { payload }) {
+      return { ...state, loading: false, list: payload };
+    },
+  },
+});
+</code></pre>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h3>以上Demo内容，已发布至 <a href="https://github.com/Justin-lu/react-redux-antd" target="_blank">Github</a></h3>
+<div>
+  <img src="./github.jpg" width="100%">
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>参考链接</h1>
+<ul>
+<li><a href="https://facebook.github.io/react/docs/getting-started.html" target="_blank">Getting started</a></li>
+<li><a href="http://camsong.github.io/redux-in-chinese/docs/introduction/PriorArt.html" target="_blank">Redux 中文</a></li>
+<li><a href="http://cn.redux.js.org/docs/introduction/Ecosystem.html" target="_blank">Redux 生态系统</a></li>
+<li><a href="http://es6.ruanyifeng.com/" target="_blank">ES6入门</a> <a href="babeljs.io/repl/" target="_blank">Babel 在线转换</a></li>
+<li><a href="http://webpack.toobug.net/zh-cn/index.html" target="_blank">Webpack 指南</a></li>
+<li><a href="http://www.browsersync.cn/" target="_blank">Browsersync</a></li>
+<li><a href="mochajs.org" target="_blank">mocha</a></li>
+<li><a href="https://www.npmjs.com/package/eslint" target="_blank">ESlint</a></li>
+<li><a href="http://www.sasschina.com/" target="_blank">sass 中文</a></li>
+<li><a href="http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/" target="_blank">npm scripts</a></li>
+<li><a href="https://github.com/airbnb/enzyme" target="_blank">enzyme</a></li>
+<li><a href="https://github.com/reactjs/redux/blob/master/docs/recipes/WritingTests.md" target="_blank">WritingTests</a></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide fill" style="background-image:url('./img/bg1.png')"><section class="slide-wrapper"><hgroup>
+<h1>Thank you !</h1>
+<h1>Q&amp;A</h1>
+<h3>如果有更多问题，或者建议</h3>
+<h3>欢迎加我微信或者到<a href="https://github.com/Justin-lu/react-redux-antd" target="_blank">Github</a>提交issue/MR</h3>
+
+</hgroup><article>
+
+<div>
+  <img src="./wechat.jpg" style="position:relative;width:200px;min-width: 200px;right:0px;">
+</div>
+</article></section></slide>
+        
+
+        <!-- <slide class="slide logoslide dark nobackground">
+            <article class="flexbox vcenter">
+                <h2 style="color: white;">Powered By nodePPT v1.4.2</h2>
+            </article>
+        </slide> -->
+        <div class="slideTip" id="tip"></div>
+    </slides>
+</div>
+<canvas id="drawBoard" class="draw-board" width="900" height="700"></canvas>
+<div class="progress"><span id="progress"></span></div>
+<div id="_buttons">
+    <div class="_btn-box" id="_btn-box" style="display:none;">
+        <button class="fa fa-arrow-circle-left" id="_btn-prev"></button>
+        <button class="fa fa-arrow-circle-right" id="_btn-next"></button>
+        <button class="fa fa-paint-brush" id="_btn-brush"></button>
+        <button class="fa fa-compress" id="_btn-overview" data-toggle="fa fa-expand"></button>
+    </div>
+    <button class="fa fa-bars" id="_btn-bar"  data-toggle="fa fa-close"></button>
+</div>
+<script src="./js/mixjs/lib/mix.0.3.0.min.js"></script>
+<script>
+var base = location.protocol + '//' + location.host;
+
+var path = (location.pathname + '#').split('/').filter(function(v){
+    return !!v;
+});
+path.pop();
+path = path.join('/');
+MixJS.config({
+    baseURL: [ base, path, 'js'].join('/')+'/'
+});
+
+</script>
+<script src="./js/mixjs/lib/event/broadcast.js"></script>
+<script src="./js/nodeppt.js"></script>
+<script>
+Slide.init({
+    containerID: 'container',
+    drawBoardID: 'drawBoard',
+    slideClass: '.slide',
+    buildClass: '.build',
+    progressID: 'progress',
+    transition: 'cards',
+    width: 1100,
+    dir: './',
+    
+    //打开下面的注释就开启postMessage方式
+    //访问网址127.0.0.1:8080/ppt/demo#client
+    control:{
+        type: 'postMessage',
+        args:{
+            isControl:  false
+        }
+    },
+    
+    tipID: 'tip'
+});
+MixJS.loadJS('highlight/highlight.pack.js',function(){
+    hljs.tabReplace = '  ';
+    hljs.initHighlightingOnLoad();
+});
+</script>
+<script src="./js/demo.js"></script>
+<link rel="stylesheet" href="./css/demo.css">
+
+<!--placeholder-->
+</body>
+</html>
