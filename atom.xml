@@ -4,7 +4,7 @@
   <title><![CDATA[Hi I'm Justin-lu]]></title>
   <link href="http://justin-lu.github.io/atom.xml" rel="self"/>
   <link href="http://justin-lu.github.io/"/>
-  <updated>2016-08-01T14:49:13+08:00</updated>
+  <updated>2016-08-19T21:00:03+08:00</updated>
   <id>http://justin-lu.github.io/</id>
   <author>
     <name><![CDATA[Justin-lu]]></name>
@@ -12,6 +12,212 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[前后端分离实践 — 如何解决跨域问题]]></title>
+    <link href="http://justin-lu.github.io/blog/2016/08/19/qian-hou-duan-fen-chi-shi-jian-ru-he-jie-jue-kua-yu-wen-ti/"/>
+    <updated>2016-08-19T20:51:22+08:00</updated>
+    <id>http://justin-lu.github.io/blog/2016/08/19/qian-hou-duan-fen-chi-shi-jian-ru-he-jie-jue-kua-yu-wen-ti</id>
+    <content type="html"><![CDATA[<p><a href="https://github.com/Justin-lu/react-redux-antd/issues/4">原文链接</a></p>
+
+<p>随着前端越来越火，越来越多的人推崇前后端分离，后端只提供API，前端只负责消费API。这样我们就能更加专注自己的事情了，比如前端可以使用任何想要的工具（Webpack、Gulp等等），后端也不用因为集成前端的代码而苦逼加班了。这里不讨论前后端分离的必要性，更多可参考</p>
+
+<!-- More -->
+
+
+<ul>
+<li><a href="http://2014.jsconf.cn/slides/herman-taobaoweb/#/96">淘宝前后端分离实践</a></li>
+<li><a href="http://frontenddev.org/column/taobao-full-stack-development/">淘宝前后端分离系列文章</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzAwNjI5MTYyMw==&amp;mid=2651493177&amp;idx=1&amp;sn=730545f530e7d6506b884ab46462169a&amp;scene=7#wechat_redirect">我们为什么要尝试前后端分离</a></li>
+</ul>
+
+
+<p>这里主要分享前后端分离后，如何解决跨域问题</p>
+
+<h2>服务端</h2>
+
+<h3>Rails</h3>
+
+<p>作为一个<code>Rails</code>程序员，首先分享一下在<code>Rails</code>里面的解决方案, 大家可以使用一个<a href="https://github.com/cyu/rack-cors">rack-cors</a> 中间件，并作以下配置:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#config/application.rb</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">insert_before</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Rack::Cors&quot;</span><span class="p">,</span> <span class="ss">:debug</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">:logger</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="p">{</span> <span class="no">Rails</span><span class="o">.</span><span class="n">logger</span> <span class="p">})</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">allow</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">origins</span> <span class="o">[</span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="o">]</span>
+</span><span class='line'>        <span class="n">resource</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:headers</span> <span class="o">=&gt;</span> <span class="ss">:any</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:methods</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:get</span><span class="p">,</span> <span class="ss">:post</span><span class="p">,</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">:put</span><span class="p">,</span> <span class="ss">:options</span><span class="p">,</span> <span class="ss">:head</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:max_age</span> <span class="o">=&gt;</span> <span class="mi">0</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>更多配置请参考 <a href="https://github.com/cyu/rack-cors">rack-cors</a></p>
+
+<h3>Node</h3>
+
+<p>当然，如果后端是<code>NodeJs</code>，我们也可以找到同样的中间件 <a href="https://github.com/expressjs/cors">cors</a> 请看以下配置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">,</span> <span class="nx">cors</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;cors&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">,</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 同样的，只支持开发环境跨域</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">==</span> <span class="s1">&#39;development&#39;</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cors</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Nginx</h2>
+
+<p>这时候，后端程序员可能会说，为了保持跟生产环境配置一直，请直接用 <code>Nginx</code> 来配置吧，这样能减少差异。啪啦啪啦&hellip;
+直接看配置吧</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>server <span class="o">{</span>
+</span><span class='line'>    listen       80<span class="p">;</span>
+</span><span class='line'>    <span class="c"># 配置可访问域名，注意需要添加相应host配置</span>
+</span><span class='line'>    server_name xxx.dev<span class="p">;</span>
+</span><span class='line'>    <span class="c">#charset koi8-r;</span>
+</span><span class='line'>    error_page   <span class="m">500</span> <span class="m">502</span> <span class="m">503</span> <span class="m">504</span>  /50x.html<span class="p">;</span>
+</span><span class='line'>    <span class="nv">location</span> <span class="o">=</span> /50x.html <span class="o">{</span>
+</span><span class='line'>        root   html<span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    location /api/v1 <span class="o">{</span>
+</span><span class='line'>        proxy_set_header Host <span class="nv">$host</span><span class="p">;</span>
+</span><span class='line'>        proxy_set_header X-Forwarded-For <span class="nv">$remote_addr</span><span class="p">;</span>
+</span><span class='line'>        proxy_set_header X-Real-IP <span class="nv">$remote_addr</span><span class="p">;</span>
+</span><span class='line'>        <span class="c"># API Server</span>
+</span><span class='line'>        proxy_pass http://localhost:4000<span class="p">;</span>
+</span><span class='line'>        proxy_next_upstream error<span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    location / <span class="o">{</span>
+</span><span class='line'>        proxy_set_header Host <span class="nv">$host</span><span class="p">;</span>
+</span><span class='line'>        proxy_set_header X-Forwarded-For <span class="nv">$remote_addr</span><span class="p">;</span>
+</span><span class='line'>        proxy_set_header X-Real-IP <span class="nv">$remote_addr</span><span class="p">;</span>
+</span><span class='line'>        <span class="c"># Frontend Server</span>
+</span><span class='line'>        proxy_pass http://localhost:3000<span class="p">;</span>
+</span><span class='line'>        proxy_next_upstream error<span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        proxy_http_version 1.1<span class="p">;</span>
+</span><span class='line'>        proxy_set_header Upgrade <span class="nv">$http_upgrade</span><span class="p">;</span>
+</span><span class='line'>        proxy_set_header Connection <span class="s2">&quot;upgrade&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>http-proxy-middleware</h2>
+
+<p>这时候前端也不服了，说，我们自己能搞定
+PS： 其实这里用了Nginx配置之后，webpack的hot reload会存在比较大的延迟，具体原因还没研究</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># 安装插件</span>
+</span><span class='line'>cnpm install --save-dev http-proxy-middleware
+</span><span class='line'>
+</span><span class='line'><span class="c"># 添加配置</span>
+</span><span class='line'>import proxy from <span class="s1">&#39;http-proxy-middleware&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>const <span class="nv">apiProxy</span> <span class="o">=</span> proxy<span class="o">(</span><span class="s1">&#39;/api/v1&#39;</span>, <span class="o">{</span>
+</span><span class='line'>    target: <span class="s1">&#39;http://localhost:4000&#39;</span>,
+</span><span class='line'>    changeOrigin: <span class="nb">true</span>,
+</span><span class='line'>    ws: <span class="nb">true</span>
+</span><span class='line'><span class="o">})</span><span class="p">;</span>
+</span><span class='line'>browserSync<span class="o">({</span>
+</span><span class='line'>  server: <span class="o">{</span>
+</span><span class='line'>    baseDir: <span class="s1">&#39;src&#39;</span>,
+</span><span class='line'>
+</span><span class='line'>    middleware: <span class="o">[</span>
+</span><span class='line'>      apiProxy,
+</span><span class='line'>      ...
+</span><span class='line'>    <span class="o">]</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>更多参考
+- <a href="https://github.com/chimurai/http-proxy-middleware">http-proxy-middelware</a>
+- <a href="https://github.com/Justin-lu/react-redux-antd/commit/54699dba93dbcdd61837ade6616d7ca13039cb78">add http-proxy-middleware as api proxy</a></p>
+
+<h2>Chrome</h2>
+
+<p>你也可以通过添加chrome插件来支持跨域
+<a href="https://chrome.google.com/webstore/detail/omcncfnpmcabckcddookmnajignpffnh">CORS Toggle</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Reddot RubyConf 2016 总结]]></title>
@@ -5384,70 +5590,6 @@ E）认证服务器核对了授权码和重定向URI，确认无误后，向客�
 </span><span class='line'><span class="n">echo</span> <span class="s">&quot;===== 如果在此过程中，没有错误，那么Ruby on rails 环境搭配成功(Justin-lu)!! ======== &quot;</span>
 </span><span class='line'><span class="n">echo</span> <span class="s">&quot;=====   QQ：448426851 ========================== &quot;</span>
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ubuntu常用软件]]></title>
-    <link href="http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-ruan-jian/"/>
-    <updated>2013-07-12T10:00:00+08:00</updated>
-    <id>http://justin-lu.github.io/blog/2013/07/12/ubuntuchang-yong-ruan-jian</id>
-    <content type="html"><![CDATA[<p>Ubuntu常用软件收集。</p>
-
-<!-- More -->
-
-
-<ol>
-<li><p><code>gnome do</code> 功能：能够快速查找文件，包括文件夹，文件名，程序。。。</p></li>
-<li><p><code>Cairo-dock</code> 功能：美化桌面，导航等。</p></li>
-<li><p><code>Gvim</code> 功能：一个功能强大的文本编辑器。特别适合用来编辑ruby文件。<a href="https://github.com/Justin-lu/.vim">vimrc配置文档</a></p></li>
-<li><p><code>Filezila</code> 功能：FileZilla是一个免费开源的FTP客户端软件，分为客户端版本和服务器版本，具备所有的FTP软件功能。可控性、有条理的界面和管理多站点的简化方式使得Filezilla客户端版成为一个方便高效的FTP客户端工具，而FileZilla Server则是一个小巧并且可靠的支持FTP&amp;SFTP的FTP服务器软件</p></li>
-<li><p><code>CompizConfig</code> 功能：美化。</p></li>
-<li><p><code>Guake Terminal</code> linux下的一种终端，比较方便</p></li>
-<li><p><code>hromium浏览器</code>：简洁快速的网际浏览器 (推荐使用)</p></li>
-<li><p><code>亦歌</code>：在线音乐播放器</p></li>
-<li><p>右键管理员和终端打开（推荐使用，不是软件，baidu百度该关键字）</p></li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">nautilus</span><span class="o">-</span><span class="n">open</span><span class="o">-</span><span class="n">terminal</span>
-</span><span class='line'><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">nautilus</span><span class="o">-</span><span class="n">gksu</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>ubuntu11.04右键管理员失效解决</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">sudo</span> <span class="n">cp</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">nautilus</span><span class="o">/</span><span class="n">extensions</span><span class="o">-</span><span class="mf">2.0</span><span class="o">/</span><span class="n">libnautilus</span><span class="o">-</span><span class="n">gksu</span><span class="p">.</span><span class="n">so</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">nautilus</span><span class="o">/</span><span class="n">extensions</span><span class="o">-</span><span class="mf">3.0</span><span class="o">/</span>
-</span><span class='line'><span class="n">killall</span> <span class="n">nautilus</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>10.<code>ssh</code>的安装</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">ssh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<ol>
-<li><p>安装rails</p></li>
-<li><p>安装rvm</p></li>
-<li><p><code>diagram</code></p></li>
-<li><p><code>wakoopa</code></p></li>
-<li><p><code>mysqlworkbench</code></p></li>
-<li><p><a href="http://justin-lu.github.io/blog/blog/2013/07/12/ubuntu12-dot-10yi-shang-an-zhuang-gu-ge-shu-ru-fa-%2C-sou-gou-shu-ru-deng/">小企鹅输入法安装</a></p></li>
-<li><p><code>VirtualBox</code> ubuntu下比较好的虚拟机(怀念window的，可以装一个winxp)</p></li>
-<li><p><code>Adobe AIR</code> ubuntu下，AIR软件安装所需软件，如微博AIR等</p></li>
-<li><p><code>Dia Diagram Editor</code> ubuntu下类似visio的画图软件</p></li>
-<li><p><code>dropbox</code> &amp;&amp; <code>Yunio</code>跨平台的云端软件</p></li>
-</ol>
 
 ]]></content>
   </entry>
