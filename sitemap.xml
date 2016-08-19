@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://justin-lu.github.io/blog/2016/08/19/qian-hou-duan-fen-chi-shi-jian-ru-he-jie-jue-kua-yu-wen-ti/</loc>
+    <lastmod>2016-08-19T20:51:22+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://justin-lu.github.io/blog/2016/06/30/reddot-rubyconf-2016-zong-jie/</loc>
     <lastmod>2016-06-30T17:24:04+08:00</lastmod>
   </url>
@@ -179,10 +183,7 @@
     <loc>http://justin-lu.github.io/blog/categories/rubyconf/</loc>
   </url>
   <url>
-    <loc>http://justin-lu.github.io/page2/</loc>
-  </url>
-  <url>
-    <loc>http://justin-lu.github.io/page3/</loc>
+    <loc>http://justin-lu.github.io/blog/categories/qian-hou-duan-fen-chi/</loc>
   </url>
   <url>
     <loc>http://justin-lu.github.io/chance_easy_ppt/index.html</loc>
